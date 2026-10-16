@@ -4,71 +4,309 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Featherview — a fast image viewer for the Mac</title>
-<meta name="description" content="Featherview is a fast, keyboard-driven image viewer for macOS with batch conversion. Free and open source.">
+<meta name="description" content="Featherview is a fast, keyboard-driven image viewer for macOS with batch conversion.">
+<meta name="theme-color" content="#0b0b0d">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'><rect width='64' height='64' rx='14' fill='%2314141a'/><path d='M46 10C28 14 18 28 16 50l4 2c2-6 5-11 9-15 8-1 14-6 17-14-4 2-8 3-12 3 5-3 10-8 12-16z' fill='%23ffb547'/></svg>">
 <style>
-  :root { --bg:#fff; --fg:#1d1d1f; --muted:#6e6e73; --line:#e5e5ea; --key:#f5f5f7; --accent:#0a66d8; }
-  @media (prefers-color-scheme: dark) {
-    :root { --bg:#0b0b0c; --fg:#f5f5f7; --muted:#9a9aa0; --line:#2a2a2e; --key:#1c1c1f; --accent:#4c9dff; }
+  :root {
+    --bg:#0b0b0d; --bg2:#121216; --fg:#f4f4f6; --muted:#9b9ba6; --line:#24242c;
+    --card:#141419; --accent:#ffb547; --accent2:#ff7a59; --key:#1d1d24; --keyhi:#2c2c36;
+  }
+  @media (prefers-color-scheme: light) {
+    :root { --bg:#fbfaf8; --bg2:#f2f0ec; --fg:#17171b; --muted:#66666f; --line:#e4e1db;
+      --card:#ffffff; --accent:#d9831a; --accent2:#e2553a; --key:#ffffff; --keyhi:#f0ede7; }
   }
   * { box-sizing:border-box; }
-  body { margin:0; background:var(--bg); color:var(--fg);
-    font:17px/1.55 -apple-system, BlinkMacSystemFont, "SF Pro Text", "Helvetica Neue", sans-serif; }
-  main { max-width:760px; margin:0 auto; padding:72px 16px 48px; }
-  h1 { font-size:clamp(40px, 8vw, 64px); letter-spacing:-.03em; line-height:1.05; margin:0 0 12px; }
-  h2 { font-size:22px; letter-spacing:-.01em; margin:56px 0 12px; }
-  .lead { font-size:clamp(19px, 3vw, 23px); color:var(--muted); margin:0 0 28px; }
-  .status { display:inline-block; font-size:14px; color:var(--muted); border:1px solid var(--line);
-    border-radius:999px; padding:4px 12px; }
-  ul { padding-left:20px; } li { margin:6px 0; }
-  a { color:var(--accent); }
-  kbd { font:600 13px/1 ui-monospace, "SF Mono", Menlo, monospace; background:var(--key);
-    border:1px solid var(--line); border-bottom-width:2px; border-radius:6px; padding:4px 7px;
-    display:inline-block; min-width:26px; text-align:center; }
-  table { width:100%; border-collapse:collapse; }
-  td { padding:9px 0; border-bottom:1px solid var(--line); vertical-align:top; }
-  td:first-child { width:46%; white-space:nowrap; }
-  td kbd { margin-right:4px; }
-  footer { margin-top:64px; padding-top:20px; border-top:1px solid var(--line); font-size:14px; color:var(--muted); }
-  @media (max-width:520px) { td:first-child { white-space:normal; } }
+  html { scroll-behavior:smooth; }
+  body { margin:0; background:var(--bg); color:var(--fg); -webkit-font-smoothing:antialiased; overflow-x:hidden;
+    font:17px/1.6 -apple-system, BlinkMacSystemFont, "SF Pro Text", "Inter", "Helvetica Neue", sans-serif; }
+  a { color:inherit; }
+  .wrap { max-width:1080px; margin:0 auto; padding:0 20px; }
+
+  nav { display:flex; align-items:center; justify-content:space-between; padding:22px 0; }
+  .brand { display:flex; align-items:center; gap:10px; font-weight:650; letter-spacing:-.01em; text-decoration:none; }
+  .brand svg { width:28px; height:28px; }
+  nav .links { display:flex; gap:22px; font-size:15px; color:var(--muted); }
+  nav .links a { text-decoration:none; } nav .links a:hover { color:var(--fg); }
+
+  .hero { position:relative; text-align:center; padding:64px 0 40px; }
+  .hero::before { content:""; position:absolute; inset:-120px -20px auto; height:620px; z-index:-1; pointer-events:none;
+    background:radial-gradient(600px 300px at 50% 30%, color-mix(in srgb, var(--accent) 22%, transparent), transparent 70%); }
+  .pill { display:inline-flex; gap:8px; align-items:center; font-size:13px; color:var(--muted);
+    border:1px solid var(--line); background:color-mix(in srgb, var(--card) 70%, transparent);
+    border-radius:999px; padding:5px 14px 5px 10px; }
+  .pill i { width:8px; height:8px; border-radius:50%; background:var(--accent); box-shadow:0 0 12px var(--accent); }
+  h1 { font-size:clamp(44px, 8.4vw, 92px); line-height:1; letter-spacing:-.045em; font-weight:750; margin:22px 0 18px; }
+  h1 em { font-style:normal; background:linear-gradient(100deg, var(--accent), var(--accent2));
+    -webkit-background-clip:text; background-clip:text; color:transparent; }
+  .lead { font-size:clamp(18px, 2.4vw, 22px); color:var(--muted); max-width:620px; margin:0 auto 32px; }
+  .cta { display:flex; gap:12px; justify-content:center; flex-wrap:wrap; }
+  .btn { display:inline-flex; align-items:center; gap:8px; padding:12px 20px; border-radius:12px;
+    font-weight:600; font-size:15px; text-decoration:none; border:1px solid var(--line); background:var(--card); }
+  .btn.primary { background:var(--fg); color:var(--bg); border-color:transparent; }
+  .btn[aria-disabled] { opacity:.75; cursor:default; }
+  .btn small { font-weight:500; opacity:.7; }
+
+  .demo { margin:56px auto 0; max-width:900px; }
+  .win { border-radius:14px; overflow:hidden; background:#000; border:1px solid var(--line); outline:none;
+    box-shadow:0 40px 100px -30px rgba(0,0,0,.6); }
+  .win:focus-visible { box-shadow:0 0 0 3px color-mix(in srgb, var(--accent) 60%, transparent), 0 40px 100px -30px rgba(0,0,0,.6); }
+  .bar { display:flex; align-items:center; height:38px; padding:0 14px; background:#1e1e22; color:#c9c9cf;
+    font-size:13px; font-weight:600; position:relative; }
+  .dots { display:flex; gap:8px; } .dots span { width:12px; height:12px; border-radius:50%; background:#ff5f57; }
+  .dots span:nth-child(2) { background:#febc2e; } .dots span:nth-child(3) { background:#28c840; }
+  .title { position:absolute; left:80px; right:80px; text-align:center; pointer-events:none; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+  .stage { position:relative; aspect-ratio:16/10; display:flex; }
+  .canvas { flex:1; display:grid; place-items:center; overflow:hidden; }
+  .photo { width:78%; aspect-ratio:3/2; transition:transform .35s cubic-bezier(.3,.7,.2,1); }
+  .photo svg { width:100%; height:100%; display:block; }
+  .info { width:0; overflow:hidden; background:#16161a; color:#cfcfd6; font-size:12.5px; text-align:left; transition:width .25s; }
+  .info.open { width:min(240px, 42%); }
+  .info dl { margin:0; padding:18px; display:grid; grid-template-columns:auto 1fr; gap:6px 12px; white-space:nowrap; }
+  .info dt { color:#7f7f8a; } .info dd { margin:0; }
+  .toast { position:absolute; left:50%; bottom:16px; transform:translateX(-50%); background:rgba(30,30,34,.85);
+    backdrop-filter:blur(8px); color:#eee; font-size:13px; padding:6px 12px; border-radius:8px; opacity:0; transition:opacity .2s; pointer-events:none; }
+  .toast.show { opacity:1; }
+  .hint { display:flex; flex-wrap:wrap; justify-content:center; gap:10px 18px; margin-top:18px; font-size:14px; color:var(--muted); }
+  .hint button { all:unset; cursor:pointer; display:inline-flex; gap:7px; align-items:center; }
+  .hint button:hover kbd, .hint button:focus-visible kbd { background:var(--keyhi); }
+
+  kbd { font:600 12.5px/1 ui-monospace, "SF Mono", Menlo, monospace; display:inline-grid; place-items:center;
+    min-width:28px; height:28px; padding:0 8px; border-radius:7px; color:var(--fg); background:var(--key);
+    border:1px solid var(--line); box-shadow:0 2px 0 var(--line); transition:transform .08s, background .08s; }
+  kbd.hit { transform:translateY(2px); box-shadow:none; background:var(--accent); color:#1a1205; }
+
+  section { padding:96px 0 0; }
+  .eyebrow { font-size:13px; font-weight:650; letter-spacing:.12em; text-transform:uppercase; color:var(--accent); margin:0 0 10px; }
+  h2 { font-size:clamp(30px, 4.6vw, 46px); line-height:1.08; letter-spacing:-.03em; margin:0 0 16px; max-width:760px; }
+  .sub { color:var(--muted); max-width:640px; margin:0 0 40px; font-size:18px; }
+
+  .grid { display:grid; grid-template-columns:repeat(3, 1fr); gap:16px; }
+  .card { background:var(--card); border:1px solid var(--line); border-radius:18px; padding:26px; }
+  .card h3 { font-size:18px; letter-spacing:-.01em; margin:14px 0 6px; }
+  .card p { margin:0; color:var(--muted); font-size:15.5px; }
+  .ico { width:38px; height:38px; border-radius:10px; display:grid; place-items:center;
+    background:color-mix(in srgb, var(--accent) 16%, transparent); color:var(--accent); }
+  .ico svg { width:20px; height:20px; fill:none; stroke:currentColor; stroke-width:1.8; stroke-linecap:round; stroke-linejoin:round; }
+
+  .stats { display:grid; grid-template-columns:repeat(3, 1fr); gap:16px; }
+  .stat { border-top:1px solid var(--line); padding-top:22px; }
+  .stat b { display:block; font-size:clamp(40px, 6vw, 64px); letter-spacing:-.04em; line-height:1; font-weight:700; }
+  .stat b span { font-size:.45em; color:var(--muted); font-weight:600; letter-spacing:-.01em; }
+  .stat p { color:var(--muted); margin:10px 0 0; font-size:15.5px; }
+
+  .split { display:grid; grid-template-columns:1fr 1fr; gap:48px; align-items:center; }
+  .keys div { display:flex; justify-content:space-between; align-items:center; gap:16px; padding:11px 0; border-bottom:1px solid var(--line); }
+  .keys span:first-child { white-space:nowrap; }
+  .keys span:last-child { color:var(--muted); font-size:15.5px; text-align:right; }
+  .keys kbd { margin-right:4px; }
+
+  .batch { background:var(--card); border:1px solid var(--line); border-radius:18px; padding:22px; font-size:14.5px; }
+  .flow { display:flex; align-items:center; gap:10px; flex-wrap:wrap; }
+  .chip { padding:7px 12px; border-radius:9px; background:var(--bg2); border:1px solid var(--line); }
+  .arrow { color:var(--muted); }
+  .files { margin-top:18px; font:13px/1.9 ui-monospace, "SF Mono", Menlo, monospace; color:var(--muted); overflow-wrap:anywhere; }
+  .files b { color:var(--fg); font-weight:500; } .files .ok { color:#3ecf8e; }
+
+  .formats { display:flex; flex-wrap:wrap; gap:10px; }
+  .formats span { font:600 14px/1 ui-monospace, "SF Mono", Menlo, monospace; padding:10px 14px; border-radius:10px;
+    border:1px solid var(--line); background:var(--card); }
+
+  .closing { text-align:center; padding:120px 0 40px; }
+  .closing h2, .closing .sub { margin-left:auto; margin-right:auto; }
+  .closing .sub { margin-bottom:30px; }
+
+  footer { border-top:1px solid var(--line); margin-top:80px; padding:28px 0 40px; color:var(--muted); font-size:14px;
+    display:flex; justify-content:space-between; gap:16px; flex-wrap:wrap; }
+  footer a { color:var(--fg); }
+
+  @media (max-width:860px) {
+    .grid, .stats { grid-template-columns:1fr 1fr; } .split { grid-template-columns:1fr; gap:32px; }
+    .split .batch { order:1; }
+  }
+  @media (max-width:560px) {
+    .wrap { padding:0 16px; }
+    .grid, .stats { grid-template-columns:1fr; } nav .links a:not(:last-child) { display:none; }
+    .photo { width:88%; } section { padding-top:72px; }
+    .keys div { align-items:flex-start; }
+  }
+  @media (prefers-reduced-motion: reduce) { * { transition:none !important; scroll-behavior:auto !important; } }
 </style>
 </head>
 <body>
-<main>
-  <h1>Featherview</h1>
-  <p class="lead">A fast, keyboard-driven image viewer for the Mac, with batch conversion.</p>
-  <span class="status">In early development · macOS 14 Sonoma or later</span>
+<div class="wrap">
+  <nav>
+    <a class="brand" href="#">
+      <svg viewBox="0 0 64 64" aria-hidden="true"><rect width="64" height="64" rx="14" fill="#14141a"/><path d="M46 10C28 14 18 28 16 50l4 2c2-6 5-11 9-15 8-1 14-6 17-14-4 2-8 3-12 3 5-3 10-8 12-16z" fill="#ffb547"/></svg>
+      Featherview
+    </a>
+    <div class="links"><a href="#features">Features</a><a href="#speed">Speed</a><a href="#batch">Batch</a><a href="https://github.com/featherview">GitHub</a></div>
+  </nav>
 
-  <h2>Open one image, flip through the folder</h2>
-  <ul>
-    <li>Opens instantly and shows every image in the folder with the arrow keys</li>
-    <li>JPEG, PNG, HEIC, WebP, TIFF, GIF and camera RAW, upright and colour-managed</li>
-    <li>Lossless rotation for JPEG, HEIC and TIFF</li>
-    <li>Batch convert, resize and rename, never overwriting a file</li>
-    <li>EXIF info panel; delete moves to the Trash</li>
-    <li>Native: Mac menus, full screen, Finder “Open With”, drag and drop, Dark Mode</li>
-  </ul>
+  <header class="hero">
+    <span class="pill"><i></i>In development · macOS 14 Sonoma or later</span>
+    <h1>Look through photos<br><em>at the speed of a keypress.</em></h1>
+    <p class="lead">Featherview is a fast, keyboard-driven image viewer for the Mac. Open one picture, flip through the whole folder, rotate, delete, and batch-convert the keepers.</p>
+    <div class="cta">
+      <span class="btn primary" aria-disabled="true">Download <small>coming soon</small></span>
+      <a class="btn" href="https://github.com/featherview">Follow on GitHub</a>
+    </div>
 
-  <h2>Keyboard first</h2>
-  <table>
-    <tr><td><kbd>→</kbd><kbd>Space</kbd></td><td>Next image</td></tr>
-    <tr><td><kbd>←</kbd><kbd>⌫</kbd></td><td>Previous image</td></tr>
-    <tr><td><kbd>R</kbd><kbd>L</kbd></td><td>Rotate right / left, losslessly</td></tr>
-    <tr><td><kbd>F</kbd><kbd>Return</kbd></td><td>Full screen</td></tr>
-    <tr><td><kbd>0</kbd><kbd>1</kbd><kbd>+</kbd><kbd>−</kbd></td><td>Fit, actual size, zoom</td></tr>
-    <tr><td><kbd>I</kbd></td><td>Info panel</td></tr>
-    <tr><td><kbd>⌘</kbd><kbd>B</kbd></td><td>Batch convert</td></tr>
-  </table>
+    <div class="demo">
+      <div class="win" id="win" tabindex="0" aria-label="Featherview demo. Use the arrow keys, R, L and I.">
+        <div class="bar"><div class="dots"><span></span><span></span><span></span></div><div class="title" id="title"></div></div>
+        <div class="stage">
+          <div class="canvas"><div class="photo" id="photo"></div></div>
+          <aside class="info" id="info"><dl id="exif"></dl></aside>
+          <div class="toast" id="toast"></div>
+        </div>
+      </div>
+      <div class="hint">
+        <button data-k="ArrowLeft"><kbd>←</kbd>Previous</button>
+        <button data-k="ArrowRight"><kbd>→</kbd>Next</button>
+        <button data-k="r"><kbd>R</kbd>Rotate</button>
+        <button data-k="i"><kbd>I</kbd>Info</button>
+        <button data-k="Delete"><kbd>⌫</kbd>Trash</button>
+      </div>
+    </div>
+  </header>
 
-  <h2>Fast by design</h2>
-  <p>Speed is the feature. Featherview is built so the first image is on screen in under 300&nbsp;ms,
-    the next one appears with no visible delay, and a folder of 10,000 files opens without the
-    window ever freezing.</p>
+  <section id="features">
+    <p class="eyebrow">Features</p>
+    <h2>Everything you need to sort a folder of photos. Nothing in the way.</h2>
+    <p class="sub">One window, the image, and the keyboard. Panels and dialogs show up only when you ask for them.</p>
+    <div class="grid">
+      <div class="card"><div class="ico"><svg viewBox="0 0 24 24"><path d="M13 2 4 14h7l-1 8 9-12h-7z"/></svg></div>
+        <h3>Opens instantly</h3><p>Double-click a picture in Finder and the rest of the folder is ready behind it, in Finder order.</p></div>
+      <div class="card"><div class="ico"><svg viewBox="0 0 24 24"><rect x="2" y="6" width="20" height="13" rx="2"/><path d="M6 10h.01M10 10h.01M14 10h.01M18 10h.01M7 15h10"/></svg></div>
+        <h3>Keyboard first</h3><p>Every viewer action is a single key. No modifiers, no menus to dig through.</p></div>
+      <div class="card"><div class="ico"><svg viewBox="0 0 24 24"><path d="M21 12a9 9 0 1 1-3-6.7L21 8"/><path d="M21 3v5h-5"/></svg></div>
+        <h3>Lossless rotation</h3><p>R and L turn JPEG, HEIC and TIFF without re-encoding a single pixel.</p></div>
+      <div class="card"><div class="ico"><svg viewBox="0 0 24 24"><path d="M4 7h16M10 11v6M14 11v6M6 7l1 13h10l1-13M9 7V4h6v3"/></svg></div>
+        <h3>Safe by default</h3><p>Delete goes to the Trash. Rotations are atomic. Batch output never overwrites a file.</p></div>
+      <div class="card"><div class="ico"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 11v6M12 7.5h.01"/></svg></div>
+        <h3>Info panel</h3><p>Camera, lens, exposure, aperture, ISO and date taken, one key away.</p></div>
+      <div class="card"><div class="ico"><svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="13" rx="2"/><path d="M8 21h8M12 17v4"/></svg></div>
+        <h3>Truly native</h3><p>Mac menus, full screen, “Open With”, drag and drop, Dark Mode and colour management.</p></div>
+    </div>
+  </section>
 
-  <h2>Free and open source</h2>
-  <p>Native Swift. The source opens up as the first release gets close. Follow along on
-    <a href="https://github.com/featherview">GitHub</a>.</p>
+  <section id="speed">
+    <p class="eyebrow">Speed</p>
+    <h2>Speed is the feature.</h2>
+    <p class="sub">Images are decoded at screen size, off the main thread, while the neighbours load in the background. These are the targets every release is held to.</p>
+    <div class="stats">
+      <div class="stat"><b>300<span> ms</span></b><p>from double-click to a 12-megapixel photo on screen</p></div>
+      <div class="stat"><b>16<span> ms</span></b><p>to show the next image once it’s loaded, faster than a screen refresh</p></div>
+      <div class="stat"><b>10,000</b><p>files in a folder, first image in half a second, and the window never freezes</p></div>
+    </div>
+  </section>
 
-  <footer>Made by <a href="https://github.com/mynetx">Joachim Rütter</a>. Featherview is an independent project and not affiliated with any other image viewer.</footer>
-</main>
+  <section>
+    <div class="split">
+      <div>
+        <p class="eyebrow">Keyboard</p>
+        <h2>Your hands stay where they are.</h2>
+        <p class="sub">Familiar single-key shortcuts, so switching from your old viewer takes about a minute.</p>
+      </div>
+      <div class="keys">
+        <div><span><kbd>→</kbd><kbd>Space</kbd></span><span>Next image, then the next folder</span></div>
+        <div><span><kbd>←</kbd><kbd>⌫</kbd></span><span>Previous image</span></div>
+        <div><span><kbd>R</kbd><kbd>L</kbd></span><span>Rotate right / left</span></div>
+        <div><span><kbd>F</kbd><kbd>↩</kbd></span><span>Full screen</span></div>
+        <div><span><kbd>0</kbd><kbd>1</kbd><kbd>+</kbd><kbd>−</kbd></span><span>Fit, actual size, zoom</span></div>
+        <div><span><kbd>F7</kbd><kbd>F8</kbd></span><span>Move / copy to a folder</span></div>
+        <div><span><kbd>⌘</kbd><kbd>B</kbd></span><span>Batch convert</span></div>
+      </div>
+    </div>
+  </section>
+
+  <section id="batch">
+    <div class="split">
+      <div class="batch" aria-hidden="true">
+        <div class="flow"><span class="chip">248 photos</span><span class="arrow">→</span><span class="chip">Resize 2048 px</span><span class="arrow">→</span><span class="chip">JPEG 85 %</span><span class="arrow">→</span><span class="chip">trip-{n}</span></div>
+        <div class="files">
+          IMG_4102.HEIC → <b>trip-001.jpg</b> <span class="ok">✓</span><br>
+          IMG_4103.HEIC → <b>trip-002.jpg</b> <span class="ok">✓</span><br>
+          IMG_4107.DNG → <b>trip-003.jpg</b> <span class="ok">✓</span><br>
+          IMG_4108.HEIC → <b>trip-004 2.jpg</b> <span class="ok">✓</span> already there, kept
+        </div>
+      </div>
+      <div>
+        <p class="eyebrow">Batch</p>
+        <h2>Convert, resize and rename hundreds at once.</h2>
+        <p class="sub">Pick a folder, choose a format and size, name the results. It runs on every core, skips files it can’t read, and never overwrites anything.</p>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <p class="eyebrow">Formats</p>
+    <h2>Opens what your Mac can open.</h2>
+    <p class="sub">Shown upright and colour-managed, straight from macOS’s own image engine.</p>
+    <div class="formats"><span>JPEG</span><span>PNG</span><span>HEIC</span><span>WebP</span><span>TIFF</span><span>GIF</span><span>BMP</span><span>Camera RAW</span><span>and more</span></div>
+  </section>
+
+  <section class="closing">
+    <h2>Free, and made for the Mac.</h2>
+    <p class="sub">Written in Swift, with nothing but macOS underneath. The first release is on its way.</p>
+    <div class="cta"><a class="btn primary" href="https://github.com/featherview">Follow on GitHub</a></div>
+  </section>
+
+  <footer>
+    <span>Made by <a href="https://github.com/mynetx">Joachim Rütter</a></span>
+    <span>An independent project, not affiliated with any other image viewer.</span>
+  </footer>
+</div>
+
+<script>
+// Demo photos are drawn as SVG here, so the page needs no image files.
+const scenes = [
+  { sky:["#ff9a5a","#ffd29a"], hills:["#5b3a6b","#2d1f3d"], sun:"#fff2c4", sy:62, cam:"iPhone 16 Pro", lens:"24 mm f/1.78", exp:"1/250 s", iso:"64" },
+  { sky:["#1b3b6f","#6fa8dc"], hills:["#e8eef5","#9fb4cc"], sun:"#ffffff", sy:28, cam:"Fujifilm X-T5", lens:"16 mm f/2.8", exp:"1/1000 s", iso:"125" },
+  { sky:["#0f2027","#2c5364"], hills:["#1e3c34","#0b1a16"], sun:"#cfe8ff", sy:22, cam:"Sony A7 IV", lens:"35 mm f/1.4", exp:"8 s", iso:"1600" },
+  { sky:["#a1c4fd","#c2e9fb"], hills:["#3f7f5a","#25523a"], sun:"#fffbe6", sy:30, cam:"Canon R6", lens:"50 mm f/1.8", exp:"1/500 s", iso:"100" },
+  { sky:["#41295a","#f8a5c2"], hills:["#2f2350","#160f2b"], sun:"#ffe0ec", sy:70, cam:"iPhone 16 Pro", lens:"13 mm f/2.2", exp:"1/60 s", iso:"320" },
+];
+const $ = id => document.getElementById(id);
+let n = 41, total = 120, rot = 0, gone = 0, timer;
+function svg(s) {
+  return `<svg viewBox="0 0 300 200" preserveAspectRatio="xMidYMid slice"><defs>
+    <linearGradient id="sk" x2="0" y2="1"><stop stop-color="${s.sky[0]}"/><stop offset="1" stop-color="${s.sky[1]}"/></linearGradient>
+    <linearGradient id="hl" x2="0" y2="1"><stop stop-color="${s.hills[0]}"/><stop offset="1" stop-color="${s.hills[1]}"/></linearGradient></defs>
+    <rect width="300" height="200" fill="url(#sk)"/><circle cx="200" cy="${s.sy + 40}" r="22" fill="${s.sun}" opacity=".9"/>
+    <path d="M0 140 L60 95 L105 128 L165 70 L220 120 L255 98 L300 130 V200 H0Z" fill="url(#hl)" opacity=".75"/>
+    <path d="M0 165 Q75 135 150 160 T300 150 V200 H0Z" fill="url(#hl)"/></svg>`;
+}
+function show() {
+  const s = scenes[(n + gone) % scenes.length];
+  $("photo").innerHTML = svg(s);
+  $("photo").style.transform = `rotate(${rot}deg) scale(${rot % 180 ? .66 : 1})`;
+  $("title").textContent = `IMG_${2000 + n}.jpg — ${n} / ${total}`;
+  $("exif").innerHTML = [["Size", "4032 × 3024"], ["Camera", s.cam], ["Lens", s.lens], ["Exposure", s.exp], ["ISO", s.iso]]
+    .map(([a, b]) => `<dt>${a}</dt><dd>${b}</dd>`).join("");
+}
+function toast(msg) {
+  $("toast").textContent = msg; $("toast").classList.add("show");
+  clearTimeout(timer); timer = setTimeout(() => $("toast").classList.remove("show"), 1100);
+}
+const actions = {
+  ArrowRight() { if (n < total) { n++; rot = 0; } }, ArrowLeft() { if (n > 1) { n--; rot = 0; } },
+  r() { rot += 90; }, l() { rot -= 90; }, i() { $("info").classList.toggle("open"); },
+  Delete() { toast("Moved to Trash"); total--; gone++; if (n > total) n = total; rot = 0; },
+};
+const alias = { ArrowDown:"ArrowRight", " ":"ArrowRight", ArrowUp:"ArrowLeft", Backspace:"Delete", R:"r", L:"l", I:"i" };
+function press(k) {
+  k = alias[k] || k;
+  if (!actions[k]) return false;
+  actions[k]();
+  const cap = document.querySelector(`.hint [data-k="${k}"] kbd`);
+  if (cap) { cap.classList.add("hit"); setTimeout(() => cap.classList.remove("hit"), 140); }
+  show(); return true;
+}
+document.querySelectorAll(".hint button").forEach(b => b.addEventListener("click", () => press(b.dataset.k)));
+$("win").addEventListener("keydown", e => { if (!e.metaKey && !e.ctrlKey && !e.altKey && press(e.key)) e.preventDefault(); });
+show();
+</script>
 </body>
 </html>
