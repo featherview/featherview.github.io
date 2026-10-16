@@ -1,0 +1,74 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Featherview — a fast image viewer for the Mac</title>
+<meta name="description" content="Featherview is a fast, keyboard-driven image viewer for macOS with batch conversion. Free and open source.">
+<style>
+  :root { --bg:#fff; --fg:#1d1d1f; --muted:#6e6e73; --line:#e5e5ea; --key:#f5f5f7; --accent:#0a66d8; }
+  @media (prefers-color-scheme: dark) {
+    :root { --bg:#0b0b0c; --fg:#f5f5f7; --muted:#9a9aa0; --line:#2a2a2e; --key:#1c1c1f; --accent:#4c9dff; }
+  }
+  * { box-sizing:border-box; }
+  body { margin:0; background:var(--bg); color:var(--fg);
+    font:17px/1.55 -apple-system, BlinkMacSystemFont, "SF Pro Text", "Helvetica Neue", sans-serif; }
+  main { max-width:760px; margin:0 auto; padding:72px 16px 48px; }
+  h1 { font-size:clamp(40px, 8vw, 64px); letter-spacing:-.03em; line-height:1.05; margin:0 0 12px; }
+  h2 { font-size:22px; letter-spacing:-.01em; margin:56px 0 12px; }
+  .lead { font-size:clamp(19px, 3vw, 23px); color:var(--muted); margin:0 0 28px; }
+  .status { display:inline-block; font-size:14px; color:var(--muted); border:1px solid var(--line);
+    border-radius:999px; padding:4px 12px; }
+  ul { padding-left:20px; } li { margin:6px 0; }
+  a { color:var(--accent); }
+  kbd { font:600 13px/1 ui-monospace, "SF Mono", Menlo, monospace; background:var(--key);
+    border:1px solid var(--line); border-bottom-width:2px; border-radius:6px; padding:4px 7px;
+    display:inline-block; min-width:26px; text-align:center; }
+  table { width:100%; border-collapse:collapse; }
+  td { padding:9px 0; border-bottom:1px solid var(--line); vertical-align:top; }
+  td:first-child { width:46%; white-space:nowrap; }
+  td kbd { margin-right:4px; }
+  footer { margin-top:64px; padding-top:20px; border-top:1px solid var(--line); font-size:14px; color:var(--muted); }
+  @media (max-width:520px) { td:first-child { white-space:normal; } }
+</style>
+</head>
+<body>
+<main>
+  <h1>Featherview</h1>
+  <p class="lead">A fast, keyboard-driven image viewer for the Mac, with batch conversion.</p>
+  <span class="status">In early development · macOS 14 Sonoma or later</span>
+
+  <h2>Open one image, flip through the folder</h2>
+  <ul>
+    <li>Opens instantly and shows every image in the folder with the arrow keys</li>
+    <li>JPEG, PNG, HEIC, WebP, TIFF, GIF and camera RAW, upright and colour-managed</li>
+    <li>Lossless rotation for JPEG, HEIC and TIFF</li>
+    <li>Batch convert, resize and rename, never overwriting a file</li>
+    <li>EXIF info panel; delete moves to the Trash</li>
+    <li>Native: Mac menus, full screen, Finder “Open With”, drag and drop, Dark Mode</li>
+  </ul>
+
+  <h2>Keyboard first</h2>
+  <table>
+    <tr><td><kbd>→</kbd><kbd>Space</kbd></td><td>Next image</td></tr>
+    <tr><td><kbd>←</kbd><kbd>⌫</kbd></td><td>Previous image</td></tr>
+    <tr><td><kbd>R</kbd><kbd>L</kbd></td><td>Rotate right / left, losslessly</td></tr>
+    <tr><td><kbd>F</kbd><kbd>Return</kbd></td><td>Full screen</td></tr>
+    <tr><td><kbd>0</kbd><kbd>1</kbd><kbd>+</kbd><kbd>−</kbd></td><td>Fit, actual size, zoom</td></tr>
+    <tr><td><kbd>I</kbd></td><td>Info panel</td></tr>
+    <tr><td><kbd>⌘</kbd><kbd>B</kbd></td><td>Batch convert</td></tr>
+  </table>
+
+  <h2>Fast by design</h2>
+  <p>Speed is the feature. Featherview is built so the first image is on screen in under 300&nbsp;ms,
+    the next one appears with no visible delay, and a folder of 10,000 files opens without the
+    window ever freezing.</p>
+
+  <h2>Free and open source</h2>
+  <p>Native Swift. The source opens up as the first release gets close. Follow along on
+    <a href="https://github.com/featherview">GitHub</a>.</p>
+
+  <footer>Featherview is an independent project and not affiliated with any other image viewer.</footer>
+</main>
+</body>
+</html>
