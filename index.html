@@ -305,7 +305,15 @@ function press(k) {
   show(); return true;
 }
 document.querySelectorAll(".hint button").forEach(b => b.addEventListener("click", () => press(b.dataset.k)));
-$("win").addEventListener("keydown", e => { if (!e.metaKey && !e.ctrlKey && !e.altKey && press(e.key)) e.preventDefault(); });
+// Keys work page-wide while the demo is visible; Space and ↑↓ keep scrolling unless the window has focus.
+let visible = true;
+new IntersectionObserver(([e]) => visible = e.isIntersecting).observe($("win"));
+document.addEventListener("keydown", e => {
+  if (e.metaKey || e.ctrlKey || e.altKey) return;
+  const focused = document.activeElement === $("win");
+  if (!focused && (!visible || [" ", "ArrowUp", "ArrowDown"].includes(e.key))) return;
+  if (press(e.key)) e.preventDefault();
+});
 show();
 </script>
 </body>
