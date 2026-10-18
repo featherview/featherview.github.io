@@ -18,7 +18,7 @@
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'><rect width='64' height='64' rx='14.4' fill='%2317171d'/><path d='M46 10C28 14 18 28 16 50l4 2c2-6 5-11 9-15 8-1 14-6 17-14-4 2-8 3-12 3 5-3 10-8 12-16z' fill='%23ffa25e'/></svg>">
 <style>
-  /* Page theme: Graphite by default, warm paper in light mode. The viewer window stays Graphite in both, as in the app. */
+  /* Page theme: Graphite by default, warm paper in light mode. The drawn windows follow it, as the app follows the Mac's appearance. */
   :root {
     --bg:#141417; --surface:#1c1c20; --raise:#24242a; --line:#2d2d34; --fg:#ededf0; --muted:#a6a4ae;
     --warm:#ffb36b; --f1:#ffc766; --f2:#ff7a59; --key:#202026; --keyline:#34343c;
@@ -27,6 +27,17 @@
     --w-bar:#2a2a2f; --w-c1:#232327; --w-c2:#1f1f23; --w-c3:#1b1b1e; --w-line:#38383e; --w-fg:#ececf0;
     --w-muted:#9b9aa3; --w-card:#26262b; --w-cap:rgba(255,255,255,.08); --w-sel:rgba(10,132,255,.24);
     --shadow:0 40px 90px -30px rgba(0,0,0,.75);
+    /* viewer window tokens, dark (Graphite); from the app's Theme.swift */
+    --v-bg:#1c1c20; --v-edge:rgba(255,255,255,.07); --v-glass:rgba(52,52,58,.55); --v-panel:rgba(44,44,50,.62); --v-solid:rgba(46,46,52,.94);
+    --v-hl:rgba(255,255,255,.12); --v-hair:rgba(255,255,255,.06); --v-pic:rgba(255,255,255,.06);
+    --v-fg:rgba(255,255,255,.85); --v-fg2:rgba(255,255,255,.55); --v-strip:rgba(255,255,255,.70);
+    --v-sep:rgba(255,255,255,.14); --v-ssep:rgba(255,255,255,.16); --v-rsep:rgba(255,255,255,.10);
+    --v-hover:rgba(255,255,255,.08); --v-press:rgba(255,255,255,.14); --v-pill:rgba(255,255,255,.12);
+    --v-badge:rgba(255,255,255,.08); --v-badgeline:rgba(255,255,255,.12); --v-card:rgba(255,255,255,.04); --v-cardline:rgba(255,255,255,.06);
+    --v-accent:#ff7a59;
+    --v-e2:0 1px 2px rgba(0,0,0,.20), 0 6px 16px rgba(0,0,0,.30); --v-e3:0 2px 4px rgba(0,0,0,.22), 0 12px 32px rgba(0,0,0,.34);
+    --v-e3f:drop-shadow(0 2px 2px rgba(0,0,0,.22)) drop-shadow(0 12px 16px rgba(0,0,0,.34)); /* E3 for the turnable picture (CSS blur / 2) */
+    --v-e5:0 8px 16px rgba(0,0,0,.28), 0 32px 72px rgba(0,0,0,.45);
     --font:-apple-system, BlinkMacSystemFont, "SF Pro Text", "Helvetica Neue", "Segoe UI", sans-serif;
     --mono:ui-monospace, "SF Mono", Menlo, monospace;
   }
@@ -36,7 +47,17 @@
       --accent:#0a5bc4;
       --w-bar:#ececee; --w-c1:#fafafb; --w-c2:#f3f3f5; --w-c3:#ffffff; --w-line:#dcdce0; --w-fg:#1d1d1f;
       --w-muted:#6e6e73; --w-card:#ffffff; --w-cap:rgba(255,255,255,.8); --w-sel:rgba(10,91,196,.13);
-      --shadow:0 34px 80px -34px rgba(40,30,20,.35); }
+      --shadow:0 34px 80px -34px rgba(40,30,20,.35);
+      --v-bg:#e7e7ec; --v-edge:rgba(0,0,0,.08); --v-glass:rgba(255,255,255,.60); --v-panel:rgba(255,255,255,.66); --v-solid:rgba(246,246,249,.94);
+      --v-hl:rgba(255,255,255,.70); --v-hair:rgba(0,0,0,.06); --v-pic:rgba(0,0,0,.08);
+      --v-fg:rgba(0,0,0,.85); --v-fg2:rgba(0,0,0,.55); --v-strip:rgba(0,0,0,.65);
+      --v-sep:rgba(0,0,0,.12); --v-ssep:rgba(0,0,0,.12); --v-rsep:rgba(0,0,0,.08);
+      --v-hover:rgba(0,0,0,.05); --v-press:rgba(0,0,0,.09); --v-pill:rgba(0,0,0,.08);
+      --v-badge:rgba(0,0,0,.08); --v-badgeline:rgba(0,0,0,.12); --v-card:rgba(0,0,0,.04); --v-cardline:rgba(0,0,0,.06);
+      --v-accent:#b8552b;
+      --v-e2:0 1px 2px rgba(0,0,0,.06), 0 6px 16px rgba(0,0,0,.10); --v-e3:0 2px 4px rgba(0,0,0,.07), 0 12px 32px rgba(0,0,0,.14);
+      --v-e3f:drop-shadow(0 2px 2px rgba(0,0,0,.07)) drop-shadow(0 12px 16px rgba(0,0,0,.14));
+      --v-e5:0 8px 16px rgba(0,0,0,.10), 0 32px 72px rgba(0,0,0,.22); }
   }
   * { box-sizing:border-box; }
   html { scroll-behavior:smooth; }
@@ -83,11 +104,11 @@
   .btn small { font-weight:500; opacity:.7; }
   a.btn:hover { border-color:var(--muted); }
 
-  /* the viewer window, drawn in the app's own look: canvas edge to edge under a glass toolbar and status strip */
+  /* the viewer window, drawn in the app's own look (docs/DESIGN.md): canvas edge to edge, Liquid Glass toolbar groups at both edges, status strip at the bottom */
   .demo { margin:64px auto 0; max-width:960px; }
   .stage { position:relative; aspect-ratio:16/10; }
-  .win { position:absolute; inset:0; border-radius:14px; overflow:hidden; background:#1c1c20; color:#f2f2f4;
-    font:12px/1.2 var(--font); text-align:start; box-shadow:0 0 0 1px rgba(255,255,255,.07) inset, var(--shadow); outline:none;
+  .win { position:absolute; inset:0; border-radius:12px; overflow:hidden; background:var(--v-bg); color:var(--v-fg);
+    font:13px/16px var(--font); text-align:start; box-shadow:inset 0 0 0 1px var(--v-edge), var(--v-e5); outline:none;
     transition:transform .22s cubic-bezier(.3,.7,.4,1), opacity .22s, border-radius .2s; }
   .win.poof { transform:scale(.9); opacity:0; filter:blur(6px); transition:transform .18s ease-in, opacity .18s, filter .18s; }
   .win.mini { transform:translateY(42%) scale(.12); opacity:0; pointer-events:none; }
@@ -101,40 +122,70 @@
   .dockpill i { width:54px; height:36px; border-radius:7px; overflow:hidden; display:block; }
   .dockpill i svg { width:100%; height:100%; display:block; }
   .dockpill small { display:block; font-weight:500; color:var(--muted); margin-top:3px; }
-  .win:focus-visible { box-shadow:0 0 0 1px rgba(255,255,255,.07) inset, 0 0 0 3px color-mix(in srgb, var(--warm) 70%, transparent), var(--shadow); }
-  .glass { background:rgba(40,40,46,.48); -webkit-backdrop-filter:blur(16px) saturate(1.7); backdrop-filter:blur(16px) saturate(1.7);
-    border:1px solid rgba(255,255,255,.15); box-shadow:inset 0 1px 0 rgba(255,255,255,.16), 0 6px 18px rgba(0,0,0,.26); }
-  @supports not ((backdrop-filter:blur(1px)) or (-webkit-backdrop-filter:blur(1px))) { .glass { background:rgba(40,40,46,.9); } }
-  .lights { position:absolute; z-index:5; top:20px; inset-inline-start:18px; display:flex; gap:8px; }
-  .lights i { width:12px; height:12px; border-radius:50%; background:#ff5f57; }
+  .win:focus-visible { box-shadow:inset 0 0 0 1px var(--v-edge), 0 0 0 3px color-mix(in srgb, var(--warm) 70%, transparent), var(--v-e5); }
+  /* one glass recipe: fill, blur 40 + saturation 180 %, top highlight, hairline; E2 for chrome, E3 for the panel */
+  .glass { background:var(--v-glass); -webkit-backdrop-filter:blur(40px) saturate(1.8); backdrop-filter:blur(40px) saturate(1.8);
+    box-shadow:inset 0 1px 0 var(--v-hl), inset 0 0 0 1px var(--v-hair), var(--v-e2); }
+  @supports not ((backdrop-filter:blur(1px)) or (-webkit-backdrop-filter:blur(1px))) { .glass, .info { background:var(--v-solid); } }
+  .lights { position:absolute; z-index:5; top:20px; inset-inline-start:20px; display:flex; gap:8px; }
+  .lights i { width:12px; height:12px; border-radius:50%; background:#ff5f57; box-shadow:inset 0 0 0 .5px rgba(0,0,0,.2); }
   .lights i:nth-child(2) { background:#febc2e; } .lights i:nth-child(3) { background:#28c840; }
   .lights button { all:unset; position:relative; cursor:pointer; width:12px; height:12px; border-radius:50%; background:#ff5f57;
-    box-shadow:inset 0 0 0 .5px rgba(0,0,0,.25); display:grid; place-items:center; color:rgba(0,0,0,.6); font:700 10px/1 var(--font); }
+    box-shadow:inset 0 0 0 .5px rgba(0,0,0,.2); display:grid; place-items:center; color:rgba(0,0,0,.6); font:700 10px/1 var(--font); }
   .lights button:nth-child(2) { background:#febc2e; } .lights button:nth-child(3) { background:#28c840; }
   .lights button::after { content:""; position:absolute; inset:-5px; } /* bigger hit area for fingers */
   .lights button span { opacity:0; transform:translateY(-.5px); }
   .lights:hover button span, .lights button:focus-visible span { opacity:1; }
   .lights button:focus-visible { outline:2px solid #ffc766; outline-offset:2px; }
-  .tools { position:absolute; z-index:4; top:12px; inset-inline:0; height:28px; display:flex; align-items:center; gap:12px; padding-inline:88px 12px; }
-  .seg { display:flex; align-items:center; height:28px; border-radius:14px; padding:0 4px; }
-  .seg button { all:unset; cursor:pointer; width:28px; height:22px; display:grid; place-items:center; border-radius:11px; color:#f4f4f6; }
-  .seg button:hover { background:rgba(255,255,255,.12); }
-  .seg button:focus-visible { outline:2px solid #ffc766; outline-offset:0; }
-  .seg svg { width:15px; height:15px; fill:none; stroke:currentColor; stroke-width:1.6; stroke-linecap:round; stroke-linejoin:round; }
-  .wtitle { flex:1; min-width:0; text-align:center; font-weight:600; font-size:12.5px; color:#ededf0; white-space:nowrap; overflow:hidden;
-    text-overflow:ellipsis; text-shadow:0 1px 3px rgba(0,0,0,.5); font-variant-numeric:tabular-nums; }
-  .fit { position:absolute; inset:52px 28px 46px; container-type:size; display:grid; place-items:center; }
-  .photo { width:min(100cqw, 150cqh); aspect-ratio:3/2; transition:transform .12s ease-out; will-change:transform; }
+  .tools { position:absolute; z-index:4; top:10px; inset-inline:0; height:32px; display:flex; align-items:center; gap:12px; padding-inline:96px 12px; }
+  .seg { flex:none; display:flex; align-items:center; height:32px; border-radius:16px; padding:0 2px; color:var(--v-fg); }
+  .seg button { all:unset; cursor:pointer; width:36px; height:28px; display:grid; place-items:center; border-radius:14px; transition:background .08s; }
+  .seg button:hover { background:var(--v-hover); }
+  .seg button:active { background:var(--v-press); } .seg button:active svg { transform:scale(.94); }
+  .seg button[aria-pressed="true"] { background:var(--v-pill); color:var(--v-accent); transition:none; }
+  .seg button:focus-visible { outline:2px solid var(--warm); outline-offset:-2px; }
+  .seg hr { all:unset; width:1px; height:16px; margin:0 1px; background:var(--v-sep); }
+  .seg svg { width:16px; height:16px; fill:none; stroke:currentColor; stroke-width:1.6; stroke-linecap:round; stroke-linejoin:round; }
+  .seg .chev { stroke-width:2; }
+  [dir="rtl"] .seg .chev { transform:scaleX(-1); }
+  /* the title follows the back/forward group: name in Semibold, the counter quieter; the name truncates first */
+  .wtitle { flex:1; min-width:0; display:flex; gap:6px; white-space:nowrap; }
+  .wtitle b { font-weight:600; overflow:hidden; text-overflow:ellipsis; }
+  .wtitle span { flex:none; color:var(--v-fg2); font-variant-numeric:tabular-nums; }
+  .fit { position:absolute; inset:60px 16px 44px; container-type:size; display:grid; place-items:center;
+    transition:inset-inline-end .18s ease-in-out; filter:var(--v-e3f); }
+  .fit.over { filter:none; } /* zoomed beyond fit: the picture runs under the glass, shadow and hairline gone */
+  .photo { width:min(100cqw, 150cqh); aspect-ratio:3/2; outline:1px solid var(--v-pic); transition:transform .12s ease-out; will-change:transform; }
+  .fit.over .photo { outline:0; }
+  /* the scroll edge effect: a zoomed picture fades into the background under the toolbar */
+  .win::before { content:""; position:absolute; z-index:3; inset:0 0 auto; height:60px; pointer-events:none; opacity:0; transition:opacity .12s linear;
+    background:linear-gradient(var(--v-bg) 30%, transparent); }
+  .win:has(.fit.over)::before { opacity:1; }
+  .photo.turning { transition:transform .16s ease-in-out; }
   .photo.turned { width:min(100cqh, 150cqw); }
   .photo svg { width:100%; height:100%; display:block; }
-  .strip { position:absolute; z-index:4; inset-inline:12px; bottom:10px; height:24px; border-radius:12px; display:flex; align-items:center;
-    gap:16px; padding:0 12px; font-size:11.5px; color:#eeeef1; font-variant-numeric:tabular-nums; white-space:nowrap; overflow:hidden; }
-  .info { position:absolute; z-index:4; top:52px; inset-inline-end:12px; width:min(230px, 46%); border-radius:12px; padding:12px 14px;
-    transform:translateX(calc(100% + 16px)); opacity:0; visibility:hidden; transition:transform .18s ease-out, opacity .18s, visibility .18s; }
-  [dir="rtl"] .info { transform:translateX(calc(-100% - 16px)); }
+  .strip { position:absolute; z-index:4; inset-inline:12px; bottom:8px; height:28px; border-radius:14px; display:flex; align-items:center;
+    gap:12px; padding:0 14px; font-size:11px; line-height:14px; color:var(--v-strip); font-variant-numeric:tabular-nums; white-space:nowrap;
+    overflow:hidden; transition:inset-inline-end .18s ease-in-out; }
+  .strip span + span { display:flex; align-items:center; gap:12px; }
+  .strip span + span::before { content:""; width:1px; height:12px; background:var(--v-ssep); }
+  .info { position:absolute; z-index:4; top:60px; bottom:44px; inset-inline-end:12px; width:280px; border-radius:16px; padding:16px;
+    display:flex; flex-direction:column; gap:12px; background:var(--v-panel);
+    -webkit-backdrop-filter:blur(40px) saturate(1.8); backdrop-filter:blur(40px) saturate(1.8); box-shadow:inset 0 1px 0 var(--v-hl), inset 0 0 0 1px var(--v-hair), var(--v-e3);
+    transform:translateX(24px); opacity:0; visibility:hidden; transition:transform .18s ease-in-out, opacity .18s linear, visibility .18s; }
+  [dir="rtl"] .info { transform:translateX(-24px); }
   .info.open { transform:none; opacity:1; visibility:visible; }
-  .info dl { margin:0; display:grid; grid-template-columns:auto 1fr; gap:6px 12px; font-size:11.5px; }
-  .info dt { color:#b4b4bc; } .info dd { margin:0; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+  /* an open panel takes its space: the picture refits beside it and the strip ends 16 before it (12 + 280 + 16) */
+  .win:has(.info.open) .fit, .win:has(.info.open) .strip { inset-inline-end:308px; }
+  .ihead { flex:none; display:flex; align-items:center; gap:12px; height:24px; padding:0 4px; }
+  .ihead b { flex:1; min-width:0; font-weight:600; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+  .ihead span { font:500 11px/14px var(--font); padding:1px 5px; border-radius:4px; color:var(--v-fg2); background:var(--v-badge); box-shadow:inset 0 0 0 1px var(--v-badgeline); }
+  .info dl { margin:0; min-height:0; overflow:auto; border-radius:10px; background:var(--v-card); box-shadow:inset 0 0 0 1px var(--v-cardline); }
+  .info dl div { display:flex; justify-content:space-between; align-items:center; gap:12px; min-height:40px; padding:0 12px; }
+  .info dl div + div { background:linear-gradient(var(--v-rsep), var(--v-rsep)) no-repeat 12px 0 / calc(100% - 12px) 1px; }
+  [dir="rtl"] .info dl div + div { background-position:0 0; }
+  .info dt { white-space:nowrap; } .info dd { margin:0; color:var(--v-fg2); font-variant-numeric:tabular-nums; text-align:end;
+    overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
   .toast { position:absolute; z-index:6; left:50%; bottom:46px; transform:translateX(-50%); padding:7px 14px; border-radius:999px;
     font-size:12.5px; opacity:0; transition:opacity .2s; pointer-events:none; white-space:nowrap; max-width:calc(100% - 24px);
     overflow:hidden; text-overflow:ellipsis; }
@@ -273,11 +324,15 @@
     section { padding-top:96px; }
     .hero { padding-top:40px; }
     .stage { aspect-ratio:4/3; }
-    .tools { padding-inline-start:74px; gap:6px; } .lights { inset-inline-start:14px; }
+    /* phone: the groups keep their order, items narrow, the title and two strip items give way */
+    .tools { padding-inline:66px 8px; gap:6px; } .lights { inset-inline-start:14px; gap:6px; }
     .wtitle, .opt-wide { display:none; }
     .tools .seg:last-child { margin-inline-start:auto; }
-    .seg button { width:24px; }
-    .fit { inset:48px 12px 42px; }
+    .seg button { width:26px; } .seg hr { margin:0; }
+    .fit { inset:50px 10px 42px; }
+    .strip { inset-inline:8px; } .strip .opt-wide { display:none; }
+    .info { inset-inline-end:8px; width:auto; inset-inline-start:8px; top:50px; }
+    .win:has(.info.open) .fit { inset-inline-end:10px; } .win:has(.info.open) .strip { inset-inline-end:8px; } /* the panel lies over the picture */
     .sheet { padding:22px 18px; }
     .row { align-items:flex-start; }
     .bcols { grid-template-columns:1fr; } .bcol { border-inline-end:0; border-bottom:1px solid var(--w-line); }
@@ -297,10 +352,13 @@
     <symbol id="icon" viewBox="0 0 64 64"><rect width="64" height="64" rx="14.4" fill="url(#tile)"/><path d="M46 10C28 14 18 28 16 50l4 2c2-6 5-11 9-15 8-1 14-6 17-14-4 2-8 3-12 3 5-3 10-8 12-16z" fill="url(#mark)"/></symbol>
     <symbol id="i-prev" viewBox="0 0 16 16"><path d="M10 3 5 8l5 5"/></symbol>
     <symbol id="i-next" viewBox="0 0 16 16"><path d="m6 3 5 5-5 5"/></symbol>
-    <symbol id="i-rot" viewBox="0 0 16 16"><path d="M13 8a5 5 0 1 1-2-4M13 2v3h-3"/></symbol>
-    <symbol id="i-zoom" viewBox="0 0 16 16"><circle cx="7" cy="7" r="4.5"/><path d="m10.5 10.5 3 3M5 7h4M7 5v4"/></symbol>
-    <symbol id="i-info" viewBox="0 0 16 16"><circle cx="8" cy="8" r="6"/><path d="M8 7.2V11M8 5v.4"/></symbol>
-    <symbol id="i-trash" viewBox="0 0 16 16"><path d="M3 4h10M6 4V2.5h4V4M4.5 4l.7 9.5h5.6l.7-9.5"/></symbol>
+    <symbol id="i-rotl" viewBox="0 0 16 16"><path d="M4.5 2.3 2.6 4.4l2.1 1.9M2.8 4.4h5.4a3 3 0 0 1 3 3V8"/><rect x="2.8" y="8.6" width="8.2" height="4.9" rx="1.2"/></symbol>
+    <symbol id="i-rotr" viewBox="0 0 16 16"><path d="m11.5 2.3 1.9 2.1-2.1 1.9M13.2 4.4H7.8a3 3 0 0 0-3 3V8"/><rect x="5" y="8.6" width="8.2" height="4.9" rx="1.2"/></symbol>
+    <symbol id="i-zout" viewBox="0 0 16 16"><circle cx="7" cy="7" r="4.6"/><path d="M10.4 10.4 14 14M5 7h4"/></symbol>
+    <symbol id="i-fit" viewBox="0 0 16 16"><circle cx="7" cy="7" r="4.6"/><path d="M10.4 10.4 14 14M5 9l4-4M5 6.4V5h1.4M9 7.6V9H7.6"/></symbol>
+    <symbol id="i-zin" viewBox="0 0 16 16"><circle cx="7" cy="7" r="4.6"/><path d="M10.4 10.4 14 14M5 7h4M7 5v4"/></symbol>
+    <symbol id="i-info" viewBox="0 0 16 16"><circle cx="8" cy="8" r="6.2"/><path d="M8 7.3V11M8 5v.3"/></symbol>
+    <symbol id="i-trash" viewBox="0 0 16 16"><path d="M2.8 4.5h10.4M6.4 4.5V3h3.2v1.5M4.2 4.5l.6 8.4a1 1 0 0 0 1 .9h4.4a1 1 0 0 0 1-.9l.6-8.4M6.8 7.2v4M9.2 7.2v4"/></symbol>
   </defs>
 </svg>
 
@@ -326,11 +384,11 @@
         <div class="fit"><div class="photo" id="photo"></div></div>
         <div class="lights"><button data-light="close" aria-label="Close window" title="Close"><span aria-hidden="true">×</span></button><button data-light="mini" aria-label="Minimise window" title="Minimise"><span aria-hidden="true">−</span></button><button data-light="max" aria-label="Fill the page" title="Fill the page"><span aria-hidden="true">+</span></button></div>
         <div class="tools">
-          <div class="seg glass"><button data-k="ArrowLeft" aria-label="Previous image" title="Previous (←)"><svg><use href="#i-prev"/></svg></button><button data-k="ArrowRight" aria-label="Next image" title="Next (→)"><svg><use href="#i-next"/></svg></button></div>
-          <div class="wtitle" id="title" aria-live="polite"></div>
-          <div class="seg glass"><button data-k="r" aria-label="Rotate right" title="Rotate right (R)"><svg><use href="#i-rot"/></svg></button><button data-k="+" aria-label="Zoom in" title="Zoom in (+)"><svg><use href="#i-zoom"/></svg></button><button data-k="i" aria-label="Info" title="Info (I)"><svg><use href="#i-info"/></svg></button><button data-k="Delete" aria-label="Move to Trash" title="Move to Trash (⌦)"><svg><use href="#i-trash"/></svg></button></div>
+          <div class="seg glass"><button data-k="ArrowLeft" aria-label="Previous image" title="Previous image (←)"><svg class="chev"><use href="#i-prev"/></svg></button><button data-k="ArrowRight" aria-label="Next image" title="Next image (→)"><svg class="chev"><use href="#i-next"/></svg></button></div>
+          <div class="wtitle" aria-live="polite"><b id="title"></b><span id="count"></span></div>
+          <div class="seg glass"><button data-k="l" aria-label="Rotate left" title="Rotate left (L)"><svg><use href="#i-rotl"/></svg></button><button data-k="r" aria-label="Rotate right" title="Rotate right (R)"><svg><use href="#i-rotr"/></svg></button><hr><button data-k="-" aria-label="Zoom out" title="Zoom out (−)"><svg><use href="#i-zout"/></svg></button><button data-k="0" aria-label="Zoom to fit" title="Zoom to fit (0)"><svg><use href="#i-fit"/></svg></button><button data-k="+" aria-label="Zoom in" title="Zoom in (+)"><svg><use href="#i-zin"/></svg></button><hr><button data-k="i" id="infobtn" aria-label="Info" aria-pressed="false" title="Show info (I)"><svg><use href="#i-info"/></svg></button><button data-k="Delete" aria-label="Move to Trash" title="Move to Trash (⌦)"><svg><use href="#i-trash"/></svg></button></div>
         </div>
-        <aside class="info glass" id="info" aria-label="Image info"><dl id="exif"></dl></aside>
+        <aside class="info" id="info" aria-label="Image info"><div class="ihead"><b id="i-name"></b><span>JPEG</span></div><dl id="exif"></dl></aside>
         <div class="strip glass" aria-hidden="true"><span id="s-size"></span><span id="s-zoom"></span><span id="s-bytes" class="opt-wide"></span><span id="s-pos"></span><span id="s-date" class="opt-wide"></span></div>
         <div class="toast glass" id="toast" role="status"></div>
       </div>
@@ -547,13 +605,14 @@ function scene(seed, id) {
     exp: night ? pick(["4 s", "8 s", "15 s"]) : pick(["1/125 s", "1/250 s", "1/500 s", "1/1000 s"]), iso: night ? pick(["800", "1600", "3200"]) : pick(["64", "100", "200"]) };
 }
 
-const win = $("win"), photo = $("photo");
+const win = $("win"), photo = $("photo"), fit = photo.parentElement;
 let n = 41, total = 120, gone = 0, rot = 0, zoom = 1, px = 0, py = 0, cur, timer;
 const fitPct = () => photo.offsetWidth * devicePixelRatio / cur.w * 100;
 function visual() { const w = photo.offsetWidth * zoom, h = w / 1.5; return rot % 180 ? [h, w] : [w, h]; }
 const larger = () => { const [w, h] = visual(); return w > win.clientWidth + 1 || h > win.clientHeight + 1; };
 function layout() {
   photo.classList.toggle("turned", rot % 180 !== 0);
+  fit.classList.toggle("over", zoom > 1.001);
   const [w, h] = visual(), mx = Math.max(0, (w - win.clientWidth) / 2), my = Math.max(0, (h - win.clientHeight) / 2);
   px = Math.max(-mx, Math.min(mx, px)); py = Math.max(-my, Math.min(my, py));
   photo.style.transform = `translate(${px}px, ${py}px) rotate(${rot}deg) scale(${zoom})`;
@@ -563,15 +622,21 @@ function show() { // browsing is instant: no transition between images
   cur = scene(n * 1009 + gone, "m");
   photo.innerHTML = cur.svg; rot = 0; zoom = 1; px = py = 0;
   photo.style.transition = "none"; layout(); photo.offsetWidth; photo.style.transition = "";
-  $("title").textContent = `IMG_${2000 + n}.jpg — ${n} / ${total}`;
+  $("title").textContent = $("i-name").textContent = `IMG_${2000 + n}.jpg`; $("count").textContent = `— ${n} / ${total}`;
   $("s-size").textContent = `${cur.w} × ${cur.h}`; $("s-bytes").textContent = `${cur.mb} MB`;
   $("s-pos").textContent = `${n} / ${total}`; $("s-date").textContent = cur.date;
-  $("exif").innerHTML = [["Size", `${cur.w} × ${cur.h}`], ["Camera", cur.cam], ["Lens", cur.lens], ["Exposure", cur.exp], ["ISO", cur.iso], ["Taken", cur.date]]
-    .map(([a, b]) => `<dt>${a}</dt><dd>${b}</dd>`).join("");
+  const [focal, aperture] = cur.lens.split(" f/");
+  $("exif").innerHTML = [["Dimensions", `${cur.w} × ${cur.h}`], ["File size", `${cur.mb} MB`], ["Camera", cur.cam], ["Taken", cur.date],
+    ["Exposure", cur.exp], ["Aperture", `f/${aperture}`], ["ISO", cur.iso], ["Focal length", focal]]
+    .map(([a, b]) => `<div><dt>${a}</dt><dd>${b}</dd></div>`).join("");
 }
 function toast(msg, ms = 1200) {
   $("toast").textContent = msg; $("toast").classList.add("show");
   clearTimeout(timer); timer = setTimeout(() => $("toast").classList.remove("show"), ms);
+}
+function turn(d) { // rotation eases in and out over 160 ms; zoom eases out over 120 ms
+  photo.classList.add("turning"); rot += d; layout();
+  clearTimeout(turn.t); turn.t = setTimeout(() => photo.classList.remove("turning"), 170);
 }
 function setZoom(z) { const f = fitPct(); zoom = Math.min(1600 / f, Math.max(5 / f, z)); layout(); }
 function pan(dx, dy) { px -= dx; py -= dy; layout(); }
@@ -589,9 +654,9 @@ const actions = {
   // arrows pan an image larger than the window, as in the app; Space and Backspace always browse
   ArrowRight() { larger() ? pan(step(), 0) : actions.next(); }, ArrowLeft() { larger() ? pan(-step(), 0) : actions.prev(); },
   ArrowDown() { larger() ? pan(0, step()) : actions.next(); }, ArrowUp() { larger() ? pan(0, -step()) : actions.prev(); },
-  r() { rot += 90; layout(); }, l() { rot -= 90; layout(); },
+  r() { turn(90); }, l() { turn(-90); },
   "+"() { setZoom(zoom * 1.1); }, "-"() { setZoom(zoom / 1.1); }, "1"() { setZoom(100 / fitPct()); }, "0"() { zoom = 1; px = py = 0; layout(); },
-  i() { $("info").classList.toggle("open"); },
+  i() { $("infobtn").setAttribute("aria-pressed", $("info").classList.toggle("open")); },
   f() { lights.max(); },
   Escape() { win.classList.contains("max") ? lights.max() : toast("Esc never quits Featherview. Not even here."); },
   "?"() { toast("Try → ← R L + − 0 1 I ⌦", 2200); },
@@ -654,7 +719,7 @@ document.addEventListener("keydown", e => {
   if (document.activeElement.tagName === "BUTTON" && (e.key === " " || e.key === "Enter")) return; // the button's own click handles it
   if (press(e.key)) e.preventDefault();
 });
-new ResizeObserver(() => cur && layout()).observe(win);
+new ResizeObserver(() => cur && layout()).observe(fit); // the fit area also changes when the info panel opens
 show();
 
 // Speed section: the key presses itself, the next photo is simply there. Click it too.
