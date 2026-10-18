@@ -4,147 +4,260 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Featherview — a fast image viewer for the Mac</title>
-<meta name="description" content="Featherview is a fast, keyboard-driven image viewer for macOS with batch conversion.">
-<meta name="theme-color" content="#0b0b0d">
+<meta name="description" content="Featherview is a fast, keyboard-driven image viewer for macOS with batch conversion. It opens a 12-megapixel photo in under 400 ms and shows the next one in about 20.">
+<meta name="color-scheme" content="dark light">
+<meta name="theme-color" content="#141417" media="(prefers-color-scheme: dark)">
+<meta name="theme-color" content="#f6f5f2" media="(prefers-color-scheme: light)">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://featherview.github.io/">
+<meta property="og:title" content="Featherview — a fast image viewer for the Mac">
+<meta property="og:description" content="Keyboard-driven image viewer for macOS with batch conversion. Opens what your Mac opens, and a few things it doesn’t.">
+<meta property="og:image" content="https://featherview.github.io/apple-touch-icon.png">
+<meta name="twitter:card" content="summary">
 <link rel="icon" type="image/png" href="favicon.png">
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
-<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'><rect width='64' height='64' rx='14.4' fill='%231a1a21'/><path d='M46 10C28 14 18 28 16 50l4 2c2-6 5-11 9-15 8-1 14-6 17-14-4 2-8 3-12 3 5-3 10-8 12-16z' fill='%23ffa25e'/></svg>">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'><rect width='64' height='64' rx='14.4' fill='%2317171d'/><path d='M46 10C28 14 18 28 16 50l4 2c2-6 5-11 9-15 8-1 14-6 17-14-4 2-8 3-12 3 5-3 10-8 12-16z' fill='%23ffa25e'/></svg>">
 <style>
+  /* Page theme: Graphite by default, warm paper in light mode. The viewer window stays Graphite in both, as in the app. */
   :root {
-    --bg:#0b0b0d; --bg2:#121216; --fg:#f4f4f6; --muted:#9b9ba6; --line:#24242c;
-    --card:#141419; --accent:#ffb547; --accent2:#ff7a59; --key:#1d1d24; --keyhi:#2c2c36;
+    --bg:#141417; --surface:#1c1c20; --raise:#24242a; --line:#2d2d34; --fg:#ededf0; --muted:#a6a4ae;
+    --warm:#ffb36b; --f1:#ffc766; --f2:#ff7a59; --key:#202026; --keyline:#34343c;
+    --accent:#0a84ff; --accent-ink:#fff;
+    /* drawn batch window, dark Mac appearance */
+    --w-bar:#2a2a2f; --w-c1:#232327; --w-c2:#1f1f23; --w-c3:#1b1b1e; --w-line:#38383e; --w-fg:#ececf0;
+    --w-muted:#9b9aa3; --w-card:#26262b; --w-cap:rgba(255,255,255,.08); --w-sel:rgba(10,132,255,.24);
+    --shadow:0 40px 90px -30px rgba(0,0,0,.75);
+    --font:-apple-system, BlinkMacSystemFont, "SF Pro Text", "Helvetica Neue", "Segoe UI", sans-serif;
+    --mono:ui-monospace, "SF Mono", Menlo, monospace;
   }
   @media (prefers-color-scheme: light) {
-    :root { --bg:#fbfaf8; --bg2:#f2f0ec; --fg:#17171b; --muted:#66666f; --line:#e4e1db;
-      --card:#ffffff; --accent:#d9831a; --accent2:#e2553a; --key:#ffffff; --keyhi:#f0ede7; }
+    :root { --bg:#f6f5f2; --surface:#ffffff; --raise:#efede8; --line:#e1ded8; --fg:#1b1a1f; --muted:#5d5a65;
+      --warm:#b9501f; --f1:#c86a12; --f2:#cf4426; --key:#ffffff; --keyline:#d6d3cc;
+      --accent:#0a5bc4;
+      --w-bar:#ececee; --w-c1:#fafafb; --w-c2:#f3f3f5; --w-c3:#ffffff; --w-line:#dcdce0; --w-fg:#1d1d1f;
+      --w-muted:#6e6e73; --w-card:#ffffff; --w-cap:rgba(255,255,255,.8); --w-sel:rgba(10,91,196,.13);
+      --shadow:0 34px 80px -34px rgba(40,30,20,.35); }
   }
   * { box-sizing:border-box; }
   html { scroll-behavior:smooth; }
-  body { margin:0; background:var(--bg); color:var(--fg); -webkit-font-smoothing:antialiased; overflow-x:hidden;
-    font:17px/1.6 -apple-system, BlinkMacSystemFont, "SF Pro Text", "Inter", "Helvetica Neue", sans-serif; }
+  body { margin:0; background:var(--bg); color:var(--fg); font:17px/1.6 var(--font);
+    -webkit-font-smoothing:antialiased; overflow-x:hidden; }
   a { color:inherit; }
   h1, h2, h3 { text-wrap:balance; } p { text-wrap:pretty; }
-  .wrap { max-width:1080px; margin:0 auto; padding:0 20px; }
+  :focus-visible { outline:2px solid var(--warm); outline-offset:3px; border-radius:6px; }
+  .wrap { max-width:1100px; margin:0 auto; padding:0 24px; }
 
-  nav { display:flex; align-items:center; justify-content:space-between; padding:22px 0; }
+  /* nav */
+  nav { display:flex; align-items:center; justify-content:space-between; gap:16px; padding:22px 0; }
   .brand { display:flex; align-items:center; gap:10px; font-weight:650; letter-spacing:-.01em; text-decoration:none; }
-  .brand svg { width:28px; height:28px; }
+  .brand svg { width:30px; height:30px; }
   nav .links { display:flex; gap:22px; font-size:15px; color:var(--muted); }
   nav .links a { text-decoration:none; } nav .links a:hover { color:var(--fg); }
 
-  .hero { position:relative; text-align:center; padding:64px 0 40px; }
-  .hero::before { content:""; position:absolute; inset:-120px -20px auto; height:620px; z-index:-1; pointer-events:none;
-    background:radial-gradient(600px 300px at 50% 30%, color-mix(in srgb, var(--accent) 22%, transparent), transparent 70%); }
-  .pill { display:inline-flex; gap:8px; align-items:center; font-size:13px; color:var(--muted);
-    border:1px solid var(--line); background:color-mix(in srgb, var(--card) 70%, transparent);
-    border-radius:999px; padding:5px 14px 5px 10px; }
-  .pill i { width:8px; height:8px; border-radius:50%; background:var(--accent); box-shadow:0 0 12px var(--accent); }
-  h1 { font-size:clamp(44px, 8.4vw, 92px); line-height:1; letter-spacing:-.045em; font-weight:750; margin:22px 0 18px; }
-  h1 em { font-style:normal; background:linear-gradient(100deg, var(--accent), var(--accent2));
-    -webkit-background-clip:text; background-clip:text; color:transparent; }
-  .lead { font-size:clamp(18px, 2.4vw, 22px); color:var(--muted); max-width:620px; margin:0 auto 32px; }
+  /* hero */
+  .hero { position:relative; text-align:center; padding:56px 0 0; }
+  .hero::before { content:""; position:absolute; z-index:-1; pointer-events:none; inset:-140px 0 auto; height:760px;
+    background:radial-gradient(50% 260px at 50% 22%, color-mix(in srgb, var(--f2) 16%, transparent), transparent 70%); }
+  .pill { display:inline-flex; gap:9px; align-items:center; font-size:13px; color:var(--muted); border:1px solid var(--line);
+    background:color-mix(in srgb, var(--surface) 70%, transparent); border-radius:999px; padding:5px 14px 5px 11px; }
+  .pill i { width:7px; height:7px; border-radius:50%; background:linear-gradient(135deg, var(--f1), var(--f2)); }
+  h1 { font-size:clamp(42px, 8vw, 88px); line-height:1.02; letter-spacing:-.045em; font-weight:750; margin:22px 0 18px; }
+  h1 em { font-style:normal; background:linear-gradient(100deg, var(--f1), var(--f2)); -webkit-background-clip:text; background-clip:text; color:transparent; }
+  .lead { font-size:clamp(18px, 2.3vw, 21px); color:var(--muted); max-width:620px; margin:0 auto 30px; }
   .cta { display:flex; gap:12px; justify-content:center; flex-wrap:wrap; }
-  .btn { display:inline-flex; align-items:center; gap:8px; padding:12px 20px; border-radius:12px;
-    font-weight:600; font-size:15px; text-decoration:none; border:1px solid var(--line); background:var(--card); }
+  .btn { display:inline-flex; align-items:center; gap:8px; padding:12px 20px; border-radius:999px; font-weight:600; font-size:15px;
+    text-decoration:none; border:1px solid var(--line); background:var(--surface); }
   .btn.primary { background:var(--fg); color:var(--bg); border-color:transparent; }
-  .btn[aria-disabled] { opacity:.75; cursor:default; }
+  .btn[aria-disabled] { cursor:default; }
   .btn small { font-weight:500; opacity:.7; }
+  a.btn:hover { border-color:var(--muted); }
 
-  .demo { margin:56px auto 0; max-width:900px; }
-  .win { border-radius:14px; overflow:hidden; background:#000; border:1px solid var(--line); outline:none;
-    box-shadow:0 40px 100px -30px rgba(0,0,0,.6); }
-  .win:focus-visible { box-shadow:0 0 0 3px color-mix(in srgb, var(--accent) 60%, transparent), 0 40px 100px -30px rgba(0,0,0,.6); }
-  .bar { display:flex; align-items:center; height:38px; padding:0 14px; background:#1e1e22; color:#c9c9cf;
-    font-size:13px; font-weight:600; position:relative; }
-  .dots { display:flex; gap:8px; } .dots span { width:12px; height:12px; border-radius:50%; background:#ff5f57; }
-  .dots span:nth-child(2) { background:#febc2e; } .dots span:nth-child(3) { background:#28c840; }
-  .title { position:absolute; left:80px; right:80px; text-align:center; pointer-events:none; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
-  .stage { position:relative; aspect-ratio:16/10; display:flex; }
-  .canvas { flex:1; display:grid; place-items:center; overflow:hidden; }
-  .photo { width:78%; aspect-ratio:3/2; transition:transform .35s cubic-bezier(.3,.7,.2,1); }
+  /* the viewer window, drawn in the app's own look: canvas edge to edge under a glass toolbar and status strip */
+  .demo { margin:56px auto 0; max-width:960px; }
+  .win { position:relative; aspect-ratio:16/10; border-radius:14px; overflow:hidden; background:#1c1c20; color:#f2f2f4;
+    font:12px/1.2 var(--font); text-align:start; box-shadow:0 0 0 1px rgba(255,255,255,.07) inset, var(--shadow); outline:none; }
+  .win:focus-visible { box-shadow:0 0 0 1px rgba(255,255,255,.07) inset, 0 0 0 3px color-mix(in srgb, var(--warm) 70%, transparent), var(--shadow); }
+  .glass { background:rgba(40,40,46,.48); -webkit-backdrop-filter:blur(16px) saturate(1.7); backdrop-filter:blur(16px) saturate(1.7);
+    border:1px solid rgba(255,255,255,.15); box-shadow:inset 0 1px 0 rgba(255,255,255,.16), 0 6px 18px rgba(0,0,0,.26); }
+  @supports not ((backdrop-filter:blur(1px)) or (-webkit-backdrop-filter:blur(1px))) { .glass { background:rgba(40,40,46,.9); } }
+  .lights { position:absolute; z-index:5; top:20px; inset-inline-start:18px; display:flex; gap:8px; }
+  .lights i { width:12px; height:12px; border-radius:50%; background:#ff5f57; }
+  .lights i:nth-child(2) { background:#febc2e; } .lights i:nth-child(3) { background:#28c840; }
+  .tools { position:absolute; z-index:4; top:12px; inset-inline:0; height:28px; display:flex; align-items:center; gap:12px; padding-inline:88px 12px; }
+  .seg { display:flex; align-items:center; height:28px; border-radius:14px; padding:0 4px; }
+  .seg button { all:unset; cursor:pointer; width:28px; height:22px; display:grid; place-items:center; border-radius:11px; color:#f4f4f6; }
+  .seg button:hover { background:rgba(255,255,255,.12); }
+  .seg button:focus-visible { outline:2px solid #ffc766; outline-offset:0; }
+  .seg svg { width:15px; height:15px; fill:none; stroke:currentColor; stroke-width:1.6; stroke-linecap:round; stroke-linejoin:round; }
+  .wtitle { flex:1; min-width:0; text-align:center; font-weight:600; font-size:12.5px; color:#ededf0; white-space:nowrap; overflow:hidden;
+    text-overflow:ellipsis; text-shadow:0 1px 3px rgba(0,0,0,.5); font-variant-numeric:tabular-nums; }
+  .fit { position:absolute; inset:52px 28px 46px; container-type:size; display:grid; place-items:center; }
+  .photo { width:min(100cqw, 150cqh); aspect-ratio:3/2; transition:transform .12s ease-out; will-change:transform; }
+  .photo.turned { width:min(100cqh, 150cqw); }
   .photo svg { width:100%; height:100%; display:block; }
-  .info { width:0; overflow:hidden; background:#16161a; color:#cfcfd6; font-size:12.5px; text-align:left; transition:width .25s; }
-  .info.open { width:min(240px, 42%); }
-  .info dl { margin:0; padding:18px; display:grid; grid-template-columns:auto 1fr; gap:6px 12px; white-space:nowrap; }
-  .info dt { color:#7f7f8a; } .info dd { margin:0; }
-  .toast { position:absolute; left:50%; bottom:16px; transform:translateX(-50%); background:rgba(30,30,34,.85);
-    backdrop-filter:blur(8px); color:#eee; font-size:13px; padding:6px 12px; border-radius:8px; opacity:0; transition:opacity .2s; pointer-events:none; }
+  .strip { position:absolute; z-index:4; inset-inline:12px; bottom:10px; height:24px; border-radius:12px; display:flex; align-items:center;
+    gap:16px; padding:0 12px; font-size:11.5px; color:#eeeef1; font-variant-numeric:tabular-nums; white-space:nowrap; overflow:hidden; }
+  .info { position:absolute; z-index:4; top:52px; inset-inline-end:12px; width:min(230px, 46%); border-radius:12px; padding:12px 14px;
+    transform:translateX(calc(100% + 16px)); opacity:0; visibility:hidden; transition:transform .18s ease-out, opacity .18s, visibility .18s; }
+  .info.open { transform:none; opacity:1; visibility:visible; }
+  .info dl { margin:0; display:grid; grid-template-columns:auto 1fr; gap:6px 12px; font-size:11.5px; }
+  .info dt { color:#b4b4bc; } .info dd { margin:0; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+  .toast { position:absolute; z-index:6; left:50%; bottom:46px; transform:translateX(-50%); padding:7px 14px; border-radius:999px;
+    font-size:12.5px; opacity:0; transition:opacity .2s; pointer-events:none; white-space:nowrap; }
   .toast.show { opacity:1; }
-  .hint { display:flex; flex-wrap:wrap; justify-content:center; gap:10px 18px; margin-top:18px; font-size:14px; color:var(--muted); }
-  .hint button { all:unset; cursor:pointer; display:inline-flex; gap:7px; align-items:center; }
-  .hint button:hover kbd, .hint button:focus-visible kbd { background:var(--keyhi); }
+  .hint { display:flex; flex-wrap:wrap; justify-content:center; gap:10px 18px; margin-top:20px; font-size:14px; color:var(--muted); }
+  .hint button { all:unset; cursor:pointer; display:inline-flex; gap:7px; align-items:center; border-radius:8px; }
+  .hint button:hover kbd, .hint button:focus-visible kbd { border-color:var(--muted); }
 
-  kbd { font:600 12.5px/1 ui-monospace, "SF Mono", Menlo, monospace; display:inline-grid; place-items:center;
-    min-width:28px; height:28px; padding:0 8px; border-radius:7px; color:var(--fg); background:var(--key);
-    border:1px solid var(--line); box-shadow:0 2px 0 var(--line); transition:transform .08s, background .08s; }
-  kbd.hit { transform:translateY(2px); box-shadow:none; background:var(--accent); color:#1a1205; }
+  kbd { font:600 12.5px/1 var(--font); display:inline-grid; place-items:center; min-width:28px; height:28px; padding:0 8px; border-radius:7px;
+    color:var(--fg); background:var(--key); border:1px solid var(--keyline); box-shadow:0 2px 0 var(--keyline); transition:transform .08s, background .08s; }
+  kbd.hit { transform:translateY(2px); box-shadow:none; background:var(--fg); color:var(--bg); }
 
-  section { padding:96px 0 0; }
-  .eyebrow { font-size:13px; font-weight:650; letter-spacing:.12em; text-transform:uppercase; color:var(--accent); margin:0 0 10px; }
+  /* sections */
+  section { padding:112px 0 0; scroll-margin-top:24px; }
+  .eyebrow { font-size:13px; font-weight:650; letter-spacing:.12em; text-transform:uppercase; color:var(--warm); margin:0 0 10px; }
   h2 { font-size:clamp(30px, 4.6vw, 46px); line-height:1.08; letter-spacing:-.03em; margin:0 0 16px; max-width:760px; }
   .sub { color:var(--muted); max-width:640px; margin:0 0 40px; font-size:18px; }
+  .split { display:grid; grid-template-columns:1fr 1fr; gap:56px; align-items:center; }
 
-  .grid { display:grid; grid-template-columns:repeat(3, 1fr); gap:16px; }
-  .card { background:var(--card); border:1px solid var(--line); border-radius:18px; padding:26px; }
-  .card h3 { font-size:18px; letter-spacing:-.01em; margin:14px 0 6px; }
+  .grid { display:grid; grid-template-columns:repeat(3, 1fr); gap:14px; }
+  .card { background:var(--surface); border:1px solid var(--line); border-radius:18px; padding:24px; }
+  .card h3 { font-size:17px; letter-spacing:-.01em; margin:14px 0 6px; }
   .card p { margin:0; color:var(--muted); font-size:15.5px; }
-  .ico { width:38px; height:38px; border-radius:10px; display:grid; place-items:center;
-    background:color-mix(in srgb, var(--accent) 16%, transparent); color:var(--accent); }
-  .ico svg { width:20px; height:20px; fill:none; stroke:currentColor; stroke-width:1.8; stroke-linecap:round; stroke-linejoin:round; }
+  .ico { width:36px; height:36px; border-radius:10px; display:grid; place-items:center; background:var(--raise); color:var(--fg); }
+  .ico svg { width:19px; height:19px; fill:none; stroke:currentColor; stroke-width:1.7; stroke-linecap:round; stroke-linejoin:round; }
 
-  .stats { display:grid; grid-template-columns:repeat(3, 1fr); gap:16px; }
-  .stat { border-top:1px solid var(--line); padding-top:22px; }
-  .stat b { display:block; font-size:clamp(40px, 6vw, 64px); letter-spacing:-.04em; line-height:1; font-weight:700; }
-  .stat b span { font-size:.45em; color:var(--muted); font-weight:600; letter-spacing:-.01em; }
-  .stat p { color:var(--muted); margin:10px 0 0; font-size:15.5px; }
-  .note { color:var(--muted); font-size:13px; margin:24px 0 0; }
+  /* speed */
+  .speed { display:grid; grid-template-columns:1.25fr 1fr 1fr; gap:14px; }
+  .stat { background:var(--surface); border:1px solid var(--line); border-radius:18px; padding:24px; display:flex; flex-direction:column; gap:10px; }
+  .stat b { display:block; font-size:clamp(38px, 5.4vw, 56px); letter-spacing:-.04em; line-height:1; font-weight:700; font-variant-numeric:tabular-nums; }
+  .stat b span { font-size:.42em; color:var(--muted); font-weight:600; letter-spacing:-.01em; }
+  .stat p { color:var(--muted); margin:0; font-size:15.5px; }
+  .stat.big { grid-row:span 2; justify-content:space-between; }
+  .stat.big .lbl { color:var(--fg); font-weight:600; }
+  .stat.big b { font-size:clamp(72px, 11vw, 132px); background:linear-gradient(120deg, var(--f1), var(--f2)); -webkit-background-clip:text; background-clip:text; color:transparent; }
+  .stat.big b span { -webkit-text-fill-color:var(--muted); }
+  .note { color:var(--muted); font-size:13.5px; margin:22px 0 0; max-width:760px; }
 
-  .split { display:grid; grid-template-columns:1fr 1fr; gap:48px; align-items:center; }
+  /* keyboard */
   .keys div { display:flex; justify-content:space-between; align-items:center; gap:16px; padding:11px 0; border-bottom:1px solid var(--line); }
   .keys span:first-child { white-space:nowrap; }
-  .keys span:last-child { color:var(--muted); font-size:15.5px; text-align:right; }
-  .keys kbd { margin-right:4px; }
+  .keys span:last-child { color:var(--muted); font-size:15.5px; text-align:end; }
+  .keys kbd { margin-inline-end:4px; }
 
-  .batch { background:var(--card); border:1px solid var(--line); border-radius:18px; padding:22px; font-size:14.5px; }
-  .flow { display:flex; align-items:center; gap:10px; flex-wrap:wrap; }
-  .chip { padding:7px 12px; border-radius:9px; background:var(--bg2); border:1px solid var(--line); }
-  .arrow { color:var(--muted); }
-  .files { margin-top:18px; font:13px/1.9 ui-monospace, "SF Mono", Menlo, monospace; color:var(--muted); overflow-wrap:anywhere; }
-  .files b { color:var(--fg); font-weight:500; } .files .ok { color:#3ecf8e; }
+  /* formats */
+  .fgroups { display:grid; grid-template-columns:1fr 1fr; gap:14px; }
+  .fgroup { background:var(--surface); border:1px solid var(--line); border-radius:18px; padding:24px; }
+  .fgroup.wide { grid-column:1 / -1; }
+  .fgroup h3 { font-size:17px; margin:0 0 4px; } .fgroup p { color:var(--muted); font-size:15px; margin:0 0 16px; }
+  .fgroup h3 + p + ul + h3 { margin-top:24px; }
+  .chips { display:flex; flex-wrap:wrap; gap:8px; margin:0; padding:0; list-style:none; }
+  .chips li { font:600 13.5px/1 var(--mono); padding:9px 12px; border-radius:9px; background:var(--raise); }
 
-  .formats { display:flex; flex-wrap:wrap; gap:10px; }
-  .formats span { font:600 14px/1 ui-monospace, "SF Mono", Menlo, monospace; padding:10px 14px; border-radius:10px;
-    border:1px solid var(--line); background:var(--card); }
+  /* batch window, drawn; follows the page's appearance like a Mac window would */
+  .bwin { border-radius:14px; overflow:hidden; background:var(--w-c3); color:var(--w-fg); font:11.5px/1.3 var(--font);
+    box-shadow:0 0 0 1px var(--w-line), var(--shadow); }
+  .bbar { height:46px; display:flex; align-items:center; gap:10px; padding:0 12px; background:var(--w-bar); border-bottom:1px solid var(--w-line); }
+  .bbar .lights { position:static; }
+  .bbar .t { font-weight:600; font-size:12.5px; margin-inline-start:6px; }
+  .bbar .sp { flex:1; }
+  .cap { display:flex; align-items:center; gap:4px; height:26px; padding:0 3px; border-radius:13px; background:var(--w-cap);
+    border:1px solid var(--w-line); box-shadow:0 1px 3px rgba(0,0,0,.08); white-space:nowrap; }
+  .cap span { padding:0 8px; }
+  .cap .go { background:var(--accent); color:var(--accent-ink); border-radius:10px; padding:3px 11px; font-weight:600; }
+  .bcols { display:grid; grid-template-columns:1.1fr .85fr 1.45fr; min-height:330px; }
+  .bcol { padding:8px; border-inline-end:1px solid var(--w-line); display:flex; flex-direction:column; gap:2px; min-width:0; }
+  .bcol:nth-child(1) { background:var(--w-c1); } .bcol:nth-child(2) { background:var(--w-c2); }
+  .bcol:last-child { border:0; padding:12px 14px; }
+  .bh { font-size:9.5px; font-weight:650; color:var(--w-muted); text-transform:uppercase; letter-spacing:.05em; padding:8px 8px 3px; }
+  .bimg { display:flex; gap:8px; align-items:center; padding:4px 6px; border-radius:7px; min-width:0; }
+  .bimg i { width:28px; height:28px; border-radius:5px; overflow:hidden; flex:none; display:block; }
+  .bimg i svg { width:100%; height:100%; display:block; }
+  .bimg div { min-width:0; } .bimg .m { font-size:10px; color:var(--w-muted); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+  .bimg.sel { background:var(--w-sel); }
+  .bstep { display:flex; justify-content:space-between; gap:8px; padding:4px 8px; border-radius:6px; }
+  .bstep b { font-weight:500; color:var(--accent); font-size:10.5px; }
+  .bstep.sel { background:var(--accent); color:var(--accent-ink); } .bstep.sel b { color:inherit; opacity:.85; }
+  .bcard { background:var(--w-card); border:1px solid var(--w-line); border-radius:10px; margin-top:10px; }
+  .brow { display:flex; justify-content:space-between; align-items:center; gap:10px; padding:8px 11px; }
+  .brow + .brow { border-top:1px solid var(--w-line); }
+  .pop { border:1px solid var(--w-line); border-radius:6px; padding:2px 7px; background:var(--w-c1); white-space:nowrap; font-variant-numeric:tabular-nums; }
+  .sw { width:28px; height:16px; border-radius:8px; background:var(--accent); position:relative; flex:none; }
+  .sw::after { content:""; position:absolute; top:2px; inset-inline-end:2px; width:12px; height:12px; border-radius:50%; background:#fff; box-shadow:0 1px 2px rgba(0,0,0,.25); }
+  .prev { display:flex; gap:12px; margin-top:14px; align-items:flex-end; }
+  .prev figure { margin:0; display:grid; gap:6px; color:var(--w-muted); font-size:10px; font-variant-numeric:tabular-nums; }
+  .prev figure div { border-radius:4px; overflow:hidden; } .prev svg { display:block; width:100%; height:100%; }
+  .prev .a { width:118px; aspect-ratio:3/2; } .prev .b { width:84px; aspect-ratio:3/2; outline:2px solid var(--accent); outline-offset:2px; }
+  .names { margin-top:14px; font:10.5px/1.8 var(--mono); color:var(--w-muted); }
+  .names b { color:var(--w-fg); font-weight:500; }
+  .ops { display:flex; flex-wrap:wrap; gap:8px; margin:-14px 0 36px; padding:0; list-style:none; }
+  .ops li { font-size:14px; padding:6px 12px; border-radius:999px; border:1px solid var(--line); color:var(--muted); }
 
-  .closing { text-align:center; padding:120px 0 40px; }
+  /* languages */
+  .langs { display:flex; flex-wrap:wrap; gap:8px 10px; margin:0; padding:0; list-style:none; }
+  .langs li { font-size:16px; padding:8px 14px; border-radius:12px; background:var(--surface); border:1px solid var(--line); }
+  .soon { display:inline-block; font-size:12px; font-weight:650; letter-spacing:.06em; text-transform:uppercase; color:var(--muted);
+    border:1px solid var(--line); border-radius:999px; padding:3px 10px; margin-inline-start:10px; vertical-align:middle; }
+
+  /* status and closing */
+  .road { display:grid; grid-template-columns:repeat(7, 1fr); gap:8px; margin:0 0 72px; padding:0; list-style:none; text-align:start; }
+  .road li { border-top:3px solid var(--line); padding-top:12px; font-size:14.5px; }
+  .road li.done { border-image:linear-gradient(90deg, var(--f1), var(--f2)) 1; }
+  .road li span { display:block; font-size:12px; color:var(--muted); margin-top:2px; }
+  .closing { text-align:center; }
   .closing h2, .closing .sub { margin-left:auto; margin-right:auto; }
   .closing .sub { margin-bottom:30px; }
+  .closing svg.mark { width:64px; height:64px; margin-bottom:18px; }
 
-  footer { border-top:1px solid var(--line); margin-top:80px; padding:28px 0 40px; color:var(--muted); font-size:14px;
-    display:flex; justify-content:space-between; gap:16px; flex-wrap:wrap; }
+  footer { border-top:1px solid var(--line); margin-top:96px; padding:28px 0 44px; color:var(--muted); font-size:14px;
+    display:flex; justify-content:space-between; gap:12px 24px; flex-wrap:wrap; }
+  footer p { margin:0; max-width:560px; }
   footer a { color:var(--fg); }
 
-  @media (max-width:860px) {
-    .grid, .stats { grid-template-columns:1fr 1fr; } .split { grid-template-columns:1fr; gap:32px; }
-    .split .batch { order:1; }
+  @media (max-width:880px) {
+    .grid { grid-template-columns:1fr 1fr; } .split { grid-template-columns:1fr; gap:32px; }
+    .speed { grid-template-columns:1fr 1fr; } .stat.big { grid-column:1 / -1; grid-row:auto; }
+    .road { grid-template-columns:repeat(4, 1fr); row-gap:20px; }
   }
-  @media (max-width:560px) {
+  @media (max-width:600px) {
     .wrap { padding:0 16px; }
-    .grid, .stats { grid-template-columns:1fr; } nav .links a:not(:last-child) { display:none; }
-    .photo { width:88%; } section { padding-top:72px; }
+    body { font-size:16px; }
+    .grid, .speed, .fgroups { grid-template-columns:1fr; }
+    nav .links a:not(:last-child) { display:none; }
+    section { padding-top:80px; }
+    .win { aspect-ratio:4/3; }
+    .tools { padding-inline-start:74px; gap:6px; } .lights { inset-inline-start:14px; }
+    .wtitle, .opt-wide { display:none; }
+    .tools .seg:last-child { margin-inline-start:auto; }
+    .seg button { width:24px; }
+    .fit { inset:48px 12px 42px; }
     .keys div { align-items:flex-start; }
+    .road { grid-template-columns:1fr 1fr; }
+    .bcols { grid-template-columns:1fr; } .bcol { border-inline-end:0; border-bottom:1px solid var(--w-line); }
+    .bbar .t { display:none; }
   }
-  @media (prefers-reduced-motion: reduce) { * { transition:none !important; scroll-behavior:auto !important; } }
+  @media (prefers-reduced-motion: reduce) { *, *::before, *::after { transition:none !important; scroll-behavior:auto !important; } }
 </style>
 </head>
 <body>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <defs>
+    <linearGradient id="tile" x2="0" y2="1"><stop stop-color="#23232c"/><stop offset="1" stop-color="#101015"/></linearGradient>
+    <linearGradient id="mark" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#ffc766"/><stop offset="1" stop-color="#ff7a59"/></linearGradient>
+    <symbol id="icon" viewBox="0 0 64 64"><rect width="64" height="64" rx="14.4" fill="url(#tile)"/><path d="M46 10C28 14 18 28 16 50l4 2c2-6 5-11 9-15 8-1 14-6 17-14-4 2-8 3-12 3 5-3 10-8 12-16z" fill="url(#mark)"/></symbol>
+    <symbol id="i-prev" viewBox="0 0 16 16"><path d="M10 3 5 8l5 5"/></symbol>
+    <symbol id="i-next" viewBox="0 0 16 16"><path d="m6 3 5 5-5 5"/></symbol>
+    <symbol id="i-rot" viewBox="0 0 16 16"><path d="M13 8a5 5 0 1 1-2-4M13 2v3h-3"/></symbol>
+    <symbol id="i-zoom" viewBox="0 0 16 16"><circle cx="7" cy="7" r="4.5"/><path d="m10.5 10.5 3 3M5 7h4M7 5v4"/></symbol>
+    <symbol id="i-info" viewBox="0 0 16 16"><circle cx="8" cy="8" r="6"/><path d="M8 7.2V11M8 5v.4"/></symbol>
+    <symbol id="i-trash" viewBox="0 0 16 16"><path d="M3 4h10M6 4V2.5h4V4M4.5 4l.7 9.5h5.6l.7-9.5"/></symbol>
+  </defs>
+</svg>
+
 <div class="wrap">
-  <nav>
-    <a class="brand" href="#">
-      <svg viewBox="0 0 64 64" aria-hidden="true"><defs><linearGradient id="lt" x2="0" y2="1"><stop stop-color="#23232c"/><stop offset="1" stop-color="#101015"/></linearGradient><linearGradient id="lm" x2="1" y2="1"><stop stop-color="#ffc766"/><stop offset="1" stop-color="#ff7a59"/></linearGradient></defs><rect width="64" height="64" rx="14.4" fill="url(#lt)"/><path d="M46 10C28 14 18 28 16 50l4 2c2-6 5-11 9-15 8-1 14-6 17-14-4 2-8 3-12 3 5-3 10-8 12-16z" fill="url(#lm)"/></svg>
-      Featherview
-    </a>
-    <div class="links"><a href="#features">Features</a><a href="#speed">Speed</a><a href="#batch">Batch</a><a href="https://github.com/featherview">GitHub</a></div>
+  <nav aria-label="Main">
+    <a class="brand" href="#"><svg viewBox="0 0 64 64" aria-hidden="true"><use href="#icon"/></svg>Featherview</a>
+    <div class="links"><a href="#speed">Speed</a><a href="#keyboard">Keyboard</a><a href="#formats">Formats</a><a href="#batch">Batch</a><a href="https://github.com/featherview">GitHub</a></div>
   </nav>
 
   <header class="hero">
@@ -157,125 +270,215 @@
     </div>
 
     <div class="demo">
-      <div class="win" id="win" tabindex="0" aria-label="Featherview demo. Use the arrow keys, R, L and I.">
-        <div class="bar"><div class="dots"><span></span><span></span><span></span></div><div class="title" id="title"></div></div>
-        <div class="stage">
-          <div class="canvas"><div class="photo" id="photo"></div></div>
-          <aside class="info" id="info"><dl id="exif"></dl></aside>
-          <div class="toast" id="toast"></div>
+      <div class="win" id="win" tabindex="0" role="group" aria-roledescription="image viewer demo"
+           aria-label="Featherview demo. Arrow keys browse, R and L rotate, plus and minus zoom, 0 fits, 1 shows actual size, I shows info, forward delete moves to Trash.">
+        <div class="fit"><div class="photo" id="photo"></div></div>
+        <div class="lights" aria-hidden="true"><i></i><i></i><i></i></div>
+        <div class="tools">
+          <div class="seg glass"><button data-k="ArrowLeft" aria-label="Previous image" title="Previous (←)"><svg><use href="#i-prev"/></svg></button><button data-k="ArrowRight" aria-label="Next image" title="Next (→)"><svg><use href="#i-next"/></svg></button></div>
+          <div class="wtitle" id="title" aria-live="polite"></div>
+          <div class="seg glass"><button data-k="r" aria-label="Rotate right" title="Rotate right (R)"><svg><use href="#i-rot"/></svg></button><button data-k="+" aria-label="Zoom in" title="Zoom in (+)"><svg><use href="#i-zoom"/></svg></button><button data-k="i" aria-label="Info" title="Info (I)"><svg><use href="#i-info"/></svg></button><button data-k="Delete" aria-label="Move to Trash" title="Move to Trash (⌦)"><svg><use href="#i-trash"/></svg></button></div>
         </div>
+        <aside class="info glass" id="info" aria-label="Image info"><dl id="exif"></dl></aside>
+        <div class="strip glass" aria-hidden="true"><span id="s-size"></span><span id="s-zoom"></span><span id="s-bytes" class="opt-wide"></span><span id="s-pos"></span><span id="s-date" class="opt-wide"></span></div>
+        <div class="toast glass" id="toast" role="status"></div>
       </div>
       <div class="hint">
         <button data-k="ArrowLeft"><kbd>←</kbd>Previous</button>
         <button data-k="ArrowRight"><kbd>→</kbd>Next</button>
         <button data-k="r"><kbd>R</kbd>Rotate</button>
+        <button data-k="+"><kbd>+</kbd>Zoom in</button>
+        <button data-k="1"><kbd>1</kbd>Actual size</button>
+        <button data-k="0"><kbd>0</kbd>Fit</button>
         <button data-k="i"><kbd>I</kbd>Info</button>
-        <button data-k="Delete"><kbd>⌫</kbd>Trash</button>
+        <button data-k="Delete"><kbd>⌦</kbd>Trash</button>
       </div>
     </div>
   </header>
 
-  <section id="features">
+  <section id="features" aria-labelledby="h-features">
     <p class="eyebrow">Features</p>
-    <h2>Everything you need to sort a folder of photos. Nothing in the way.</h2>
-    <p class="sub">One window, the image, and the keyboard. Panels and dialogs show up only when you ask for them.</p>
+    <h2 id="h-features">Everything you need to sort a folder of photos. Nothing in the way.</h2>
+    <p class="sub">One window, the picture edge to edge, and the keyboard. Panels show up only when you ask for them.</p>
     <div class="grid">
-      <div class="card"><div class="ico"><svg viewBox="0 0 24 24"><path d="M13 2 4 14h7l-1 8 9-12h-7z"/></svg></div>
+      <div class="card"><div class="ico"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M13 2 4 14h7l-1 8 9-12h-7z"/></svg></div>
         <h3>Opens instantly</h3><p>Double-click a picture in Finder and the rest of the folder is ready behind it, in Finder order.</p></div>
-      <div class="card"><div class="ico"><svg viewBox="0 0 24 24"><rect x="2" y="6" width="20" height="13" rx="2"/><path d="M6 10h.01M10 10h.01M14 10h.01M18 10h.01M7 15h10"/></svg></div>
-        <h3>Keyboard first</h3><p>Every viewer action is a single key. No modifiers, no menus to dig through.</p></div>
-      <div class="card"><div class="ico"><svg viewBox="0 0 24 24"><path d="M21 12a9 9 0 1 1-3-6.7L21 8"/><path d="M21 3v5h-5"/></svg></div>
+      <div class="card"><div class="ico"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="2" y="6" width="20" height="13" rx="2"/><path d="M6 10h.01M10 10h.01M14 10h.01M18 10h.01M7 15h10"/></svg></div>
+        <h3>Keyboard first</h3><p>Every viewer action is a single key. The ⌘ shortcuts and a toolbar are there for everyone else.</p></div>
+      <div class="card"><div class="ico"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M21 12a9 9 0 1 1-3-6.7L21 8"/><path d="M21 3v5h-5"/></svg></div>
         <h3>Lossless rotation</h3><p>R and L turn JPEG, HEIC and TIFF without re-encoding a single pixel.</p></div>
-      <div class="card"><div class="ico"><svg viewBox="0 0 24 24"><path d="M4 7h16M10 11v6M14 11v6M6 7l1 13h10l1-13M9 7V4h6v3"/></svg></div>
+      <div class="card"><div class="ico"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h16M10 11v6M14 11v6M6 7l1 13h10l1-13M9 7V4h6v3"/></svg></div>
         <h3>Safe by default</h3><p>Delete goes to the Trash. Rotations are atomic. Batch output never overwrites a file.</p></div>
-      <div class="card"><div class="ico"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 11v6M12 7.5h.01"/></svg></div>
+      <div class="card"><div class="ico"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 11v6M12 7.5h.01"/></svg></div>
         <h3>Info panel</h3><p>Camera, lens, exposure, aperture, ISO and date taken, one key away.</p></div>
-      <div class="card"><div class="ico"><svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="13" rx="2"/><path d="M8 21h8M12 17v4"/></svg></div>
-        <h3>Truly native</h3><p>Mac menus, full screen, “Open With”, drag and drop, Dark Mode and colour management.</p></div>
+      <div class="card"><div class="ico"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="4" width="18" height="13" rx="2"/><path d="M8 21h8M12 17v4"/></svg></div>
+        <h3>Made for the Mac</h3><p>Mac menus, full screen, Open With, drag and drop, colour management, and HDR on HDR screens.</p></div>
     </div>
   </section>
 
-  <section id="speed">
+  <section id="speed" aria-labelledby="h-speed">
     <p class="eyebrow">Speed</p>
-    <h2>Speed is the feature.</h2>
-    <p class="sub">Images are decoded at screen size, off the main thread, while the neighbours load in the background. Measured, not promised: these are medians from a release build.</p>
-    <div class="stats">
-      <div class="stat"><b>320<span> ms</span></b><p>From double-click to a 12-megapixel photo on screen, app not running</p></div>
-      <div class="stat"><b>9<span> ms</span></b><p>To show the next image while you hold the arrow key, within one screen refresh</p></div>
-      <div class="stat"><b>10,000</b><p>Files in a folder, first image after 314 ms, and the window never freezes</p></div>
+    <h2 id="h-speed">Speed is the feature.</h2>
+    <p class="sub">Images are decoded at screen size, off the main thread, while the neighbours load in the background. These are measured numbers, not targets.</p>
+    <div class="speed">
+      <div class="stat big">
+        <p class="lbl">Next image, when it’s already loaded</p>
+        <div>
+          <b>19<span> ms</span></b>
+          <p>Median time to show the next or previous image; 95 % of them within 25 ms. A little over one frame at 60 Hz.</p>
+        </div>
+      </div>
+      <div class="stat"><b>377<span> ms</span></b><p>From double-click to a 12-megapixel photo on screen, app not running</p></div>
+      <div class="stat"><b>107<span> ms</span></b><p>To show an image that wasn’t loaded ahead, such as after a jump to the end</p></div>
+      <div class="stat"><b>383<span> ms</span></b><p>To the first image in a folder of 10,000 files, and the window never freezes</p></div>
+      <div class="stat"><b>48<span> MB</span></b><p>Memory while browsing, however big the folder is</p></div>
     </div>
-    <p class="note">MacBook Pro (M1 Pro, 2021), 12-megapixel JPEGs. Launch: median of 5. Next image: median of 359 while holding →.</p>
+    <p class="note">Measured on one Mac: MacBook Pro with Apple M1 Pro, macOS 27, 12-megapixel JPEGs. Launch is timed after a normal quit, so no window is restored. Other Macs will differ.</p>
   </section>
 
-  <section>
+  <section id="keyboard" aria-labelledby="h-keys">
     <div class="split">
       <div>
         <p class="eyebrow">Keyboard</p>
-        <h2>Your hands stay where they are.</h2>
-        <p class="sub">Coming from IrfanView on Windows? Featherview uses the same single-key shortcuts, so switching takes about a minute.</p>
+        <h2 id="h-keys">Your hands stay where they are.</h2>
+        <p class="sub">Every action in the viewer is one key, with no modifiers to hold. If you’re switching from a classic Windows viewer, these will feel familiar. The window at the top of this page answers to them.</p>
       </div>
       <div class="keys">
         <div><span><kbd>→</kbd><kbd>Space</kbd></span><span>Next image, then the next folder</span></div>
         <div><span><kbd>←</kbd><kbd>⌫</kbd></span><span>Previous image</span></div>
-        <div><span><kbd>R</kbd><kbd>L</kbd></span><span>Rotate right / left</span></div>
+        <div><span><kbd>R</kbd><kbd>L</kbd></span><span>Rotate right / left, losslessly</span></div>
         <div><span><kbd>F</kbd><kbd>↩</kbd></span><span>Full screen</span></div>
         <div><span><kbd>0</kbd><kbd>1</kbd><kbd>+</kbd><kbd>−</kbd></span><span>Fit, actual size, zoom</span></div>
-        <div><span><kbd>F7</kbd><kbd>F8</kbd></span><span>Move / copy to a folder</span></div>
-        <div><span><kbd>⌘</kbd><kbd>B</kbd></span><span>Batch convert</span></div>
+        <div><span><kbd>I</kbd></span><span>Info panel</span></div>
+        <div><span><kbd>F7</kbd><kbd>F8</kbd></span><span>Move / copy to one of 14 folders</span></div>
+        <div><span><kbd>⌦</kbd></span><span>Move to Trash</span></div>
+        <div><span><kbd>B</kbd></span><span>Batch convert</span></div>
       </div>
     </div>
   </section>
 
-  <section id="batch">
-    <div class="split">
-      <div class="batch" aria-hidden="true">
-        <div class="flow"><span class="chip">248 photos</span><span class="arrow">→</span><span class="chip">Resize 2048 px</span><span class="arrow">→</span><span class="chip">JPEG 85 %</span><span class="arrow">→</span><span class="chip">trip-{n}</span></div>
-        <div class="files">
-          IMG_4102.HEIC → <b>trip-001.jpg</b> <span class="ok">✓</span><br>
-          IMG_4103.HEIC → <b>trip-002.jpg</b> <span class="ok">✓</span><br>
-          IMG_4107.DNG → <b>trip-003.jpg</b> <span class="ok">✓</span><br>
-          IMG_4108.HEIC → <b>trip-004 2.jpg</b> <span class="ok">✓</span> already there, kept
+  <section id="formats" aria-labelledby="h-formats">
+    <p class="eyebrow">Formats</p>
+    <h2 id="h-formats">Opens what your Mac opens, and a few things it doesn’t.</h2>
+    <p class="sub">Every picture is shown upright and colour-managed. HDR photos keep their extra brightness on HDR screens (macOS 15 and later).</p>
+    <div class="fgroups">
+      <div class="fgroup">
+        <h3>Through macOS’s own image engine</h3><p>Plus SVG, and PDF pages like a multi-page image.</p>
+        <ul class="chips"><li>JPEG</li><li>PNG</li><li>HEIC</li><li>AVIF</li><li>JPEG XL</li><li>WebP</li><li>TIFF</li><li>GIF</li><li>BMP</li><li>PSD</li><li>JPEG 2000</li><li>TGA</li><li>OpenEXR</li><li>DNG</li><li>Camera RAW</li><li>SVG</li><li>PDF</li></ul>
+      </div>
+      <div class="fgroup">
+        <h3>Read by Featherview itself</h3><p>Older and simpler formats macOS can’t open.</p>
+        <ul class="chips"><li>QOI</li><li>PCX</li><li>DCX</li><li>XBM</li><li>XPM</li><li>WBMP</li><li>Sun Raster</li><li>IFF/LBM</li></ul>
+        <h3>Layered files from image editors</h3><p>Shown flattened, without opening the editor. Blend modes are drawn as normal.</p>
+        <ul class="chips"><li>Photoshop PSB</li><li>GIMP XCF</li><li>Paint.NET PDN</li><li>PaintShop Pro PSP</li></ul>
+      </div>
+      <div class="fgroup wide">
+        <h3>Saves and batch converts to</h3><p>Each format with its own options, the same in Save As and in the batch window.</p>
+        <ul class="chips"><li>JPEG</li><li>PNG</li><li>HEIC</li><li>AVIF</li><li>TIFF</li><li>WebP</li><li>GIF</li><li>BMP</li><li>JPEG 2000</li><li>PDF</li><li>PSD</li><li>TGA</li><li>ICO</li><li>ICNS</li><li>OpenEXR</li><li>PBM</li><li>PGM</li><li>PPM</li><li>QOI</li><li>PCX</li></ul>
+      </div>
+    </div>
+  </section>
+
+  <section id="batch" aria-labelledby="h-batch">
+    <p class="eyebrow">Batch</p>
+    <h2 id="h-batch">Convert, resize and rename hundreds at once.</h2>
+    <p class="sub">Pick the images, switch on the steps you need, and watch the preview follow your settings. Save them as a preset for next time. It runs on every core but one, skips files it can’t read, keeps EXIF and GPS data, and never overwrites anything.</p>
+    <ul class="ops" aria-label="Batch steps"><li>Crop</li><li>Resize</li><li>Rotate and flip</li><li>Colour</li><li>Filters</li><li>Canvas</li><li>Border</li><li>Text</li><li>Watermark</li><li>Rename</li></ul>
+    <div class="bwin" role="img" aria-label="Drawing of the batch window: an image list, the steps with Resize selected, its settings and a live preview">
+      <div class="bbar">
+        <div class="lights"><i></i><i></i><i></i></div><span class="t">Batch</span><span class="sp"></span>
+        <span class="cap opt-wide"><span>Convert and rename ▾</span></span>
+        <span class="cap"><span>Web export ▾</span><span class="go">Start</span></span>
+      </div>
+      <div class="bcols">
+        <div class="bcol" id="bimgs"><div class="bh">Images · 248 files · 1.1 GB</div></div>
+        <div class="bcol">
+          <div class="bh">Output</div>
+          <div class="bstep"><span>Format and folder</span><b>WebP</b></div>
+          <div class="bstep"><span>Rename</span><b>trip-{n:3}</b></div>
+          <div class="bh">Steps</div>
+          <div class="bstep"><span>Crop</span><b></b></div>
+          <div class="bstep sel"><span>Resize</span><b>2048</b></div>
+          <div class="bstep"><span>Rotate and flip</span><b></b></div>
+          <div class="bstep"><span>Colour</span><b></b></div>
+          <div class="bstep"><span>Filters</span><b>sharpen</b></div>
+          <div class="bstep"><span>Canvas</span><b></b></div>
+          <div class="bstep"><span>Border</span><b></b></div>
+          <div class="bstep"><span>Text</span><b>{date}</b></div>
+          <div class="bstep"><span>Watermark</span><b></b></div>
+          <div class="bh">Files</div>
+          <div class="bstep"><span>Safety and dates</span><b></b></div>
+        </div>
+        <div class="bcol">
+          <div style="display:flex;justify-content:space-between;align-items:center"><span style="font-size:13px;font-weight:600">Resize</span><span class="sw"></span></div>
+          <div class="bcard">
+            <div class="brow"><span>Resize to</span><span class="pop">Longest side ▾</span></div>
+            <div class="brow"><span>Side</span><span class="pop">2048 px</span></div>
+            <div class="brow"><span>Don’t enlarge smaller images</span><span class="sw"></span></div>
+          </div>
+          <div class="prev">
+            <figure><div class="a" id="pv-a"></div><figcaption id="pv-a-cap"></figcaption></figure>
+            <figure><div class="b" id="pv-b"></div><figcaption id="pv-b-cap"></figcaption></figure>
+          </div>
+          <div class="names">
+            IMG_4102.HEIC → <b>trip-001.webp</b><br>
+            IMG_4103.HEIC → <b>trip-002.webp</b><br>
+            DSC00118.ARW → <b>trip-003.webp</b>
+          </div>
         </div>
       </div>
-      <div>
-        <p class="eyebrow">Batch</p>
-        <h2>Convert, resize and rename hundreds at once.</h2>
-        <p class="sub">Pick a folder, choose a format and size, name the results. It runs on every core, skips files it can’t read, and never overwrites anything.</p>
-      </div>
     </div>
   </section>
 
-  <section>
-    <p class="eyebrow">Formats</p>
-    <h2>Opens what your Mac can open.</h2>
-    <p class="sub">Shown upright and colour-managed, straight from macOS’s own image engine.</p>
-    <div class="formats"><span>JPEG</span><span>PNG</span><span>HEIC</span><span>WebP</span><span>TIFF</span><span>GIF</span><span>BMP</span><span>Camera RAW</span><span>and more</span></div>
+  <section id="languages" aria-labelledby="h-langs">
+    <p class="eyebrow">Languages</p>
+    <h2 id="h-langs">Thirty languages. <span class="soon">Coming</span></h2>
+    <p class="sub">Featherview will follow your Mac’s language, or the one you pick for it in System Settings. Arabic and Hebrew mirror the whole window, right to left. The picture itself never flips.</p>
+    <ul class="langs">
+      <li lang="en">English</li><li lang="zh-Hans">简体中文</li><li lang="zh-Hant">繁體中文</li><li lang="hi">हिन्दी</li><li lang="es">Español</li>
+      <li lang="ar" dir="rtl">العربية</li><li lang="fr">Français</li><li lang="pt-BR">Português (Brasil)</li><li lang="ru">Русский</li><li lang="id">Bahasa Indonesia</li>
+      <li lang="de">Deutsch</li><li lang="ja">日本語</li><li lang="tr">Türkçe</li><li lang="vi">Tiếng Việt</li><li lang="ko">한국어</li>
+      <li lang="it">Italiano</li><li lang="th">ไทย</li><li lang="pl">Polski</li><li lang="uk">Українська</li><li lang="ms">Bahasa Melayu</li>
+      <li lang="nl">Nederlands</li><li lang="ro">Română</li><li lang="el">Ελληνικά</li><li lang="hu">Magyar</li><li lang="sv">Svenska</li>
+      <li lang="cs">Čeština</li><li lang="ca">Català</li><li lang="he" dir="rtl">עברית</li><li lang="da">Dansk</li><li lang="fi">Suomi</li>
+    </ul>
   </section>
 
-  <section class="closing">
-    <h2>Free, and made for the Mac.</h2>
-    <p class="sub">Written in Swift, with nothing but macOS underneath. The first release is on its way.</p>
+  <section class="closing" aria-labelledby="h-close">
+    <ol class="road" aria-label="Progress">
+      <li class="done">Viewer<span>done</span></li>
+      <li class="done">Formats and Save As<span>done</span></li>
+      <li class="done">Batch<span>done</span></li>
+      <li class="done">WebP output<span>done</span></li>
+      <li class="done">App formats<span>done</span></li>
+      <li>30 languages<span>coming</span></li>
+      <li>Finder previews<span>coming</span></li>
+    </ol>
+    <svg class="mark" viewBox="0 0 64 64" aria-hidden="true"><use href="#icon"/></svg>
+    <h2 id="h-close">Free, and made for the Mac.</h2>
+    <p class="sub">Written in Swift on macOS’s own image engine. The first release is on its way.</p>
     <div class="cta"><a class="btn primary" href="https://github.com/featherview">Follow on GitHub</a></div>
   </section>
 
   <footer>
     <span>Made by <a href="https://github.com/mynetx">Joachim Rütter</a></span>
-    <span>An independent Mac alternative to IrfanView, not affiliated with it or its author.</span>
+    <p>An independent Mac alternative to IrfanView, not affiliated with it or its author. Thanks to Irfan Škiljan, whose viewer has shown for decades how fast looking at images can be.</p>
   </footer>
 </div>
 
 <script>
 // Demo photos are random landscapes drawn as SVG, seeded by image number so going back shows the same one.
 const $ = id => document.getElementById(id);
-let n = 41, total = 120, rot = 0, gone = 0, timer;
 const cams = [["iPhone 16 Pro","24 mm f/1.78"],["Fujifilm X-T5","16 mm f/2.8"],["Sony A7 IV","35 mm f/1.4"],["Canon R6","50 mm f/1.8"],["Nikon Z6 II","85 mm f/1.8"],["Ricoh GR III","18 mm f/2.8"]];
+const sizes = [[6000, 4000], [6240, 4160], [4032, 2688], [7728, 5152]];
+const months = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
 function rng(seed) { return () => { seed = (seed + 0x6d2b79f5) | 0; let t = Math.imul(seed ^ seed >>> 15, 1 | seed); t ^= t + Math.imul(t ^ t >>> 7, 61 | t); return ((t ^ t >>> 14) >>> 0) / 4294967296; }; }
-function scene(seed) {
-  const r = rng(seed), pick = a => a[Math.floor(r() * a.length)];
+function scene(seed, id) {
+  const r = rng(seed), pick = a => a[Math.floor(r() * a.length)], g = "sk" + id; // gradient id unique per SVG on the page
   const h = Math.floor(r() * 360), night = r() < .25;
   const sky = night ? [`hsl(${h} 45% 9%)`, `hsl(${h + 20} 40% 24%)`] : [`hsl(${h} 70% ${45 + r() * 20}%)`, `hsl(${h + 30 + r() * 30} 85% ${70 + r() * 15}%)`];
   const sx = 40 + r() * 220, sy = 25 + r() * 70;
-  let out = `<rect width="300" height="200" fill="url(#sk)"/>`;
+  let out = `<rect width="300" height="200" fill="url(#${g})"/>`;
   if (night) for (let i = 0; i < 40; i++) out += `<circle cx="${r() * 300}" cy="${r() * 110}" r="${r() * .9 + .2}" fill="#fff" opacity="${.3 + r() * .7}"/>`;
   out += `<circle cx="${sx}" cy="${sy}" r="${10 + r() * 16}" fill="${night ? "#eef3ff" : `hsl(${h + 40} 100% 92%)`}" opacity=".92"/>`;
   const layers = 2 + Math.floor(r() * 3), water = r() < .35, hh = h + 150 + r() * 80;
@@ -286,48 +489,89 @@ function scene(seed) {
     const l = night ? 7 + k * 3 : 58 - k * (40 / layers), sat = night ? 20 : 18 + k * 8; // far ridges fade toward the sky
     out += `<path d="M0 200 L${pts.join(" L")} L300 200Z" fill="hsl(${hh} ${sat}% ${l}%)"/>`;
   }
-  if (water) out += `<rect y="160" width="300" height="40" fill="url(#sk)" opacity=".85"/><rect y="160" width="300" height="1" fill="#fff" opacity=".25"/>`;
-  const [cam, lens] = pick(cams);
-  return { svg: `<svg viewBox="0 0 300 200" preserveAspectRatio="xMidYMid slice"><defs><linearGradient id="sk" x2="0" y2="1"><stop stop-color="${sky[0]}"/><stop offset="1" stop-color="${sky[1]}"/></linearGradient></defs>${out}</svg>`,
-    cam, lens, exp: night ? pick(["4 s", "8 s", "15 s"]) : pick(["1/125 s", "1/250 s", "1/500 s", "1/1000 s"]), iso: night ? pick(["800", "1600", "3200"]) : pick(["64", "100", "200"]) };
+  if (water) out += `<rect y="160" width="300" height="40" fill="url(#${g})" opacity=".85"/><rect y="160" width="300" height="1" fill="#fff" opacity=".25"/>`;
+  const [cam, lens] = pick(cams), [w, hgt] = pick(sizes);
+  const d = 1 + Math.floor(r() * 28), mo = Math.floor(r() * 9), hr = night ? 21 + Math.floor(r() * 3) : 7 + Math.floor(r() * 11), mi = Math.floor(r() * 60);
+  return { svg: `<svg viewBox="0 0 300 200" preserveAspectRatio="xMidYMid slice" aria-hidden="true"><defs><linearGradient id="${g}" x2="0" y2="1"><stop stop-color="${sky[0]}"/><stop offset="1" stop-color="${sky[1]}"/></linearGradient></defs>${out}</svg>`,
+    cam, lens, w, h: hgt, mb: (w * hgt / 1e6 * (.32 + r() * .2)).toFixed(1),
+    date: `${d} ${months[mo]} 2026, ${String(hr).padStart(2, "0")}:${String(mi).padStart(2, "0")}`,
+    exp: night ? pick(["4 s", "8 s", "15 s"]) : pick(["1/125 s", "1/250 s", "1/500 s", "1/1000 s"]), iso: night ? pick(["800", "1600", "3200"]) : pick(["64", "100", "200"]) };
 }
-function show() {
-  const s = scene(n * 1009 + gone);
-  $("photo").innerHTML = s.svg;
-  $("photo").style.transform = `rotate(${rot}deg) scale(${rot % 180 ? .66 : 1})`;
+
+const win = $("win"), photo = $("photo");
+let n = 41, total = 120, gone = 0, rot = 0, zoom = 1, px = 0, py = 0, cur, timer;
+const fitPct = () => photo.offsetWidth * devicePixelRatio / cur.w * 100;
+function visual() { const w = photo.offsetWidth * zoom, h = w / 1.5; return rot % 180 ? [h, w] : [w, h]; }
+const larger = () => { const [w, h] = visual(); return w > win.clientWidth + 1 || h > win.clientHeight + 1; };
+function layout() {
+  photo.classList.toggle("turned", rot % 180 !== 0);
+  const [w, h] = visual(), mx = Math.max(0, (w - win.clientWidth) / 2), my = Math.max(0, (h - win.clientHeight) / 2);
+  px = Math.max(-mx, Math.min(mx, px)); py = Math.max(-my, Math.min(my, py));
+  photo.style.transform = `translate(${px}px, ${py}px) rotate(${rot}deg) scale(${zoom})`;
+  $("s-zoom").textContent = `${Math.round(fitPct() * zoom)} %`;
+}
+function show() { // browsing is instant: no transition between images
+  cur = scene(n * 1009 + gone, "m");
+  photo.innerHTML = cur.svg; rot = 0; zoom = 1; px = py = 0;
+  photo.style.transition = "none"; layout(); photo.offsetWidth; photo.style.transition = "";
   $("title").textContent = `IMG_${2000 + n}.jpg — ${n} / ${total}`;
-  $("exif").innerHTML = [["Size", "4032 × 3024"], ["Camera", s.cam], ["Lens", s.lens], ["Exposure", s.exp], ["ISO", s.iso]]
+  $("s-size").textContent = `${cur.w} × ${cur.h}`; $("s-bytes").textContent = `${cur.mb} MB`;
+  $("s-pos").textContent = `${n} / ${total}`; $("s-date").textContent = cur.date;
+  $("exif").innerHTML = [["Size", `${cur.w} × ${cur.h}`], ["Camera", cur.cam], ["Lens", cur.lens], ["Exposure", cur.exp], ["ISO", cur.iso], ["Taken", cur.date]]
     .map(([a, b]) => `<dt>${a}</dt><dd>${b}</dd>`).join("");
 }
 function toast(msg) {
   $("toast").textContent = msg; $("toast").classList.add("show");
-  clearTimeout(timer); timer = setTimeout(() => $("toast").classList.remove("show"), 1100);
+  clearTimeout(timer); timer = setTimeout(() => $("toast").classList.remove("show"), 1200);
 }
+function setZoom(z) { const f = fitPct(); zoom = Math.min(1600 / f, Math.max(5 / f, z)); layout(); }
+function pan(dx, dy) { px -= dx; py -= dy; layout(); }
+const step = () => win.clientWidth * .15;
 const actions = {
-  ArrowRight() { if (n < total) { n++; rot = 0; } }, ArrowLeft() { if (n > 1) { n--; rot = 0; } },
-  r() { rot += 90; }, l() { rot -= 90; }, i() { $("info").classList.toggle("open"); },
-  Delete() { toast("Moved to Trash"); total--; gone++; if (n > total) n = total; rot = 0; },
+  next() { if (n < total) { n++; show(); } }, prev() { if (n > 1) { n--; show(); } },
+  first() { n = 1; show(); }, last() { n = total; show(); },
+  // arrows pan an image larger than the window, as in the app; Space and Backspace always browse
+  ArrowRight() { larger() ? pan(step(), 0) : actions.next(); }, ArrowLeft() { larger() ? pan(-step(), 0) : actions.prev(); },
+  ArrowDown() { larger() ? pan(0, step()) : actions.next(); }, ArrowUp() { larger() ? pan(0, -step()) : actions.prev(); },
+  r() { rot += 90; layout(); }, l() { rot -= 90; layout(); },
+  "+"() { setZoom(zoom * 1.1); }, "-"() { setZoom(zoom / 1.1); }, "1"() { setZoom(100 / fitPct()); }, "0"() { zoom = 1; px = py = 0; layout(); },
+  i() { $("info").classList.toggle("open"); },
+  Delete() { if (total < 2) return toast("That’s the last one in this demo"); toast("Moved to Trash"); total--; gone++; if (n > total) n = total; show(); },
 };
-const alias = { ArrowDown:"ArrowRight", " ":"ArrowRight", ArrowUp:"ArrowLeft", Backspace:"Delete", R:"r", L:"l", I:"i" };
+const alias = { " ":"next", PageDown:"next", Backspace:"prev", PageUp:"prev", Home:"first", End:"last", "=":"+", "−":"-", R:"r", L:"l", I:"i" };
 function press(k) {
   k = alias[k] || k;
-  if (!actions[k]) return false;
+  if (!Object.hasOwn(actions, k)) return false;
   actions[k]();
-  const cap = document.querySelector(`.hint [data-k="${k}"] kbd`);
+  const cap = document.querySelector(`.hint [data-k="${CSS.escape(k)}"] kbd`);
   if (cap) { cap.classList.add("hit"); setTimeout(() => cap.classList.remove("hit"), 140); }
-  show(); return true;
+  return true;
 }
-document.querySelectorAll(".hint button").forEach(b => b.addEventListener("click", () => press(b.dataset.k)));
-// Keys work page-wide while the demo is visible; Space and ↑↓ keep scrolling unless the window has focus.
+document.querySelectorAll("[data-k]").forEach(b => b.addEventListener("click", () => press(b.dataset.k)));
+// Keys work page-wide while the demo is visible; keys that scroll the page only act when the window has focus.
 let visible = true;
-new IntersectionObserver(([e]) => visible = e.isIntersecting).observe($("win"));
+new IntersectionObserver(([e]) => visible = e.isIntersecting).observe(win);
 document.addEventListener("keydown", e => {
   if (e.metaKey || e.ctrlKey || e.altKey) return;
-  const focused = document.activeElement === $("win");
-  if (!focused && (!visible || [" ", "ArrowUp", "ArrowDown"].includes(e.key))) return;
+  const focused = win.contains(document.activeElement);
+  if (!focused && (!visible || [" ", "ArrowUp", "ArrowDown", "PageUp", "PageDown", "Home", "End"].includes(e.key))) return;
+  if (document.activeElement.tagName === "BUTTON" && (e.key === " " || e.key === "Enter")) return; // the button's own click handles it
   if (press(e.key)) e.preventDefault();
 });
+new ResizeObserver(() => cur && layout()).observe(win);
 show();
+
+// The batch window's image list and preview reuse the same generated landscapes.
+["IMG_4102.HEIC", "IMG_4103.HEIC", "DSC00118.ARW", "IMG_4107.DNG", "IMG_4108.HEIC", "scan-01.tif"].forEach((name, i) => {
+  const s = scene(7001 + i * 31, "b" + i), row = document.createElement("div");
+  row.className = "bimg" + (i ? "" : " sel");
+  row.innerHTML = `<i>${s.svg}</i><div><div>${name}</div><div class="m">${s.w} × ${s.h} · ${s.mb} MB</div></div>`;
+  $("bimgs").append(row);
+  if (i) return;
+  $("pv-a").innerHTML = scene(7001, "pa").svg; $("pv-b").innerHTML = scene(7001, "pb").svg;
+  $("pv-a-cap").textContent = `Original ${s.w} × ${s.h}`;
+  $("pv-b-cap").textContent = `Output 2048 × ${Math.round(2048 * s.h / s.w)}`;
+});
 </script>
 </body>
 </html>
