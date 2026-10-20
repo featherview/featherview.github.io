@@ -131,13 +131,20 @@
     box-shadow:inset 0 1px 0 var(--v-hl), inset 0 0 0 1px var(--v-hair), var(--v-e2); }
   @supports not ((backdrop-filter:blur(1px)) or (-webkit-backdrop-filter:blur(1px))) { .glass, .info { background:var(--v-solid); } }
   .lights { position:absolute; z-index:5; top:20px; inset-inline-start:20px; display:flex; gap:8px; }
-  .lights i { width:12px; height:12px; border-radius:50%; background:#ff5f57; box-shadow:inset 0 0 0 .5px rgba(0,0,0,.2); }
-  .lights i:nth-child(2) { background:#febc2e; } .lights i:nth-child(3) { background:#28c840; }
-  .lights button { all:unset; position:relative; cursor:pointer; width:12px; height:12px; border-radius:50%; background:#ff5f57;
-    box-shadow:inset 0 0 0 .5px rgba(0,0,0,.2); display:grid; place-items:center; color:rgba(0,0,0,.6); font:700 10px/1 var(--font); }
-  .lights button:nth-child(2) { background:#febc2e; } .lights button:nth-child(3) { background:#28c840; }
+  .lights i { width:12px; height:12px; border-radius:50%; background-color:#ff5f57; }
+  .lights i:nth-child(2) { background-color:#febc2e; } .lights i:nth-child(3) { background-color:#28c840; }
+  .lights button { all:unset; position:relative; cursor:pointer; width:12px; height:12px; border-radius:50%; background-color:#ff5f57;
+    display:grid; transition:transform .35s cubic-bezier(.3,1.8,.5,1); place-items:center; color:rgba(0,0,0,.6); font:700 10px/1 var(--font); }
+  .lights button:nth-child(2) { background-color:#febc2e; } .lights button:nth-child(3) { background-color:#28c840; }
+  /* macOS 27 window buttons: glassy, lit from above, a shade along the bottom */
+  .lights i, .lights button { background-image:radial-gradient(70% 45% at 50% 22%, rgba(255,255,255,.75), rgba(255,255,255,0) 70%),
+      linear-gradient(rgba(255,255,255,.12), rgba(0,0,0,.14));
+    box-shadow:inset 0 0 0 .5px rgba(0,0,0,.25), inset 0 .5px .5px rgba(255,255,255,.6), inset 0 -1px 1.5px rgba(0,0,0,.18), 0 .5px 1.5px rgba(0,0,0,.28); }
+  .lights button:active { transform:scale(.82); transition-duration:.08s; } /* and springs back */
   .lights button::after { content:""; position:absolute; inset:-5px; } /* bigger hit area for fingers */
-  .lights button span { opacity:0; transform:translateY(-.5px); }
+  .lights button span { opacity:0; display:block; width:12px; height:12px; }
+  .lights button svg { display:block; width:12px; height:12px; fill:none; stroke:rgba(0,0,0,.55); stroke-width:1; stroke-linecap:round; }
+  .lights button svg .fill { fill:rgba(0,0,0,.55); stroke:none; }
   .lights:hover button span, .lights button:focus-visible span { opacity:1; }
   .lights button:focus-visible { outline:2px solid #ffc766; outline-offset:2px; }
   .tools { position:absolute; z-index:4; top:10px; inset-inline:0; height:32px; display:flex; align-items:center; gap:12px; padding-inline:96px 12px; }
@@ -390,7 +397,7 @@
       <div class="win" id="win" tabindex="0" role="group" aria-roledescription="image viewer demo"
            aria-label="Featherview demo. Arrow keys browse, R and L rotate, plus and minus zoom, 0 fits, 1 shows actual size, I shows info, forward delete moves to Trash.">
         <div class="fit"><div class="photo" id="photo"></div></div>
-        <div class="lights"><button data-light="close" aria-label="Close window" title="Close"><span aria-hidden="true">×</span></button><button data-light="mini" aria-label="Minimise window" title="Minimise"><span aria-hidden="true">−</span></button><button data-light="max" aria-label="Fill the page" title="Fill the page"><span aria-hidden="true">+</span></button></div>
+        <div class="lights"><button data-light="close" aria-label="Close window" title="Close"><span aria-hidden="true"><svg viewBox="0 0 12 12"><path d="M3.9 3.9l4.2 4.2M8.1 3.9l-4.2 4.2"/></svg></span></button><button data-light="mini" aria-label="Minimise window" title="Minimise"><span aria-hidden="true"><svg viewBox="0 0 12 12"><path d="M3.3 6h5.4"/></svg></span></button><button data-light="max" aria-label="Fill the page" title="Fill the page"><span aria-hidden="true"><svg viewBox="0 0 12 12"><path class="fill" d="M3.4 3.4h3.3L3.4 6.7zM8.6 8.6H5.3L8.6 5.3z"/></svg></span></button></div>
         <div class="tools">
           <div class="seg glass"><button data-k="ArrowLeft" aria-label="Previous image" title="Previous image (←)"><svg class="chev"><use href="#i-prev"/></svg></button><button data-k="ArrowRight" aria-label="Next image" title="Next image (→)"><svg class="chev"><use href="#i-next"/></svg></button></div>
           <div class="wtitle" aria-live="polite"><b id="title"></b><span id="count"></span></div>
