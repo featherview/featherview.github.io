@@ -130,20 +130,19 @@
   .glass { background:var(--v-glass); -webkit-backdrop-filter:blur(40px) saturate(1.8); backdrop-filter:blur(40px) saturate(1.8);
     box-shadow:inset 0 1px 0 var(--v-hl), inset 0 0 0 1px var(--v-hair), var(--v-e2); }
   @supports not ((backdrop-filter:blur(1px)) or (-webkit-backdrop-filter:blur(1px))) { .glass, .info { background:var(--v-solid); } }
-  .lights { position:absolute; z-index:5; top:20px; inset-inline-start:20px; display:flex; gap:8px; }
-  .lights i { width:12px; height:12px; border-radius:50%; background-color:#ff5f57; }
-  .lights i:nth-child(2) { background-color:#febc2e; } .lights i:nth-child(3) { background-color:#28c840; }
-  .lights button { all:unset; position:relative; cursor:pointer; width:12px; height:12px; border-radius:50%; background-color:#ff5f57;
+  .lights { position:absolute; z-index:5; top:19px; inset-inline-start:20px; display:flex; gap:9px; }
+  .lights :nth-child(2) { --top:#f1bc50; --bot:#f8d664; --rim:rgba(150,90,0,.5); }
+  .lights :nth-child(3) { --top:#7ecb4a; --bot:#abdc88; --rim:rgba(10,90,10,.5); }
+  .lights button { all:unset; position:relative; cursor:pointer;
     display:grid; transition:transform .35s cubic-bezier(.3,1.8,.5,1); place-items:center; color:rgba(0,0,0,.6); font:700 10px/1 var(--font); }
-  .lights button:nth-child(2) { background-color:#febc2e; } .lights button:nth-child(3) { background-color:#28c840; }
-  /* macOS 27 window buttons: glassy, lit from above, a shade along the bottom */
-  .lights i, .lights button { background-image:radial-gradient(70% 45% at 50% 22%, rgba(255,255,255,.75), rgba(255,255,255,0) 70%),
-      linear-gradient(rgba(255,255,255,.12), rgba(0,0,0,.14));
-    box-shadow:inset 0 0 0 .5px rgba(0,0,0,.25), inset 0 .5px .5px rgba(255,255,255,.6), inset 0 -1px 1.5px rgba(0,0,0,.18), 0 .5px 1.5px rgba(0,0,0,.28); }
+  /* macOS 27 window buttons: deeper colour at the top, lighter below, a thin rim in a darker shade */
+  .lights i, .lights button { --top:#eb7669; --bot:#e9948a; --rim:rgba(180,10,10,.55); width:14px; height:14px; border-radius:50%;
+    background:linear-gradient(var(--top) 15%, var(--bot) 85%);
+    box-shadow:inset 0 0 0 .5px var(--rim), inset 0 1px 1px rgba(255,255,255,.18), 0 .5px 1.5px rgba(0,0,0,.12); }
   .lights button:active { transform:scale(.82); transition-duration:.08s; } /* and springs back */
   .lights button::after { content:""; position:absolute; inset:-5px; } /* bigger hit area for fingers */
-  .lights button span { opacity:0; display:block; width:12px; height:12px; }
-  .lights button svg { display:block; width:12px; height:12px; fill:none; stroke:rgba(0,0,0,.55); stroke-width:1; stroke-linecap:round; }
+  .lights button span { opacity:0; display:block; width:14px; height:14px; }
+  .lights button svg { display:block; width:14px; height:14px; fill:none; stroke:rgba(0,0,0,.55); stroke-width:1; stroke-linecap:round; }
   .lights button svg .fill { fill:rgba(0,0,0,.55); stroke:none; }
   .lights:hover button span, .lights button:focus-visible span { opacity:1; }
   .lights button:focus-visible { outline:2px solid #ffc766; outline-offset:2px; }
@@ -340,7 +339,7 @@
     .hero { padding-top:40px; }
     .stage { aspect-ratio:4/3; }
     /* phone: the groups keep their order, items narrow, the title and two strip items give way */
-    .tools { padding-inline:66px 8px; gap:6px; } .lights { inset-inline-start:14px; gap:6px; }
+    .tools { padding-inline:72px 8px; gap:6px; } .lights { inset-inline-start:14px; gap:7px; }
     .wtitle, .opt-wide { display:none; }
     .tools .seg:last-child { margin-inline-start:auto; }
     .seg button { width:26px; } .seg hr { margin:0; }
