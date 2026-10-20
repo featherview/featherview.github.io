@@ -261,13 +261,9 @@
   .bbar .lights { position:static; }
   .bbar .t { font-weight:600; font-size:12.5px; margin-inline-start:6px; }
   .bbar .sp { flex:1; }
-  .cap { display:flex; align-items:center; gap:4px; height:26px; padding:0 3px; border-radius:13px; background:var(--w-cap);
-    border:1px solid var(--w-line); box-shadow:0 1px 3px rgba(0,0,0,.08); white-space:nowrap; }
-  .cap span { padding:0 8px; }
-  .cap .go { background:var(--accent); color:var(--accent-ink); border-radius:10px; padding:3px 11px; font-weight:600; }
-  .bcols { display:grid; grid-template-columns:1.1fr .85fr 1.45fr; min-height:300px; }
-  .bcol { padding:8px; border-inline-end:1px solid var(--w-line); display:flex; flex-direction:column; gap:2px; min-width:0; }
-  .bcol:nth-child(1) { background:var(--w-c1); } .bcol:nth-child(2) { background:var(--w-c2); }
+  .bcols { display:grid; grid-template-columns:.9fr 1.6fr; min-height:300px; }
+  .bcol { padding:8px; border-inline-end:1px solid var(--w-line); display:flex; flex-direction:column; gap:6px; min-width:0; }
+  .bcol:nth-child(1) { background:var(--w-c1); gap:2px; }
   .bcol:last-child { border:0; padding:12px 14px; }
   .bh { font-size:9.5px; font-weight:650; color:var(--w-muted); text-transform:uppercase; letter-spacing:.05em; padding:8px 8px 3px; }
   .bimg { display:flex; gap:8px; align-items:center; padding:4px 6px; border-radius:7px; min-width:0; }
@@ -275,21 +271,30 @@
   .bimg i svg { width:100%; height:100%; display:block; }
   .bimg div { min-width:0; } .bimg .m { font-size:10px; color:var(--w-muted); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
   .bimg.sel { background:var(--w-sel); }
-  .bstep { display:flex; justify-content:space-between; gap:8px; padding:4px 8px; border-radius:6px; }
-  .bstep b { font-weight:500; color:var(--accent); font-size:10.5px; }
-  .bstep.sel { background:var(--accent); color:var(--accent-ink); } .bstep.sel b { color:inherit; opacity:.85; }
-  .bcard { background:var(--w-card); border:1px solid var(--w-line); border-radius:10px; margin-top:10px; }
-  .brow { display:flex; justify-content:space-between; align-items:center; gap:10px; padding:8px 11px; }
+  .bstep { display:flex; flex-wrap:wrap; justify-content:space-between; align-items:center; gap:4px 8px; padding:8px 11px;
+    background:var(--w-card); border:1px solid var(--w-line); border-radius:10px; }
+  .bstep > span { font-weight:600; display:flex; align-items:center; gap:7px; }
+  .bstep em { font-style:normal; font-size:9.5px; width:16px; height:16px; border-radius:50%; display:grid; place-items:center;
+    background:var(--w-c1); color:var(--w-muted); font-weight:650; }
+  .bstep b { font-weight:500; color:var(--w-muted); font-size:10.5px; }
+  .bstep.open em { background:var(--accent); color:var(--accent-ink); }
+  .bcard { flex:0 0 calc(100% + 22px); border-top:1px solid var(--w-line); margin:6px -11px -8px; }
+  .brow { display:flex; justify-content:space-between; align-items:center; gap:10px; padding:7px 11px; }
   .brow + .brow { border-top:1px solid var(--w-line); }
   .pop { border:1px solid var(--w-line); border-radius:6px; padding:2px 7px; background:var(--w-c1); white-space:nowrap; }
-  .sw { width:28px; height:16px; border-radius:8px; background:var(--accent); position:relative; flex:none; }
-  .sw::after { content:""; position:absolute; top:2px; inset-inline-end:2px; width:12px; height:12px; border-radius:50%; background:#fff; box-shadow:0 1px 2px rgba(0,0,0,.25); }
-  .prev { display:flex; gap:12px; margin-top:14px; align-items:flex-end; }
+  .ck { width:14px; height:14px; border-radius:4px; background:var(--accent); position:relative; flex:none; }
+  .ck::after { content:""; position:absolute; left:4.5px; top:1.5px; width:3.5px; height:7px; border:solid var(--accent-ink); border-width:0 2px 2px 0; transform:rotate(45deg); }
+  .addstep { align-self:flex-start; padding:4px 10px; border-radius:7px; border:1px dashed var(--w-line); color:var(--w-muted); }
+  .prev { display:flex; gap:12px; margin-top:8px; align-items:flex-end; flex-wrap:wrap; padding-top:12px; border-top:1px solid var(--w-line); }
   .prev figure { margin:0; display:grid; gap:6px; color:var(--w-muted); font-size:10px; }
   .prev figure div { border-radius:4px; overflow:hidden; } .prev svg { display:block; width:100%; height:100%; }
-  .prev .a { width:118px; aspect-ratio:3/2; } .prev .b { width:84px; aspect-ratio:3/2; outline:2px solid var(--accent); outline-offset:2px; }
-  .names { margin-top:14px; font:10.5px/1.8 var(--mono); color:var(--w-muted); }
+  .prev .a { width:118px; aspect-ratio:4/3; } .prev .b { width:84px; aspect-ratio:4/3; outline:2px solid var(--accent); outline-offset:2px; }
+  .names { font:10.5px/1.8 var(--mono); color:var(--w-muted); margin-inline-start:6px; }
   .names b { color:var(--w-fg); font-weight:500; }
+  .applied { font-size:10.5px; color:var(--w-muted); }
+  .bfoot { display:flex; align-items:center; gap:10px; padding:9px 12px; background:var(--w-bar); border-top:1px solid var(--w-line); }
+  .bfoot .sp { flex:1; }
+  .bfoot .go { background:var(--accent); color:var(--accent-ink); border-radius:7px; padding:4px 12px; font-weight:600; }
   .ticks { display:grid; gap:14px; margin:0; padding:0; list-style:none; }
   .ticks li { display:flex; gap:12px; align-items:flex-start; font-size:16.5px; }
   .ticks li::before { content:"✓"; flex:none; display:grid; place-items:center; width:24px; height:24px; margin-top:1px; border-radius:50%;
@@ -496,7 +501,7 @@
       <div>
         <p class="eyebrow">batch</p>
         <h2 id="h-batch">A whole shoot in. Exactly what you need out.</h2>
-        <p class="sub" style="margin-bottom:0">Pick the keepers, switch on the steps you want, watch the preview follow along, press Start. Keep the recipe as a preset for next time.</p>
+        <p class="sub" style="margin-bottom:0">Pick the keepers, choose a format, a size and a name, add the steps you want, watch the preview follow along, press Convert. Keep the recipe as a preset for next time.</p>
       </div>
       <div>
         <ul class="ticks">
@@ -507,45 +512,33 @@
         <p class="steps">Resize, crop, rotate, fix colour, sharpen, add a border, stamp text or a watermark, and rename with a pattern.</p>
       </div>
     </div>
-    <div class="bwin" role="img" aria-label="Drawing of the batch window: an image list, the steps with Resize selected, its settings and a live preview">
+    <div class="bwin" role="img" aria-label="Drawing of the batch window: the image list, numbered cards for format, size and name with Size open, an added Text step, and a live before and after preview">
       <div class="bbar">
         <div class="lights"><i></i><i></i><i></i></div><span class="t">Batch</span><span class="sp"></span>
-        <span class="cap opt-wide"><span>Convert and rename ▾</span></span>
-        <span class="cap"><span>Web export ▾</span><span class="go">Start</span></span>
       </div>
       <div class="bcols">
-        <div class="bcol" id="bimgs"><div class="bh">Images · Coast trip</div></div>
+        <div class="bcol" id="bimgs"><div class="bh">Images</div></div>
         <div class="bcol">
-          <div class="bh">Output</div>
-          <div class="bstep"><span>Format and folder</span><b>WebP</b></div>
-          <div class="bstep"><span>Rename</span><b>trip-{n:3}</b></div>
-          <div class="bh">Steps</div>
-          <div class="bstep"><span>Crop</span><b></b></div>
-          <div class="bstep sel"><span>Resize</span><b>on</b></div>
-          <div class="bstep"><span>Rotate and flip</span><b></b></div>
-          <div class="bstep"><span>Colour</span><b></b></div>
-          <div class="bstep"><span>Filters</span><b>sharpen</b></div>
-          <div class="bstep"><span>Border</span><b></b></div>
-          <div class="bstep"><span>Text</span><b>{date}</b></div>
-          <div class="bstep"><span>Watermark</span><b></b></div>
-        </div>
-        <div class="bcol">
-          <div style="display:flex;justify-content:space-between;align-items:center"><span style="font-size:13px;font-weight:600">Resize</span><span class="sw"></span></div>
-          <div class="bcard">
-            <div class="brow"><span>Resize to</span><span class="pop">Longest side ▾</span></div>
-            <div class="brow"><span>Don’t enlarge smaller images</span><span class="sw"></span></div>
+          <div class="bstep"><span><em>2</em>Format</span><b>WebP · 80</b></div>
+          <div class="bstep open"><span><em>3</em>Size</span><b>Longest side 2048</b>
+            <div class="bcard">
+              <div class="brow"><span>Change size</span><span class="ck"></span></div>
+              <div class="brow"><span>Resize to</span><span class="pop">Longest Side ▾</span></div>
+              <div class="brow"><span>Don’t enlarge smaller images</span><span class="ck"></span></div>
+            </div>
           </div>
+          <div class="bstep"><span><em>4</em>Name</span><b>trip-{n:3} · Desktop/Coast</b></div>
+          <div class="bstep"><span><em>✕</em>Text</span><b>{date}</b></div>
+          <div class="addstep">Add Step ▾</div>
           <div class="prev">
-            <figure><div class="a" id="pv-a"></div><figcaption>Before</figcaption></figure>
-            <figure><div class="b" id="pv-b"></div><figcaption>After</figcaption></figure>
+            <figure><div class="a" id="pv-a"></div><figcaption>4032 × 3024</figcaption></figure>
+            <figure><div class="b" id="pv-b"></div><figcaption>2048 × 1536</figcaption></figure>
+            <div class="names">IMG_4102.HEIC → <b>trip-001.webp</b><br>IMG_4103.HEIC → <b>trip-002.webp</b><br>DSC00118.ARW → <b>trip-003.webp</b></div>
           </div>
-          <div class="names">
-            IMG_4102.HEIC → <b>trip-001.webp</b><br>
-            IMG_4103.HEIC → <b>trip-002.webp</b><br>
-            DSC00118.ARW → <b>trip-003.webp</b>
-          </div>
+          <div class="applied">Applied: size → text</div>
         </div>
       </div>
+      <div class="bfoot"><span class="pop">Presets ▾</span><span class="sp"></span><span class="go">Convert 6 images</span></div>
     </div>
   </section>
 
@@ -554,12 +547,12 @@
     <h2 id="h-langs">Speaks your language. Thirty of them.</h2>
     <p class="sub">Featherview follows your Mac’s language. Arabic and Hebrew flip the whole window right to left. Your photos stay the right way round.</p>
     <ul class="langs">
-      <li lang="en">English</li><li lang="zh-Hans">简体中文</li><li lang="zh-Hant">繁體中文</li><li lang="hi">हिन्दी</li><li lang="es">Español</li>
-      <li lang="ar" dir="rtl">العربية</li><li lang="fr">Français</li><li lang="pt-BR">Português (Brasil)</li><li lang="ru">Русский</li><li lang="id">Bahasa Indonesia</li>
-      <li lang="de">Deutsch</li><li lang="ja">日本語</li><li lang="tr">Türkçe</li><li lang="vi">Tiếng Việt</li><li lang="ko">한국어</li>
-      <li lang="it">Italiano</li><li lang="th">ไทย</li><li lang="pl">Polski</li><li lang="uk">Українська</li><li lang="ms">Bahasa Melayu</li>
-      <li lang="nl">Nederlands</li><li lang="ro">Română</li><li lang="el">Ελληνικά</li><li lang="hu">Magyar</li><li lang="sv">Svenska</li>
-      <li lang="cs">Čeština</li><li lang="ca">Català</li><li lang="he" dir="rtl">עברית</li><li lang="da">Dansk</li><li lang="fi">Suomi</li>
+      <li lang="id">Bahasa Indonesia</li><li lang="ms">Bahasa Melayu</li><li lang="ca">Català</li><li lang="cs">Čeština</li><li lang="da">Dansk</li>
+      <li lang="de">Deutsch</li><li lang="en">English</li><li lang="es">Español</li><li lang="fr">Français</li><li lang="it">Italiano</li>
+      <li lang="hu">Magyar</li><li lang="nl">Nederlands</li><li lang="pl">Polski</li><li lang="pt-BR">Português (Brasil)</li><li lang="ro">Română</li>
+      <li lang="fi">Suomi</li><li lang="sv">Svenska</li><li lang="vi">Tiếng Việt</li><li lang="tr">Türkçe</li><li lang="el">Ελληνικά</li>
+      <li lang="ru">Русский</li><li lang="uk">Українська</li><li lang="he" dir="rtl">עברית</li><li lang="ar" dir="rtl">العربية</li><li lang="hi">हिन्दी</li>
+      <li lang="th">ไทย</li><li lang="ko">한국어</li><li lang="ja">日本語</li><li lang="zh-Hans">简体中文</li><li lang="zh-Hant">繁體中文</li>
     </ul>
   </section>
 
@@ -741,10 +734,10 @@ $("jump").addEventListener("click", () => {
 });
 
 // The batch window's image list and preview reuse the same generated landscapes.
-[["IMG_4102.HEIC", "iPhone"], ["IMG_4103.HEIC", "iPhone"], ["DSC00118.ARW", "Sony RAW"], ["IMG_4107.DNG", "RAW"], ["IMG_4108.HEIC", "iPhone"], ["scan-01.tif", "Scanner"]].forEach(([name, kind], i) => {
+[["IMG_4102.HEIC", "4032 × 3024 · 2.1 MB"], ["IMG_4103.HEIC", "4032 × 3024 · 1.9 MB"], ["DSC00118.ARW", "6000 × 4000 · 24.6 MB"], ["IMG_4107.DNG", "4032 × 3024 · 12.3 MB"], ["IMG_4108.HEIC", "3024 × 4032 · 2.4 MB"], ["scan-01.tif", "2550 × 3300 · 4.8 MB"]].forEach(([name, size], i) => {
   const s = scene(7001 + i * 31, "b" + i), row = document.createElement("div");
   row.className = "bimg" + (i ? "" : " sel");
-  row.innerHTML = `<i>${s.svg}</i><div><div>${name}</div><div class="m">${kind}</div></div>`;
+  row.innerHTML = `<i>${s.svg}</i><div><div>${name}</div><div class="m">${size}</div></div>`;
   $("bimgs").append(row);
   if (i) return;
   $("pv-a").innerHTML = scene(7001, "pa").svg; $("pv-b").innerHTML = scene(7001, "pb").svg;
