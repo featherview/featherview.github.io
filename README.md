@@ -1,7 +1,7 @@
 # featherview.github.io
 
 The website for Featherview, a fast, keyboard-driven image viewer for macOS:
-https://featherview.github.io
+https://featherview.mynetx.net
 
 One static `index.html`, no build step and no dependencies. GitHub Pages publishes every push to
 `main` within a minute. To preview it locally, open `index.html` in a browser.
