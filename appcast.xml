@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<rss version="2.0" xmlns:sparkle="http://www.andymatuschak.org/xml-namespaces/sparkle">
+  <channel>
+    <title>Featherview</title>
+    <link>https://featherview.mynetx.net/</link>
+    <item>
+      <title>Featherview 0.9.0</title>
+      <pubDate>Wed, 21 Oct 2026 11:50:13 +0000</pubDate>
+      <sparkle:version>2</sparkle:version>
+      <sparkle:shortVersionString>0.9.0</sparkle:shortVersionString>
+      <sparkle:minimumSystemVersion>14.0</sparkle:minimumSystemVersion>
+      <link>https://github.com/featherview/featherview/releases/tag/v0.9.0</link>
+      <description><![CDATA[<ul><li>Flip through every image in a folder with the arrow keys; images open instantly.</li><li>Opens JPEG, PNG, HEIC, AVIF, JPEG XL, WebP, RAW and many more, plus SVG and PDF pages.</li><li>Reads layered files from Photoshop, GIMP, Krita, Paint.NET and others as a flattened image.</li><li>Batch convert and rename with crop, resize, rotate, colour, filters, text and watermark steps, live preview and presets.</li><li>Save As and batch output to JPEG, PNG, HEIC, AVIF, WebP, TIFF, PDF and more.</li><li>Finder thumbnails and Quick Look previews for formats macOS can't show itself.</li><li>Lossless rotation, an EXIF info panel, and delete that moves files to the Trash.</li><li>Available in 30 languages, including right-to-left layout; tells you when a new version is out.</li></ul>]]></description>
+      <enclosure url="https://github.com/featherview/featherview/releases/download/v0.9.0/Featherview-0.9.0.dmg"
+                 length="5148568" type="application/x-apple-diskimage"/>
+    </item>
+  </channel>
+</rss>
