@@ -4,6 +4,17 @@
     <title>Featherview</title>
     <link>https://featherview.mynetx.net/</link>
     <item>
+      <title>Featherview 0.10.0</title>
+      <pubDate>Sat, 24 Oct 2026 17:28:14 +0000</pubDate>
+      <sparkle:version>3</sparkle:version>
+      <sparkle:shortVersionString>0.10.0</sparkle:shortVersionString>
+      <sparkle:minimumSystemVersion>14.0</sparkle:minimumSystemVersion>
+      <link>https://github.com/featherview/featherview/releases/tag/v0.10.0</link>
+      <description><![CDATA[<ul><li>Press <code>T</code> for a thumbnail grid of the folder. Move, copy, Trash, batch and Quick Look work on the selection.</li><li>Compare two images side by side, zoom and pan them in step, and see their difference.</li><li>Play a slideshow in the window or in full screen, and play animated images (<code>G</code> pauses).</li><li>Rename the image from the window title with <code>F2</code>, and refresh the folder with <code>F5</code>. Follow New Files shows images as they arrive.</li><li>Flip with <code>H</code> and <code>V</code>, zoom to width or height with <code>2</code> and <code>3</code>, and sort the folder by name, date or size.</li><li>Save As and batch can write JPEG XL. Batch can also split images into tiles, write every frame or page, and set the date taken.</li><li>Security: a damaged or crafted JPEG XR file can no longer crash Featherview or read memory it shouldn't.</li><li>Plus smaller fixes, among them HDR photos keeping their gain map when saved as HEIC or AVIF, and rotating HEIC photos losslessly.</li></ul>]]></description>
+      <enclosure url="https://github.com/featherview/featherview/releases/download/v0.10.0/Featherview-0.10.0.dmg"
+                 length="17027831" type="application/x-apple-diskimage"/>
+    </item>
+    <item>
       <title>Featherview 0.9.0</title>
       <pubDate>Wed, 21 Oct 2026 11:50:13 +0000</pubDate>
       <sparkle:version>2</sparkle:version>
