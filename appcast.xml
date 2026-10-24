@@ -4,6 +4,17 @@
     <title>Featherview</title>
     <link>https://featherview.mynetx.net/</link>
     <item>
+      <title>Featherview 0.10.1</title>
+      <pubDate>Sat, 24 Oct 2026 22:42:33 +0000</pubDate>
+      <sparkle:version>4</sparkle:version>
+      <sparkle:shortVersionString>0.10.1</sparkle:shortVersionString>
+      <sparkle:minimumSystemVersion>14.0</sparkle:minimumSystemVersion>
+      <link>https://github.com/featherview/featherview/releases/tag/v0.10.1</link>
+      <description><![CDATA[<ul><li>Customized toolbars now survive a relaunch instead of resetting.</li><li>Browsing on a second display stays fast, with images decoded in that screen's colour space.</li><li>The thumbnail grid opens quicker for folders with thousands of files.</li><li>Compare's first Difference view appears almost instantly.</li></ul>]]></description>
+      <enclosure url="https://github.com/featherview/featherview/releases/download/v0.10.1/Featherview-0.10.1.dmg"
+                 length="17053696" type="application/x-apple-diskimage"/>
+    </item>
+    <item>
       <title>Featherview 0.10.0</title>
       <pubDate>Sat, 24 Oct 2026 17:28:14 +0000</pubDate>
       <sparkle:version>3</sparkle:version>
