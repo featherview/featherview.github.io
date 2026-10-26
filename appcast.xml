@@ -4,6 +4,17 @@
     <title>Featherview</title>
     <link>https://featherview.mynetx.net/</link>
     <item>
+      <title>Featherview 0.11.0</title>
+      <pubDate>Mon, 26 Oct 2026 11:38:05 +0000</pubDate>
+      <sparkle:version>5</sparkle:version>
+      <sparkle:shortVersionString>0.11.0</sparkle:shortVersionString>
+      <sparkle:minimumSystemVersion>14.0</sparkle:minimumSystemVersion>
+      <link>https://github.com/featherview/featherview/releases/tag/v0.11.0</link>
+      <description><![CDATA[<ul><li>Featherview now updates itself: it checks for new versions and installs them with your OK.</li><li>The thumbnail grid always fills the window with whole columns; <code>+</code>, <code>−</code> and pinch change the size by one column.</li><li>Right-click a thumbnail for a menu; <code>⌘C</code> and Show in Finder work on the whole selection.</li><li>Drag thumbnails out of the grid into Finder, Mail or other apps as files.</li><li>Plus smaller fixes, among them drags out of the grid no longer being caught by Featherview's own drop targets.</li></ul>]]></description>
+      <enclosure url="https://github.com/featherview/featherview/releases/download/v0.11.0/Featherview-0.11.0.dmg"
+                 sparkle:edSignature="fBHv69MIbEA8ZjfN4sIDegYfncre16QYOQENB2n9yHRgt3GKcIYP062QgZ22cJcallobvIB9qS635t8AVPclAA==" length="17851217" type="application/x-apple-diskimage"/>
+    </item>
+    <item>
       <title>Featherview 0.10.1</title>
       <pubDate>Sat, 24 Oct 2026 22:42:33 +0000</pubDate>
       <sparkle:version>4</sparkle:version>
