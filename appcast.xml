@@ -4,6 +4,17 @@
     <title>Featherview</title>
     <link>https://featherview.mynetx.net/</link>
     <item>
+      <title>Featherview 0.12.0</title>
+      <pubDate>Wed, 28 Oct 2026 22:42:50 +0000</pubDate>
+      <sparkle:version>6</sparkle:version>
+      <sparkle:shortVersionString>0.12.0</sparkle:shortVersionString>
+      <sparkle:minimumSystemVersion>14.0</sparkle:minimumSystemVersion>
+      <link>https://github.com/featherview/featherview/releases/tag/v0.12.0</link>
+      <description><![CDATA[<ul><li>A new info panel shows a histogram with clipping marks, an exposure card and foldable groups for the current picture.</li><li>Geotagged pictures show their place name in the app's language, offline, with Open in Maps.</li><li>Image › All Metadata opens a window with every tag in the file, searchable and fully keyboard-driven.</li><li>The info panel takes the keyboard (Tab, Space, Return, Esc), and VoiceOver reads each row's label and value.</li><li>The histogram handles HDR and 10-bit pictures correctly and never slows browsing.</li><li>Web addresses in About's text sheets are now clickable.</li><li>Plus smaller fixes, among them sturdier handling of odd GPS, XMP and exposure values in the info panel.</li></ul>]]></description>
+      <enclosure url="https://github.com/featherview/featherview/releases/download/v0.12.0/Featherview-0.12.0.dmg"
+                 sparkle:edSignature="tmGdBHSKxEdC7n992XEjENG0Z7/j8BA1VHxq1V81KrURnCQh7D6H53L2WkYJhY2wN9xVFAzkzqorHoCtBPBfBg==" length="24009127" type="application/x-apple-diskimage"/>
+    </item>
+    <item>
       <title>Featherview 0.11.0</title>
       <pubDate>Mon, 26 Oct 2026 11:38:05 +0000</pubDate>
       <sparkle:version>5</sparkle:version>
