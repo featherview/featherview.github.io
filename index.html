@@ -38,7 +38,10 @@
     --v-sep:rgba(255,255,255,.14); --v-ssep:rgba(255,255,255,.16); --v-rsep:rgba(255,255,255,.10);
     --v-hover:rgba(255,255,255,.08); --v-press:rgba(255,255,255,.14); --v-pill:rgba(255,255,255,.12);
     --v-badge:rgba(255,255,255,.08); --v-badgeline:rgba(255,255,255,.12); --v-card:rgba(255,255,255,.04); --v-cardline:rgba(255,255,255,.06);
-    --v-accent:#ff7a59;
+    --v-accent:#ff7a59; --v-title:rgba(255,255,255,.90);
+    /* info panel: exposure tiles, chips, small buttons, clip mark with nothing clipped */
+    --v-tile:rgba(255,255,255,.06); --v-chip:rgba(255,255,255,.06); --v-chipline:rgba(255,255,255,.10);
+    --v-keycap:rgba(255,255,255,.07); --v-clipoff:rgba(255,255,255,.45);
     --v-e2:0 1px 2px rgba(0,0,0,.20), 0 6px 16px rgba(0,0,0,.30); --v-e3:0 2px 4px rgba(0,0,0,.22), 0 12px 32px rgba(0,0,0,.34);
     --v-e3f:drop-shadow(0 2px 2px rgba(0,0,0,.22)) drop-shadow(0 12px 16px rgba(0,0,0,.34)); /* E3 for the turnable picture (CSS blur / 2) */
     --v-e5:0 8px 16px rgba(0,0,0,.28), 0 32px 72px rgba(0,0,0,.45);
@@ -58,7 +61,9 @@
       --v-sep:rgba(0,0,0,.12); --v-ssep:rgba(0,0,0,.12); --v-rsep:rgba(0,0,0,.08);
       --v-hover:rgba(0,0,0,.05); --v-press:rgba(0,0,0,.09); --v-pill:rgba(0,0,0,.08);
       --v-badge:rgba(0,0,0,.08); --v-badgeline:rgba(0,0,0,.12); --v-card:rgba(0,0,0,.04); --v-cardline:rgba(0,0,0,.06);
-      --v-accent:#b8552b;
+      --v-accent:#b8552b; --v-title:rgba(0,0,0,.90);
+      --v-tile:rgba(0,0,0,.05); --v-chip:rgba(0,0,0,.04); --v-chipline:rgba(0,0,0,.10);
+      --v-keycap:rgba(0,0,0,.05); --v-clipoff:rgba(0,0,0,.45);
       --v-e2:0 1px 2px rgba(0,0,0,.06), 0 6px 16px rgba(0,0,0,.10); --v-e3:0 2px 4px rgba(0,0,0,.07), 0 12px 32px rgba(0,0,0,.14);
       --v-e3f:drop-shadow(0 2px 2px rgba(0,0,0,.07)) drop-shadow(0 12px 16px rgba(0,0,0,.14));
       --v-e5:0 8px 16px rgba(0,0,0,.10), 0 32px 72px rgba(0,0,0,.22); }
@@ -184,22 +189,79 @@
   .strip span + span { display:flex; align-items:center; gap:12px; }
   .strip span + span::before { content:""; width:1px; height:12px; background:var(--v-ssep); }
   .info { position:absolute; z-index:4; top:60px; bottom:44px; inset-inline-end:12px; width:280px; border-radius:16px; padding:16px;
-    display:flex; flex-direction:column; gap:12px; background:var(--v-panel);
+    display:flex; flex-direction:column; gap:10px; overflow-y:auto; overscroll-behavior:contain; scrollbar-width:thin; background:var(--v-panel);
     -webkit-backdrop-filter:blur(40px) saturate(1.8); backdrop-filter:blur(40px) saturate(1.8); box-shadow:inset 0 1px 0 var(--v-hl), inset 0 0 0 1px var(--v-hair), var(--v-e3);
     transform:translateX(24px); opacity:0; visibility:hidden; transition:transform .18s ease-in-out, opacity .18s linear, visibility .18s; }
   [dir="rtl"] .info { transform:translateX(-24px); }
   .info.open { transform:none; opacity:1; visibility:visible; }
   /* an open panel takes its space: the picture refits beside it and the strip ends 16 before it (12 + 280 + 16) */
   .win:has(.info.open) .fit, .win:has(.info.open) .strip { inset-inline-end:308px; }
-  .ihead { flex:none; display:flex; align-items:center; gap:12px; height:24px; padding:0 4px; }
-  .ihead b { flex:1; min-width:0; font-weight:600; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
-  .ihead span { font:500 11px/14px var(--font); padding:1px 5px; border-radius:4px; color:var(--v-fg2); background:var(--v-badge); box-shadow:inset 0 0 0 1px var(--v-badgeline); }
-  .info dl { margin:0; min-height:0; overflow:auto; border-radius:10px; background:var(--v-card); box-shadow:inset 0 0 0 1px var(--v-cardline); }
-  .info dl div { display:flex; justify-content:space-between; align-items:center; gap:12px; min-height:40px; padding:0 12px; }
-  .info dl div + div { background:linear-gradient(var(--v-rsep), var(--v-rsep)) no-repeat 12px 0 / calc(100% - 12px) 1px; }
-  [dir="rtl"] .info dl div + div { background-position:0 0; }
-  .info dt { white-space:nowrap; } .info dd { margin:0; color:var(--v-fg2); font-variant-numeric:tabular-nums; text-align:end;
-    overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+  /* info panel, design B2-1b-2 (the app's docs/DESIGN.md "Info panel") */
+  .info > * { flex:none; }
+  :where(.info button) { all:unset; box-sizing:border-box; cursor:pointer; }
+  .info .ic { width:14px; height:14px; flex:none; fill:none; stroke:currentColor; stroke-width:1.5; stroke-linecap:round; stroke-linejoin:round; color:var(--v-accent); }
+  /* the focus ring: the accent at half opacity, 2 outside by 1, only when the keyboard moved the focus */
+  .info :focus-visible { outline:none; }
+  .info.kb :focus { outline:2px solid color-mix(in srgb, var(--v-accent) 50%, transparent); outline-offset:1px; }
+  .ihead { display:grid; gap:2px; padding:0 4px; }
+  .ihead b { font-weight:600; color:var(--v-title); overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+  .ihead small, .ihead p { font-size:11px; line-height:14px; font-variant-numeric:tabular-nums; }
+  .ihead small { color:var(--v-fg2); }
+  .ihead p { margin:3px 0 0; display:flex; gap:4px; color:var(--v-fg); }
+  .ihead p .ic { width:11px; height:14px; }
+  .hhead { display:flex; align-items:center; justify-content:space-between; padding:0 4px; margin-bottom:4px; font:600 11px/14px var(--font); color:var(--v-fg2); }
+  .mode { display:flex; gap:2px; padding:2px; border-radius:6px; background:var(--v-card); }
+  .mode span { font:500 10px/13px var(--font); padding:2px 7px; border-radius:5px; color:var(--v-fg2); }
+  .mode span.on { background:var(--v-pill); color:var(--v-accent); }
+  /* the plot never mirrors: shadows stay on the left */
+  .plot { position:relative; height:60px; border-radius:6px; direction:ltr; background:var(--v-card); box-shadow:inset 0 0 0 1px var(--v-cardline); }
+  .plot svg { position:absolute; inset:0; width:100%; height:100%; overflow:visible; }
+  .plot path { fill:none; vector-effect:non-scaling-stroke; }
+  .plot .grid { stroke:var(--v-rsep); }
+  .curves { transform-origin:50% 100%; }
+  .curves.rising { transition:transform .24s ease-out; } /* a histogram arriving with the panel open rises from the baseline */
+  #h-fill { fill:color-mix(in srgb, var(--v-accent) 14%, transparent); }
+  #h-lum { stroke:var(--v-accent); stroke-width:1.5; stroke-linejoin:round; }
+  .ch { stroke-width:1; } #h-r { stroke:rgba(255,105,105,.85); } #h-g { stroke:rgba(110,225,140,.85); } #h-b { stroke:rgba(120,170,255,.9); }
+  .clip { position:absolute; bottom:0; left:0; padding:3px; border-radius:4px; line-height:0; }
+  .clip + .clip { left:auto; right:0; }
+  .clip svg { position:static; width:11px; height:10px; }
+  .clip path { stroke:var(--v-clipoff); stroke-width:1.2; stroke-linejoin:round; vector-effect:none; }
+  .clip.on path { fill:var(--v-accent); stroke:var(--v-accent); }
+  .bubble { position:absolute; top:4px; left:4px; padding:1px 5px; border-radius:4px; font-size:11px; line-height:14px; font-variant-numeric:tabular-nums;
+    color:var(--v-fg); background:var(--v-bg); box-shadow:inset 0 0 0 1px var(--v-chipline); pointer-events:none; white-space:nowrap; }
+  .bubble.end { left:auto; right:4px; }
+  .grp { border-radius:10px; background:var(--v-card); box-shadow:inset 0 0 0 1px var(--v-cardline); }
+  .grp > button { width:100%; min-height:36px; padding:0 12px; display:flex; align-items:center; gap:7px; border-radius:10px; font-size:12px; }
+  .grp > button b { font-weight:600; color:var(--v-title); white-space:nowrap; }
+  .grp > button span { flex:1; min-width:0; text-align:end; color:var(--v-fg2); font-variant-numeric:tabular-nums; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+  .grp > button .chev { width:10px; height:10px; color:var(--v-fg2); stroke-width:2; }
+  .grp.open > button span { visibility:hidden; }
+  .grp.open > button .chev { transform:rotate(90deg); }
+  /* opening and closing a group: 180 ms ease-in-out, a cut with Reduce Motion */
+  .gbody { display:grid; grid-template-rows:0fr; transition:grid-template-rows .18s ease-in-out; }
+  .gbody > div { min-height:0; overflow:hidden; visibility:hidden; transition:visibility 0s .18s; }
+  .grp.open .gbody { grid-template-rows:1fr; }
+  .grp.open .gbody > div { visibility:visible; transition-delay:0s; }
+  .ir { display:flex; justify-content:space-between; align-items:center; gap:12px; min-height:32px; padding:0 12px; border-top:1px solid var(--v-rsep); font-size:12px; }
+  .ir > span { color:var(--v-fg2); white-space:nowrap; }
+  .ir > b { min-width:0; font-weight:400; text-align:end; font-variant-numeric:tabular-nums; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+  .ir.btns { justify-content:flex-end; }
+  .pl { padding:0 12px 9px; font:600 13px/16px var(--font); }
+  .expo { display:grid; gap:8px; padding:2px 8px 10px; }
+  .tiles { display:flex; gap:4px; }
+  .tiles div { flex:1; min-width:0; display:grid; gap:1px; justify-items:center; padding:6px 2px 5px; border-radius:8px; background:var(--v-tile); }
+  .tiles b { font:600 14px/17px var(--font); font-variant-numeric:tabular-nums; white-space:nowrap; }
+  .tiles small { display:flex; align-items:center; gap:3px; font-size:10px; line-height:12px; color:var(--v-fg2); white-space:nowrap; }
+  .tiles .ic, .chips .ic { width:10px; height:10px; }
+  .chips { display:flex; flex-wrap:wrap; gap:5px; }
+  .chips span { display:flex; align-items:center; gap:4px; padding:3px 8px; border-radius:999px; font-size:11px; line-height:14px;
+    background:var(--v-chip); box-shadow:inset 0 0 0 1px var(--v-chipline); }
+  .sb { display:inline-flex; align-items:center; gap:5px; height:22px; padding:0 10px; border-radius:6px; font:500 12px/1 var(--font);
+    background:var(--v-keycap); box-shadow:inset 0 0 0 1px var(--v-badgeline); }
+  .sb .ic { color:inherit; width:12px; height:12px; }
+  .info > .sb { align-self:flex-start; }
+  #groups { display:grid; gap:10px; }
   .toast { position:absolute; z-index:6; left:50%; bottom:46px; transform:translateX(-50%); padding:7px 14px; border-radius:999px;
     font-size:12.5px; opacity:0; transition:opacity .2s; pointer-events:none; white-space:nowrap; max-width:calc(100% - 24px);
     overflow:hidden; text-overflow:ellipsis; }
@@ -377,6 +439,22 @@
     <symbol id="i-fit" viewBox="0 0 16 16"><circle cx="7" cy="7" r="4.6"/><path d="M10.4 10.4 14 14M5 9l4-4M5 6.4V5h1.4M9 7.6V9H7.6"/></symbol>
     <symbol id="i-zin" viewBox="0 0 16 16"><circle cx="7" cy="7" r="4.6"/><path d="M10.4 10.4 14 14M5 7h4M7 5v4"/></symbol>
     <symbol id="i-info" viewBox="0 0 16 16"><circle cx="8" cy="8" r="6.2"/><path d="M8 7.3V11M8 5v.3"/></symbol>
+    <!-- info panel glyphs -->
+    <symbol id="g-camera" viewBox="0 0 16 16"><path d="M2.5 5.5h2.2l1.2-1.8h4.2l1.2 1.8h2.2v7h-11z"/><circle cx="8" cy="9" r="2.2"/></symbol>
+    <symbol id="g-image" viewBox="0 0 16 16"><rect x="2.5" y="3.5" width="11" height="9" rx="1.5"/><path d="m2.5 11 3.3-3.3 2.9 2.9 1.8-1.8 3 3"/></symbol>
+    <symbol id="g-location" viewBox="0 0 16 16"><path d="M8 2.3a3 3 0 0 1 3 3c0 2.2-3 5.2-3 5.2S5 7.5 5 5.3a3 3 0 0 1 3-3z"/><path d="M5.2 10.6c-1.7.3-2.7.8-2.7 1.4 0 .9 2.5 1.6 5.5 1.6s5.5-.7 5.5-1.6c0-.6-1-1.1-2.7-1.4"/></symbol>
+    <symbol id="g-description" viewBox="0 0 16 16"><path d="M3 4h10M3 7h7M3 10h10M3 13h6"/></symbol>
+    <symbol id="g-file" viewBox="0 0 16 16"><path d="M4 2.5h5l3 3v8H4z"/><path d="M9 2.5v3h3"/></symbol>
+    <symbol id="g-pin" viewBox="0 0 11 14"><path d="M5.5 1a3.5 3.5 0 0 1 3.5 3.5c0 2.4-3.5 5.5-3.5 5.5S2 6.9 2 4.5A3.5 3.5 0 0 1 5.5 1z" fill="currentColor"/><path d="M5.5 10v3.2"/></symbol>
+    <symbol id="g-timer" viewBox="0 0 16 16"><circle cx="8" cy="9" r="5"/><path d="M8 9V6.5M6.5 2.5h3"/></symbol>
+    <symbol id="g-lens" viewBox="0 0 16 16"><circle cx="8" cy="8" r="5.6"/><circle cx="8" cy="8" r="2.6"/></symbol>
+    <symbol id="g-bias" viewBox="0 0 16 16"><path d="M8 2.5v6M5 5.5h6M5 12.5h6"/></symbol>
+    <symbol id="g-flash" viewBox="0 0 16 16"><path d="M9 1.5 4 9h4l-1 5.5L12 7H8z"/></symbol>
+    <symbol id="g-wb" viewBox="0 0 16 16"><circle cx="8" cy="8" r="2.6"/><path d="M8 1.8v1.6M8 12.6v1.6M1.8 8h1.6M12.6 8h1.6M3.6 3.6l1.1 1.1M11.3 11.3l1.1 1.1M3.6 12.4l1.1-1.1M11.3 4.7l1.1-1.1"/></symbol>
+    <symbol id="g-meter" viewBox="0 0 16 16"><rect x="2.5" y="3.5" width="11" height="9" rx="1.5"/><circle cx="8" cy="8" r="2"/></symbol>
+    <symbol id="g-map" viewBox="0 0 16 16"><path d="M2.5 4.5 6 3l4 1.5 3.5-1.5v8.5L10 13l-4-1.5-3.5 1.5z"/><path d="M6 3v8.5M10 4.5V13"/></symbol>
+    <symbol id="g-folder" viewBox="0 0 16 16"><path d="M2.5 4.5a1 1 0 0 1 1-1h3l1.5 1.5h4.5a1 1 0 0 1 1 1v6a1 1 0 0 1-1 1h-9a1 1 0 0 1-1-1z"/></symbol>
+    <symbol id="g-list" viewBox="0 0 16 16"><rect x="2.5" y="3" width="11" height="10" rx="1.5"/><path d="M5 6h.01M7 6h4M5 8h.01M7 8h4M5 10h.01M7 10h4"/></symbol>
     <symbol id="i-trash" viewBox="0 0 16 16"><path d="M2.8 4.5h10.4M6.4 4.5V3h3.2v1.5M4.2 4.5l.6 8.4a1 1 0 0 0 1 .9h4.4a1 1 0 0 0 1-.9l.6-8.4M6.8 7.2v4M9.2 7.2v4"/></symbol>
   </defs>
 </svg>
@@ -409,7 +487,20 @@
           <div class="wtitle" aria-live="polite"><b id="title"></b><span id="count"></span></div>
           <div class="seg glass"><button data-k="l" aria-label="Rotate left" title="Rotate left (L)"><svg><use href="#i-rotl"/></svg></button><button data-k="r" aria-label="Rotate right" title="Rotate right (R)"><svg><use href="#i-rotr"/></svg></button><hr><button data-k="-" aria-label="Zoom out" title="Zoom out (−)"><svg><use href="#i-zout"/></svg></button><button data-k="0" aria-label="Zoom to fit" title="Zoom to fit (0)"><svg><use href="#i-fit"/></svg></button><button data-k="+" aria-label="Zoom in" title="Zoom in (+)"><svg><use href="#i-zin"/></svg></button><hr><button data-k="i" id="infobtn" aria-label="Info" aria-pressed="false" title="Show info (I)"><svg><use href="#i-info"/></svg></button><button data-k="Delete" aria-label="Move to Trash" title="Move to Trash (⌦)"><svg><use href="#i-trash"/></svg></button></div>
         </div>
-        <aside class="info" id="info" aria-label="Image info"><div class="ihead"><b id="i-name"></b><span>JPEG</span></div><dl id="exif"></dl></aside>
+        <aside class="info" id="info" aria-label="Info">
+          <div class="ihead" id="ihead"></div>
+          <div>
+            <div class="hhead"><span>Histogram</span><button class="mode" id="mode" aria-label="Histogram mode: Luminance"><span data-m="lum" class="on">Luminance</span><span data-m="rgb">RGB</span></button></div>
+            <div class="plot" id="plot" role="img" aria-label="Luminance histogram">
+              <svg viewBox="0 0 255 60" preserveAspectRatio="none" aria-hidden="true"><path class="grid" d="M63.75 0V60M127.5 0V60M191.25 0V60"/></svg>
+              <svg class="curves" id="curves" viewBox="0 0 255 60" preserveAspectRatio="none" aria-hidden="true"><g id="h-rgb" display="none"><path class="ch" id="h-r"/><path class="ch" id="h-g"/><path class="ch" id="h-b"/></g><path id="h-fill"/><path id="h-lum"/></svg>
+              <button class="clip" data-c="0" aria-label="Shadows clipping"><svg viewBox="0 0 11 10" aria-hidden="true"><path d="M.7 9.3 5.5.8l4.8 8.5z"/></svg></button><button class="clip" data-c="1" aria-label="Highlights clipping"><svg viewBox="0 0 11 10" aria-hidden="true"><path d="M.7 9.3 5.5.8l4.8 8.5z"/></svg></button>
+              <span class="bubble" id="bubble" hidden></span>
+            </div>
+          </div>
+          <div id="groups"></div>
+          <button class="sb" data-say="The app lists every tag in a window of its own."><svg class="ic"><use href="#g-list"/></svg>Show all metadata…</button>
+        </aside>
         <div class="strip glass" aria-hidden="true"><span id="s-size"></span><span id="s-zoom"></span><span id="s-bytes" class="opt-wide"></span><span id="s-pos"></span><span id="s-date" class="opt-wide"></span></div>
         <div class="toast glass" id="toast" role="status"></div>
       </div>
@@ -456,7 +547,7 @@
       <div class="card"><div class="ico"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3 4 6v6c0 5 3.5 8 8 9 4.5-1 8-4 8-9V6z"/></svg></div>
         <h3>Hard to break</h3><p>Delete goes to the Trash. Batch output never overwrites. One broken file never stops the show.</p></div>
       <div class="card"><div class="ico"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 11v6M12 7.5h.01"/></svg></div>
-        <h3>Nosy, on request</h3><p>Press I to see the camera, lens, exposure and when the shot was taken.</p></div>
+        <h3>Nosy, on request</h3><p>Press I for the histogram, the camera and exposure, and where and when the shot was taken.</p></div>
       <div class="card"><div class="ico"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="4" width="18" height="13" rx="2"/><path d="M8 21h8M12 17v4"/></svg></div>
         <h3>Mac to the core</h3><p>Real Mac menus, full screen, Open With, drag and drop, true colours, and HDR that glows on HDR screens.</p></div>
     </div>
@@ -585,7 +676,10 @@
 <script>
 // Demo photos are random landscapes drawn as SVG, seeded by image number so going back shows the same one.
 const $ = id => document.getElementById(id);
-const cams = [["iPhone 16 Pro","24 mm f/1.78"],["Fujifilm X-T5","16 mm f/2.8"],["Sony A7 IV","35 mm f/1.4"],["Canon R6","50 mm f/1.8"],["Nikon Z6 II","85 mm f/1.8"],["Ricoh GR III","18 mm f/2.8"]];
+// camera, lens, focal length, aperture, 35 mm equivalent (when it differs), colour profile
+const cams = [["iPhone 16 Pro","Back camera 6.8 mm f/1.78","6.8","1.78","24 mm","Display P3"],["Fujifilm X-T5","16 mm f/2.8","16","2.8","24 mm","sRGB IEC61966-2.1"],
+  ["Sony A7 IV","35 mm f/1.4","35","1.4",null,"sRGB IEC61966-2.1"],["Canon R6","50 mm f/1.8","50","1.8",null,"Adobe RGB (1998)"],
+  ["Nikon Z6 II","85 mm f/1.8","85","1.8",null,"sRGB IEC61966-2.1"],["Ricoh GR III","18.3 mm f/2.8","18.3","2.8","28 mm","sRGB IEC61966-2.1"]];
 const sizes = [[6000, 4000], [6240, 4160], [4032, 2688], [7728, 5152]];
 const months = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
 function rng(seed) { return () => { seed = (seed + 0x6d2b79f5) | 0; let t = Math.imul(seed ^ seed >>> 15, 1 | seed); t ^= t + Math.imul(t ^ t >>> 7, 61 | t); return ((t ^ t >>> 14) >>> 0) / 4294967296; }; }
@@ -606,12 +700,12 @@ function scene(seed, id) {
     out += `<path d="M0 200 L${pts.join(" L")} L300 200Z" fill="hsl(${hh} ${sat}% ${l}%)"/>`;
   }
   if (water) out += `<rect y="160" width="300" height="40" fill="url(#${g})" opacity=".85"/><rect y="160" width="300" height="1" fill="#fff" opacity=".25"/>`;
-  const [cam, lens] = pick(cams), [w, hgt] = pick(sizes);
+  const cam = pick(cams), [w, hgt] = pick(sizes);
   const d = 1 + Math.floor(r() * 28), mo = Math.floor(r() * 9), hr = night ? 21 + Math.floor(r() * 3) : 7 + Math.floor(r() * 11), mi = Math.floor(r() * 60);
   return { svg: `<svg viewBox="0 0 300 200" preserveAspectRatio="xMidYMid slice" aria-hidden="true"><defs><linearGradient id="${g}" x2="0" y2="1"><stop stop-color="${sky[0]}"/><stop offset="1" stop-color="${sky[1]}"/></linearGradient></defs>${out}</svg>`,
-    cam, lens, w, h: hgt, mb: (w * hgt / 1e6 * (.32 + r() * .2)).toFixed(1),
-    date: `${d} ${months[mo]} 2026, ${String(hr).padStart(2, "0")}:${String(mi).padStart(2, "0")}`,
-    exp: night ? pick(["4 s", "8 s", "15 s"]) : pick(["1/125 s", "1/250 s", "1/500 s", "1/1000 s"]), iso: night ? pick(["800", "1600", "3200"]) : pick(["64", "100", "200"]) };
+    cam, night, w, h: hgt, mb: (w * hgt / 1e6 * (.32 + r() * .2)).toFixed(1),
+    date: `${d} ${months[mo]} 2026, ${String(hr).padStart(2, "0")}:${String(mi).padStart(2, "0")}`, day: `${d} ${months[mo]} 2026`,
+    exp: night ? pick(["4", "8", "15"]) : pick(["1/125", "1/250", "1/500", "1/1000"]), iso: night ? pick(["800", "1600", "3200"]) : pick(["64", "100", "200"]) };
 }
 
 const win = $("win"), photo = $("photo"), fit = photo.parentElement;
@@ -631,13 +725,139 @@ function show() { // browsing is instant: no transition between images
   cur = scene(n * 1009 + gone, "m");
   photo.innerHTML = cur.svg; rot = 0; zoom = 1; px = py = 0;
   photo.style.transition = "none"; layout(); photo.offsetWidth; photo.style.transition = "";
-  $("title").textContent = $("i-name").textContent = `IMG_${2000 + n}.jpg`; $("count").textContent = `— ${n} / ${total}`;
+  $("title").textContent = `IMG_${2000 + n}.jpg`; $("count").textContent = `— ${n} / ${total}`;
   $("s-size").textContent = `${cur.w} × ${cur.h}`; $("s-bytes").textContent = `${cur.mb} MB`;
   $("s-pos").textContent = `${n} / ${total}`; $("s-date").textContent = cur.date;
-  const [focal, aperture] = cur.lens.split(" f/");
-  $("exif").innerHTML = [["Dimensions", `${cur.w} × ${cur.h}`], ["File size", `${cur.mb} MB`], ["Camera", cur.cam], ["Taken", cur.date],
-    ["Exposure", cur.exp], ["Aperture", `f/${aperture}`], ["ISO", cur.iso], ["Focal length", focal]]
-    .map(([a, b]) => `<div><dt>${a}</dt><dd>${b}</dd></div>`).join("");
+  infoShow();
+}
+// Info panel (I), as in the app: header with the place, a histogram counted from the picture on screen, then groups that
+// stay open or closed from image to image. Places and camera details are made up per image, from the same seed.
+const places = [ // header, Location's full name, latitude, longitude, altitude (none at sea)
+  ["Andermatt, Switzerland", "near Andermatt, Uri, Switzerland", 46.6356, 8.5939, 1447],
+  ["Nürnberg-Wetzendorf, Germany", "near Nürnberg-Wetzendorf, Bavaria, Germany", 49.4712, 11.0517, 309],
+  ["Hallstatt, Austria", "near Hallstatt, Upper Austria, Austria", 47.5622, 13.6493, 511],
+  ["Tromsø, Norway", "near Tromsø, Troms, Norway", 69.6489, 18.9551, 14],
+  ["Portree, United Kingdom", "near Portree, Scotland, United Kingdom", 57.4129, -6.1942, 41],
+  ["Banff, Canada", "near Banff, Alberta, Canada", 51.1784, -115.5708, 1383],
+  ["North Atlantic, off Gambia", "North Atlantic Ocean, off Banjul, Gambia", 13.3412, -17.2954, null],
+  ["Sahara, near Algeria", "Sahara, near Algeria", 24.5583, 9.4846, 1094],
+];
+const info = $("info"), plot = $("plot"), curves = $("curves"), bubble = $("bubble");
+const panel = { open: new Set(["camera", "location"]), rgb: false, since: 0, hist: null, token: 0, clip: -1 };
+const num = x => x.toLocaleString("en-US");
+const ic = (g, cls = "ic") => `<svg class="${cls}" aria-hidden="true"><use href="#g-${g}"/></svg>`;
+const infoOpen = () => info.classList.contains("open");
+function details(seed) {
+  const r = rng(seed ^ 0x51ed), pick = a => a[Math.floor(r() * a.length)];
+  return { place: r() < .8 ? pick(places) : null, bias: pick(["−0.7 EV", "−0.3 EV", "+0.3 EV", null, null]),
+    flash: "No flash", wb: cur.night ? "Auto" : pick(["Auto", "Daylight", "Cloudy"]), meter: pick(["Multi-segment", "Centre-weighted", "Spot"]),
+    rating: r() < .45 ? 2 + Math.floor(r() * 4) : 0, keywords: pick(["mountains, dusk", "lake, hiking", "coast, trip", "night sky, stars"]),
+    folder: pick(["~/Pictures/Hiking 2026", "~/Pictures/Coast", "~/Desktop/Trip"]), edited: 1 + Math.floor(r() * 3) };
+}
+function infoShow() {
+  const [model, lens, focal, aperture, eq, profile] = cur.cam, d = details(n * 1009 + gone), p = d.place, name = `IMG_${2000 + n}.jpg`;
+  const ll = (v, a, b) => `${Math.abs(v).toFixed(4)}° ${v < 0 ? b : a}`;
+  const row = (k, v) => v ? `<div class="ir"><span>${k}</span><b title="${v}">${v}</b></div>` : "";
+  const btn = (g, label, say) => `<div class="ir btns"><button class="sb" data-say="${say}">${ic(g)}${label}</button></div>`;
+  const stars = d.rating && "★".repeat(d.rating) + "☆".repeat(5 - d.rating);
+  $("ihead").innerHTML = `<b title="${name}">${name}</b><small>JPEG · ${num(cur.w)} × ${num(cur.h)} · ${cur.mb} MB</small>` +
+    (p ? `<p>${ic("pin")}${p[0]}</p>` : "");
+  const groups = [
+    ["camera", "Camera", model, `<div class="expo"><div class="tiles">
+      <div><b>${cur.exp}</b><small>${ic("timer")}sec</small></div><div><b>${aperture}</b><small>ƒ stop</small></div>
+      <div><b>${cur.iso}</b><small>ISO speed</small></div><div${eq ? ` title="${eq} equivalent"` : ""}><b>${focal}</b><small>${ic("lens")}mm</small></div></div>
+      <div class="chips">${[["bias", d.bias], ["flash", d.flash], ["wb", d.wb], ["meter", d.meter]].filter(c => c[1]).map(([g, t]) => `<span>${ic(g)}${t}</span>`).join("")}</div></div>` +
+      row("Lens", lens) + row("35 mm equivalent", eq) + row("Taken", cur.date)],
+    ["image", "Image", `${profile.startsWith("sRGB") ? "sRGB" : profile.replace("Display ", "").replace(" (1998)", "")} · 8-bit`,
+      row("Dimensions", `${num(cur.w)} × ${num(cur.h)} · ${(cur.w * cur.h / 1e6).toFixed(1)} MP`) + row("Colour profile", profile) + row("Bit depth", "8 bits per channel")],
+    p && ["location", "Location", p[4] == null ? "" : `${num(p[4])} m`, `<div class="pl">${p[1]}</div>` + row("Latitude", ll(p[2], "N", "S")) +
+      row("Longitude", ll(p[3], "E", "W")) + row("Altitude", p[4] == null ? "" : `${num(p[4])} m`) + btn("map", "Open in Maps", "Maps would open at this spot. Nothing loads before the click.")],
+    stars && ["description", "Description", stars, row("Keywords", d.keywords) + row("Rating", stars)],
+    ["file", "File", `${cur.day}, 18:${String(10 + d.edited * 7)}`, row("Folder", d.folder) + row("Modified", `${cur.day}, 18:${String(10 + d.edited * 7)}`) +
+      row("Created", cur.date) + btn("folder", "Show in Finder", `Finder would show ${name}.`)],
+  ].filter(Boolean);
+  // the focused control stays focused when the next image has it, else the focus moves on to the next one
+  const a = document.activeElement, g = info.contains(a) && a.closest(".grp"), had = g && [g.dataset.g, stops().indexOf(a), a.matches(".sb")];
+  $("groups").innerHTML = groups.map(([id, title, summary, body]) => `<div class="grp${panel.open.has(id) ? " open" : ""}" data-g="${id}">
+    <button aria-expanded="${panel.open.has(id)}">${ic(id)}<b>${title}</b><span>${summary}</span>${ic("next", "ic chev")}</button>
+    <div class="gbody"><div>${body}</div></div></div>`).join("");
+  if (had) (info.querySelector(`[data-g="${had[0]}"] ${had[2] ? ".sb" : "> button"}`) || stops()[had[1]] || $("mode")).focus({ preventScroll: true });
+  // the next picture's histogram rises from the baseline once counted, unless the panel is only just opening
+  panel.hist = null; drawHist();
+  if (!infoOpen()) return;
+  if (!calm.matches && performance.now() - panel.since > 180) { curves.classList.remove("rising"); curves.style.transform = "scaleY(0)"; }
+  count(cur.svg);
+}
+// Counts 256 levels per channel from the picture as drawn, at 150 × 100 (as the app counts the screen-size decode).
+const hc = document.createElement("canvas"); hc.width = 150; hc.height = 100;
+const hx = hc.getContext("2d", { willReadFrequently: true });
+function count(svg) {
+  const img = new Image(), t = ++panel.token;
+  img.src = "data:image/svg+xml," + encodeURIComponent(svg.replace("<svg ", '<svg xmlns="http://www.w3.org/2000/svg" width="300" height="200" '));
+  img.decode().then(() => {
+    if (t !== panel.token) return; // a newer picture came first
+    hx.drawImage(img, 0, 0, 150, 100);
+    const px = hx.getImageData(0, 0, 150, 100).data, bins = [0, 1, 2, 3].map(() => new Float32Array(256));
+    for (let i = 0; i < px.length; i += 4) {
+      bins[0][Math.round(.2126 * px[i] + .7152 * px[i + 1] + .0722 * px[i + 2])]++; // Rec. 709 luminance
+      bins[1][px[i]]++; bins[2][px[i + 1]]++; bins[3][px[i + 2]]++;
+    }
+    const all = px.length / 4, top = Math.max(...bins[0]);
+    panel.hist = { bins: bins.map(b => b.map(v => v / top)), clip: [bins[0][0] / all, bins[0][255] / all] };
+    drawHist();
+    if (curves.style.transform) { curves.getBoundingClientRect(); curves.classList.add("rising"); curves.style.transform = ""; }
+  }).catch(() => {}); // a browser that won't draw it shows the plot empty
+}
+const clipText = (i, f) => `${i ? "Highlights" : "Shadows"}: ${(f * 100).toFixed(1)} % clipped`;
+function drawHist() {
+  const h = panel.hist, line = b => Array.from(b, (v, i) => `${i ? "L" : "M"}${i} ${(60 * (1 - Math.min(1, v))).toFixed(1)}`).join("");
+  ["h-lum", "h-r", "h-g", "h-b"].forEach((id, i) => $(id).setAttribute("d", h ? line(h.bins[i]) : ""));
+  $("h-fill").setAttribute("d", h ? line(h.bins[0]) + "L255 60L0 60Z" : "");
+  $("h-rgb").setAttribute("display", panel.rgb ? "inline" : "none");
+  info.querySelectorAll(".clip").forEach((c, i) => c.classList.toggle("on", !!h && h.clip[i] > .001));
+  bubble.hidden = !h || panel.clip < 0;
+  if (h && panel.clip >= 0) { bubble.textContent = clipText(panel.clip, h.clip[panel.clip]); bubble.classList.toggle("end", panel.clip === 1); }
+  const clipped = h ? [0, 1].filter(i => h.clip[i] > .001).map(i => clipText(i, h.clip[i])).join(", ") || "nothing clipped" : "";
+  plot.setAttribute("aria-label", `${panel.rgb ? "RGB" : "Luminance"} histogram${clipped && ", " + clipped}`);
+}
+function setMode(rgb) {
+  panel.rgb = rgb; $("mode").setAttribute("aria-label", `Histogram mode: ${rgb ? "RGB" : "Luminance"}`);
+  $("mode").querySelectorAll("span").forEach(s => s.classList.toggle("on", (s.dataset.m === "rgb") === rgb));
+  drawHist();
+}
+function infoToggle() {
+  const open = info.classList.toggle("open");
+  $("infobtn").setAttribute("aria-pressed", open);
+  if (open) { panel.since = performance.now(); curves.classList.remove("rising"); curves.style.transform = ""; count(cur.svg); }
+  else if (info.contains(document.activeElement)) win.focus({ preventScroll: true }); // the focus goes back to the picture
+}
+const stops = () => [...info.querySelectorAll(".mode, .clip, .grp > button, .grp.open .sb, .info > .sb")];
+function keyFocus(el) { // Tab: the ring shows, and the panel scrolls the control into view
+  info.classList.add("kb"); el.focus({ preventScroll: true });
+  const p = info.getBoundingClientRect(), b = el.getBoundingClientRect(), d = b.top < p.top + 16 ? b.top - p.top - 16 : b.bottom > p.bottom - 16 ? b.bottom - p.bottom + 16 : 0;
+  if (d) info.scrollBy({ top: d, behavior: calm.matches ? "auto" : "smooth" });
+}
+info.addEventListener("pointerdown", () => info.classList.remove("kb")); // a click focuses without the ring
+info.addEventListener("click", e => {
+  const b = e.target.closest("button"); if (!b) return;
+  if (b.id === "mode") setMode(e.target.dataset.m ? e.target.dataset.m === "rgb" : !panel.rgb);
+  else if (b.classList.contains("clip")) { panel.clip = panel.clip === +b.dataset.c ? -1 : +b.dataset.c; drawHist(); }
+  else if (b.dataset.say) toast(b.dataset.say, 2000);
+  else { const g = b.parentElement, id = g.dataset.g, on = !panel.open.has(id);
+    on ? panel.open.add(id) : panel.open.delete(id); g.classList.toggle("open", on); b.setAttribute("aria-expanded", on); }
+});
+// Tab from the picture enters the panel, past either end it returns; Esc returns; ← → switch the histogram mode.
+function panelKey(e) {
+  const a = document.activeElement, inside = info.contains(a);
+  if (e.key === "Tab" && infoOpen() && (a === win || inside) && !(a === win && e.shiftKey)) { // ⇧Tab from the picture leaves the demo
+    const list = stops(), next = a === win ? list[0] : list[list.indexOf(a) + (e.shiftKey ? -1 : 1)];
+    next ? keyFocus(next) : win.focus({ preventScroll: true });
+    return true;
+  }
+  if (!inside) return false;
+  if (e.key === "Escape") { win.focus({ preventScroll: true }); return true; }
+  if (a.id === "mode" && (e.key === "ArrowLeft" || e.key === "ArrowRight")) { setMode(!panel.rgb); return true; }
+  return false;
 }
 function toast(msg, ms = 1200) {
   $("toast").textContent = msg; $("toast").classList.add("show");
@@ -665,7 +885,7 @@ const actions = {
   ArrowDown() { larger() ? pan(0, step()) : actions.next(); }, ArrowUp() { larger() ? pan(0, -step()) : actions.prev(); },
   r() { turn(90); }, l() { turn(-90); },
   "+"() { setZoom(zoom * 1.1); }, "-"() { setZoom(zoom / 1.1); }, "1"() { setZoom(100 / fitPct()); }, "0"() { zoom = 1; px = py = 0; layout(); },
-  i() { $("infobtn").setAttribute("aria-pressed", $("info").classList.toggle("open")); },
+  i() { infoToggle(); },
   f() { lights.max(); },
   Escape() { win.classList.contains("max") ? lights.max() : toast("Esc never quits Featherview. Not even here."); },
   "?"() { toast("Try → ← R L + − 0 1 I ⌦", 2200); },
@@ -723,6 +943,7 @@ document.addEventListener("keydown", e => {
   kpos = kk === konami[kpos] ? kpos + 1 : kk === "ArrowUp" ? (kpos === 2 ? 2 : 1) : 0; // ↑↑↑ still counts as the start
   if (kpos === konami.length) { kpos = 0; toast("Cheat code accepted. It was already this fast.", 2600); return; }
   if (win.inert) return; // minimised: the pill restores it
+  if (panelKey(e)) return e.preventDefault();
   const focused = win.contains(document.activeElement);
   if (!focused && (!visible || [" ", "ArrowUp", "ArrowDown", "PageUp", "PageDown", "Home", "End", "Escape", "Enter"].includes(e.key))) return;
   if (document.activeElement.tagName === "BUTTON" && (e.key === " " || e.key === "Enter")) return; // the button's own click handles it
