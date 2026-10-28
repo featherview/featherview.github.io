@@ -260,7 +260,7 @@
   .sb { display:inline-flex; align-items:center; gap:5px; height:22px; padding:0 10px; border-radius:6px; font:500 12px/1 var(--font);
     background:var(--v-keycap); box-shadow:inset 0 0 0 1px var(--v-badgeline); }
   .sb .ic { color:inherit; width:12px; height:12px; }
-  .info > .sb { align-self:flex-start; }
+  .info > .sb { align-self:flex-end; margin-inline-end:12px; } /* trailing, in line with the groups' buttons */
   #groups { display:grid; gap:10px; }
   .toast { position:absolute; z-index:6; left:50%; bottom:46px; transform:translateX(-50%); padding:7px 14px; border-radius:999px;
     font-size:12.5px; opacity:0; transition:opacity .2s; pointer-events:none; white-space:nowrap; max-width:calc(100% - 24px);
