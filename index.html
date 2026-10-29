@@ -91,9 +91,6 @@
   .hero::before { content:""; position:absolute; z-index:-1; pointer-events:none; inset:-160px 0 auto; height:900px;
     background:radial-gradient(46% 300px at 50% 20%, color-mix(in srgb, var(--f2) 18%, transparent), transparent 70%),
                radial-gradient(30% 200px at 72% 8%, color-mix(in srgb, var(--f1) 10%, transparent), transparent 70%); }
-  .pill { display:inline-flex; gap:9px; align-items:center; font-size:13px; color:var(--muted); border:1px solid var(--line);
-    background:color-mix(in srgb, var(--surface) 70%, transparent); border-radius:999px; padding:5px 14px 5px 11px; }
-  .pill i { width:7px; height:7px; border-radius:50%; background:linear-gradient(135deg, var(--f1), var(--f2)); }
   h1 { font-size:clamp(44px, 8.6vw, 96px); line-height:1.02; letter-spacing:-.045em; font-weight:750; margin:24px 0 22px; }
   h1 em { font-style:normal; }
   /* the → in the headline is a real key: it browses the demo */
@@ -109,7 +106,6 @@
   .cta-note { margin:16px auto 0; max-width:620px; font-size:13px; line-height:1.6; color:var(--muted); }
   .cta-note code { font:12px/1 ui-monospace, SFMono-Regular, Menlo, monospace; color:var(--fg); background:var(--key);
     border:1px solid var(--keyline); border-radius:6px; padding:2px 6px; user-select:all; }
-  a.pill { text-decoration:none; } a.pill:hover { color:var(--fg); border-color:var(--muted); }
   .btn { display:inline-flex; align-items:center; gap:8px; padding:12px 20px; border-radius:999px; font-weight:600; font-size:15px;
     text-decoration:none; border:1px solid var(--line); background:var(--surface); }
   .btn.primary { background:var(--fg); color:var(--bg); border-color:transparent; }
@@ -306,8 +302,7 @@
   .jump:hover { text-decoration:underline; text-underline-offset:4px; }
 
   /* keyboard cheat sheet */
-  .sheet { background:var(--surface); border:1px solid var(--line); border-radius:22px; padding:26px 28px; position:relative;
-    box-shadow:0 30px 60px -40px rgba(0,0,0,.5); }
+  .sheet { background:var(--surface); border:1px solid var(--line); border-radius:20px; padding:26px 28px; position:relative; }
   .sheet header { display:flex; justify-content:space-between; gap:12px; align-items:baseline; font:600 12px/1.4 var(--mono); color:var(--muted);
     border-bottom:1px dashed var(--line); padding-bottom:14px; margin-bottom:6px; }
   .sheet header b { color:var(--fg); font-weight:650; }
@@ -469,14 +464,13 @@
 
   <main>
   <header class="hero">
-    <a class="pill" href="https://github.com/featherview/featherview/releases/latest"><i></i>Version 0.12.0 · for macOS Sonoma and later</a>
     <h1>Photos at the <em class="grad">speed&nbsp;of</em>&nbsp;<button class="hk" data-k="ArrowRight" aria-label="Next image in the demo">→</button></h1>
     <p class="lead">Featherview is an image viewer for the Mac that keeps up with your fingers. Open one picture, flip through the whole folder, toss the rejects, batch-convert the keepers.</p>
     <div class="cta">
       <a class="btn primary" href="https://github.com/featherview/featherview/releases/download/v0.12.0/Featherview-0.12.0.dmg">Download 0.12.0</a>
       <a class="btn" href="https://github.com/featherview/featherview">Follow on GitHub</a>
     </div>
-    <p class="cta-note">Free and open source. Not notarized yet: on first launch choose System Settings › Privacy &amp; Security › Open Anyway.<br>
+    <p class="cta-note">Free and open source, for macOS Sonoma and later. Not notarized yet: on first launch choose System Settings › Privacy &amp; Security › Open Anyway.<br>
       Or with Homebrew: <code>brew install --cask featherview/tap/featherview</code></p>
 
     <div class="demo">
@@ -726,10 +720,10 @@ function layout() {
   photo.style.transform = `translate(${px}px, ${py}px) rotate(${rot}deg) scale(${zoom})`;
   $("s-zoom").textContent = `${Math.round(fitPct() * zoom)} %`;
 }
-function show() { // browsing is instant: no transition between images
+function show(first) { // browsing is instant: no transition between images
   cur = scene(n * 1009 + gone, "m");
   photo.innerHTML = cur.svg; rot = 0; zoom = 1; px = py = 0;
-  photo.style.transition = "none"; layout(); photo.offsetWidth; photo.style.transition = "";
+  if (!first) { photo.style.transition = "none"; layout(); photo.offsetWidth; photo.style.transition = ""; } // first: the ResizeObserver lays it out, without forcing a reflow during load
   $("title").textContent = `IMG_${2000 + n}.jpg`; $("count").textContent = `— ${n} / ${total}`;
   $("s-size").textContent = `${cur.w} × ${cur.h}`; $("s-bytes").textContent = `${cur.mb} MB`;
   $("s-pos").textContent = `${n} / ${total}`; $("s-date").textContent = cur.date;
@@ -955,7 +949,7 @@ document.addEventListener("keydown", e => {
   if (press(e.key)) e.preventDefault();
 });
 new ResizeObserver(() => cur && layout()).observe(fit); // the fit area also changes when the info panel opens
-show();
+show(true);
 
 // Speed section: the key presses itself, the next photo is simply there. Click it too.
 const snapKey = $("snapkey"), snapFrame = $("snapframe");
