@@ -29,7 +29,7 @@
     --accent:#ff7a59; --accent-ink:#fff;
     /* drawn batch window, dark Mac appearance */
     --w-bar:#2a2a2f; --w-c1:#232327; --w-c2:#1f1f23; --w-c3:#1b1b1e; --w-line:#38383e; --w-fg:#ececf0;
-    --w-muted:#9b9aa3; --w-card:#26262b; --w-cap:rgba(255,255,255,.08); --w-sel:rgba(10,132,255,.24);
+    --w-muted:#acabb4; --w-card:#26262b; --w-cap:rgba(255,255,255,.08); --w-sel:rgba(10,132,255,.24);
     --shadow:0 40px 90px -30px rgba(0,0,0,.75);
     /* viewer window tokens, dark (Graphite); from the app's Theme.swift */
     --v-bg:#1c1c20; --v-edge:rgba(255,255,255,.07); --v-glass:rgba(52,52,58,.55); --v-panel:rgba(44,44,50,.62); --v-solid:rgba(46,46,52,.94);
@@ -53,7 +53,7 @@
       --warm:#b9501f; --f1:#c86a12; --f2:#cf4426; --key:#ffffff; --keyline:#d6d3cc;
       --accent:#b8552b;
       --w-bar:#ececee; --w-c1:#fafafb; --w-c2:#f3f3f5; --w-c3:#ffffff; --w-line:#dcdce0; --w-fg:#1d1d1f;
-      --w-muted:#6e6e73; --w-card:#ffffff; --w-cap:rgba(255,255,255,.8); --w-sel:rgba(10,91,196,.13);
+      --w-muted:#5f5f64; --w-card:#ffffff; --w-cap:rgba(255,255,255,.8); --w-sel:rgba(10,91,196,.13);
       --shadow:0 34px 80px -34px rgba(40,30,20,.35);
       --v-bg:#e7e7ec; --v-edge:rgba(0,0,0,.08); --v-glass:rgba(255,255,255,.60); --v-panel:rgba(255,255,255,.66); --v-solid:rgba(246,246,249,.94);
       --v-hl:rgba(255,255,255,.70); --v-hair:rgba(0,0,0,.06); --v-pic:rgba(0,0,0,.08);
@@ -100,7 +100,7 @@
   .hk { all:unset; cursor:pointer; display:inline-grid; place-items:center; vertical-align:.06em; width:1.1em; height:1em;
     font:600 .62em/1 var(--font); letter-spacing:0; color:var(--fg); border-radius:.2em; background:var(--key);
     border:1px solid var(--keyline); box-shadow:0 .09em 0 var(--keyline), 0 .3em .7em -.3em color-mix(in srgb, var(--f2) 60%, transparent);
-    transition:transform .08s, box-shadow .08s; }
+    transition:transform .08s; }
   .hk:hover { border-color:var(--muted); }
   .hk:active, .hk.hit { transform:translateY(.07em); box-shadow:0 .02em 0 var(--keyline); }
   .hk:focus-visible { outline:3px solid var(--warm); outline-offset:4px; border-radius:.2em; }
@@ -385,13 +385,15 @@
   /* closing */
   .closing { text-align:center; }
   .closing h2, .closing .sub { margin-left:auto; margin-right:auto; }
-  .closing .sub { margin-bottom:30px; }
+  .closing .sub { margin-bottom:30px; text-wrap:balance; }
   .closing svg.mark { width:72px; height:72px; margin-bottom:20px; filter:drop-shadow(0 16px 30px color-mix(in srgb, var(--f2) 35%, transparent)); }
 
   footer { border-top:1px solid var(--line); margin-top:120px; padding:28px 0 44px; color:var(--muted); font-size:14px;
     display:flex; justify-content:space-between; gap:12px 24px; flex-wrap:wrap; }
   footer p { margin:0; max-width:560px; }
   footer a { color:var(--fg); }
+  footer .mx { display:inline-block; vertical-align:-6px; margin-inline-end:10px; color:var(--fg); }
+  footer .mx svg { width:31px; height:22px; display:block; }
 
   @media (max-width:880px) {
     .grid, .fgroups { grid-template-columns:1fr 1fr; } .fgroup:last-child { grid-column:1 / -1; }
@@ -465,6 +467,7 @@
     <div class="links"><a href="#keyboard">Keys</a><a href="#formats">Formats</a><a href="#batch">Batch</a><a href="https://github.com/featherview/featherview">GitHub</a></div>
   </nav>
 
+  <main>
   <header class="hero">
     <a class="pill" href="https://github.com/featherview/featherview/releases/latest"><i></i>Version 0.12.0 · for macOS Sonoma and later</a>
     <h1>Photos at the <em class="grad">speed&nbsp;of</em>&nbsp;<button class="hk" data-k="ArrowRight" aria-label="Next image in the demo">→</button></h1>
@@ -663,12 +666,14 @@
   <section class="closing" aria-labelledby="h-close">
     <svg class="mark" viewBox="0 0 64 64" aria-hidden="true"><use href="#icon"/></svg>
     <h2 id="h-close">Free, light as a feather, made for the Mac.</h2>
-    <p class="sub">Written in Swift on macOS’s own image engine. The viewer, the formats, batch, translations and Finder previews are built; animated GIFs come next. The first release is on its way.</p>
+    <p class="sub">Written in Swift on macOS’s own image engine. <a href="https://github.com/featherview/featherview/blob/main/ROADMAP.md">Next&nbsp;up</a>: your Photos library, browsed with the arrow keys.</p>
     <div class="cta"><a class="btn primary" href="https://github.com/featherview/featherview">Follow on GitHub</a></div>
   </section>
 
+  </main>
+
   <footer>
-    <span>Made by <a href="https://github.com/mynetx">Joachim Rütter</a> · <a href="https://github.com/featherview/featherview/blob/main/ROADMAP.md">Roadmap</a></span>
+    <span><a class="mx" href="https://mynetx.net" aria-label="mynetx"><svg viewBox="1800 2500 4500 3150" aria-hidden="true"><path d="M1852.226 5472.772c-4-3-7-660-7-1460v-1453h270 270l1 43 8 190 6 149 48-65c127-174 322-299 565-364 86-23 117-26 272-27 192-1 274 14 420 74 180 74 363 239 436 393 10 20 20 37 24 37 3 0 26-28 50-62 215-297 588-465 986-445 448 24 746 240 878 637 69 209 69 208 73 983l-1 697c-3 0-21-11-41-25-81-54-209-87-311-79l-59 5-75-69-75-70-6-513c-7-537-8-557-55-704-86-266-283-398-574-382-200 10-329 63-445 181-99 100-157 216-202 401-15 62-18 173-22 1000l-6 930h-280-280l-6-965c-5-956-5-966-28-1065-58-257-169-398-365-462-103-33-273-38-376-10-272 74-421 253-507 612-15 62-17 175-22 980l-6 910-276 3c-151 1-278-1-282-5z" fill="currentColor"/><circle cx="5830" cy="5200" r="400" fill="var(--bg)"/><path d="M4885 4220 5830 5200" stroke="#247966" stroke-width="320"/><circle cx="4885" cy="4220" r="320" fill="#247966"/><circle cx="5830" cy="5200" r="320" fill="#247966"/></svg></a>Made by <a href="https://github.com/mynetx">Joachim Rütter</a> · <a href="https://github.com/featherview/featherview/blob/main/ROADMAP.md">Roadmap</a></span>
     <p>An independent Mac alternative to IrfanView, not affiliated with it or its author. Thanks to Irfan Škiljan, whose viewer has shown for decades how fast looking at images can be.</p>
   </footer>
 </div>
