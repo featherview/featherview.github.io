@@ -4,6 +4,17 @@
     <title>Featherview</title>
     <link>https://featherview.mynetx.net/</link>
     <item>
+      <title>Featherview 0.12.1</title>
+      <pubDate>Fri, 30 Oct 2026 15:42:29 +0000</pubDate>
+      <sparkle:version>7</sparkle:version>
+      <sparkle:shortVersionString>0.12.1</sparkle:shortVersionString>
+      <sparkle:minimumSystemVersion>14.0</sparkle:minimumSystemVersion>
+      <link>https://github.com/featherview/featherview/releases/tag/v0.12.1</link>
+      <description><![CDATA[<ul><li>Standard (non-admin) accounts can open Featherview again: the disk image has a "Read Me First" file with one Terminal line that opens it on any account, where Open Anyway failed.</li><li>The disk image keeps its designed background on other Macs instead of a plain Finder window.</li><li>About now says Featherview is free and links to GitHub Sponsors to help pay Apple's notarization fee, in every language.</li></ul>]]></description>
+      <enclosure url="https://github.com/featherview/featherview/releases/download/v0.12.1/Featherview-0.12.1.dmg"
+                 sparkle:edSignature="k9BVumXZe82JoPmhPi6hV/Chj6ojriwvTuybimuM4hmq0MGY76CSPB0Z3VLytYHk2x960QEa11aez508GLLIBg==" length="24041635" type="application/x-apple-diskimage"/>
+    </item>
+    <item>
       <title>Featherview 0.12.0</title>
       <pubDate>Wed, 28 Oct 2026 22:42:50 +0000</pubDate>
       <sparkle:version>6</sparkle:version>
