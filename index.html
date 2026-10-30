@@ -149,14 +149,40 @@
   .win.max .lights, .win.max .tools, .win.max .strip { opacity:0; pointer-events:none; transform:translateY(-6px); transition:opacity .2s, transform .2s; }
   .win.max .strip { transform:none; }
   .win.max.peek .lights, .win.max.peek .tools { opacity:1; pointer-events:auto; transform:none; }
-  .dockpill { position:absolute; left:50%; bottom:8px; transform:translateX(-50%) scale(.6); opacity:0; visibility:hidden;
-    display:flex; align-items:center; gap:10px; padding:6px 14px 6px 6px; border-radius:14px; cursor:pointer; color:var(--fg); font:600 13px/1 var(--font);
-    background:color-mix(in srgb, var(--surface) 80%, transparent); border:1px solid var(--line); box-shadow:var(--shadow);
+  /* minimise: a classic Aqua Dock, translucent glass shelf, running triangles, magnification and labels */
+  .adock { position:absolute; left:50%; bottom:0; transform:translate(-50%, 30%); opacity:0; visibility:hidden; z-index:6;
+    display:flex; align-items:flex-end; gap:6px; height:58px; padding:0 12px 10px; border-radius:12px 12px 0 0;
+    background:linear-gradient(rgba(255,255,255,.55), rgba(255,255,255,.28)); -webkit-backdrop-filter:blur(12px); backdrop-filter:blur(12px);
+    border:1px solid rgba(255,255,255,.75); border-bottom:0; box-shadow:0 -1px 0 rgba(0,0,0,.18), 0 10px 30px -10px rgba(0,0,0,.5);
     transition:transform .22s cubic-bezier(.3,.7,.4,1) .08s, opacity .2s .08s, visibility .2s .08s; }
-  .dockpill.show { transform:translateX(-50%); opacity:1; visibility:visible; }
-  .dockpill i { width:54px; height:36px; border-radius:7px; overflow:hidden; display:block; }
-  .dockpill i svg { width:100%; height:100%; display:block; }
-  .dockpill small { display:block; font-weight:500; color:var(--muted); margin-top:3px; }
+  .adock.show { transform:translate(-50%, 0); opacity:1; visibility:visible; }
+  .adock .sep { align-self:stretch; width:1px; margin:2px 4px 0; background:rgba(0,0,0,.28); box-shadow:1px 0 0 rgba(255,255,255,.6); }
+  /* magnification grows the tile, so its neighbours move aside as in the real Dock */
+  .ditem { all:unset; --s:1; position:relative; flex:none; width:calc(52px * var(--s)); height:calc(52px * var(--s)); cursor:pointer;
+    transition:width .14s ease-out, height .14s ease-out; }
+  .ditem > svg, .ditem > .mw { position:absolute; left:2px; bottom:2px; width:48px; height:48px; transform:scale(var(--s)); transform-origin:0 100%;
+    transition:transform .14s ease-out; filter:drop-shadow(0 2px 2px rgba(0,0,0,.35)); }
+  .ditem:hover { --s:1.45; }
+  .ditem:has(+ .ditem:hover), .ditem:hover + .ditem { --s:1.18; }
+  .ditem:focus-visible { outline:2px solid var(--warm); outline-offset:3px; border-radius:10px; }
+  .ditem .run { position:absolute; bottom:-8px; left:50%; transform:translateX(-50%); width:0; height:0;
+    border:4px solid transparent; border-bottom:5px solid #111; border-top:0; }
+  .ditem::before { content:attr(data-label); position:absolute; bottom:calc(100% + 6px); left:50%; transform:translateX(-50%);
+    white-space:nowrap; padding:2px 9px; border-radius:9px; background:rgba(20,20,24,.82); color:#fff; font:600 12px/1.3 var(--font);
+    box-shadow:0 0 0 1px rgba(255,255,255,.25);
+    opacity:0; pointer-events:none; transition:opacity .12s; }
+  .ditem:hover::before, .ditem:focus-visible::before { opacity:1; }
+  .ditem.bounce { animation:bounce .5s cubic-bezier(.3,.7,.4,1) 2; }
+  @keyframes bounce { 50% { translate:0 -18px; } }
+  .mw { display:flex; flex-direction:column; justify-content:flex-end; }
+  .mw > span { display:block; height:36px; border-radius:4px; overflow:hidden; background:#fff; box-shadow:0 0 0 .5px rgba(0,0,0,.4); }
+  .mw svg { width:100%; height:100%; display:block; }
+  .mw .tb { height:6px; background:linear-gradient(#ececec, #cfcfcf); display:flex; gap:1.5px; align-items:center; padding-inline:2px; }
+  .mw .tb i { width:2.5px; height:2.5px; border-radius:50%; background:#e0574b; } .mw .tb i + i { background:#e9b742; } .mw .tb i + i + i { background:#6bbf4c; }
+  .site { height:30px; background:#141417; color:#ededf0; display:grid; place-items:center; text-align:center;
+    font:800 6px/1 var(--font); letter-spacing:-.03em; }
+  .site em { font-style:normal; color:#ffb36b; }
+  .site b { display:block; margin:3px auto 0; width:12px; height:3px; border-radius:2px; background:#ededf0; }
   .win:focus-visible { box-shadow:inset 0 0 0 1px var(--v-edge), 0 0 0 3px color-mix(in srgb, var(--warm) 70%, transparent), var(--v-e5); }
   /* one glass recipe: fill, blur 40 + saturation 180 %, top highlight, hairline; E2 for chrome, E3 for the panel */
   .glass { background:var(--v-glass); -webkit-backdrop-filter:blur(40px) saturate(1.8); backdrop-filter:blur(40px) saturate(1.8);
@@ -551,7 +577,17 @@
         <div class="strip glass" aria-hidden="true"><span id="s-size"></span><span id="s-zoom"></span><span id="s-bytes" class="opt-wide"></span><span id="s-pos"></span><span id="s-date" class="opt-wide"></span></div>
         <div class="toast glass" id="toast" role="status"></div>
       </div>
-      <button class="dockpill" id="dockpill" tabindex="-1" aria-label="Restore the demo window"><i id="dockthumb"></i><span>Featherview<small>click to restore</small></span></button>
+      <div class="adock" id="adock" role="group" aria-label="Dock" inert>
+        <button class="ditem" id="dockapp" data-label="Featherview" aria-label="Featherview, restore the demo window"><svg viewBox="0 0 64 64" aria-hidden="true"><use href="#icon"/></svg><b class="run"></b></button>
+        <button class="ditem" id="docksafari" data-label="Safari" aria-label="Safari"><svg viewBox="0 0 64 64" aria-hidden="true">
+          <defs><linearGradient id="sfr" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#7cc8ff"/><stop offset="1" stop-color="#1665d8"/></linearGradient></defs>
+          <circle cx="32" cy="32" r="29" fill="#f4f4f6" stroke="#b9bcc4"/><circle cx="32" cy="32" r="25" fill="url(#sfr)"/>
+          <g stroke="#fff" stroke-width="1.4" stroke-linecap="round" opacity=".85"><path d="M32 9v5M32 50v5M9 32h5M50 32h5M15.7 15.7l3 3M45.3 45.3l3 3M48.3 15.7l-3 3M18.7 45.3l-3 3"/></g>
+          <path d="M44 20 35 35 29 29z" fill="#ff3b30"/><path d="M20 44 29 29 35 35z" fill="#fff"/><circle cx="32" cy="32" r="2" fill="#1d1d1f"/></svg><b class="run"></b></button>
+        <i class="sep" aria-hidden="true"></i>
+        <button class="ditem" id="dockmin" data-label="IMG_2041.jpg" aria-label="Restore the demo window"><span class="mw" aria-hidden="true"><span><span class="tb"><i></i><i></i><i></i></span><span id="dockthumb" style="display:block;height:30px"></span></span></span></button>
+        <button class="ditem" id="docksite" data-label="Featherview, in Safari" aria-label="Featherview website in Safari, back to the top"><span class="mw" aria-hidden="true"><span><span class="tb"><i></i><i></i><i></i></span><span class="site"><span>Photos at the <em>speed of</em><b></b></span></span></span></span></button>
+      </div>
       </div>
       <div class="hint">
         <button data-k="ArrowLeft"><kbd>←</kbd>Previous</button>
@@ -950,8 +986,8 @@ function press(k) {
   if (k === "ArrowRight") { const hk = document.querySelector(".hk"); hk.classList.add("hit"); setTimeout(() => hk.classList.remove("hit"), 140); }
   return true;
 }
-// Traffic lights: close pops right back, minimise parks it in a pill, green goes full screen.
-const calm = matchMedia("(prefers-reduced-motion: reduce)"), pill = $("dockpill");
+// Traffic lights: close pops right back, minimise parks it in the Dock, green goes full screen.
+const calm = matchMedia("(prefers-reduced-motion: reduce)"), dock = $("adock");
 const lights = {
   close() {
     if (win.classList.contains("poof")) return;
@@ -963,12 +999,12 @@ const lights = {
     if (win.classList.contains("max")) lights.max();
     $("dockthumb").innerHTML = scene(n * 1009 + gone, "d").svg;
     win.classList.add("mini"); win.inert = true;
-    pill.classList.add("show"); pill.tabIndex = 0;
-    setTimeout(() => pill.focus({ preventScroll: true }), calm.matches ? 0 : 200); // visible only after its delay
+    dock.classList.add("show"); dock.inert = false;
+    setTimeout(() => $("dockmin").focus({ preventScroll: true }), calm.matches ? 0 : 200); // visible only after its delay
   },
   restore() {
     win.classList.remove("mini"); win.inert = false;
-    pill.classList.remove("show"); pill.tabIndex = -1; win.focus({ preventScroll: true });
+    dock.classList.remove("show"); dock.inert = true; win.focus({ preventScroll: true });
   },
   max() {
     const on = win.classList.toggle("max");
@@ -986,7 +1022,10 @@ win.addEventListener("mouseleave", () => win.classList.remove("peek"));
 // Esc in full screen is the browser's: it leaves full screen without a key event, so follow it.
 document.addEventListener("fullscreenchange", () => { if (!document.fullscreenElement && win.classList.contains("max")) lights.max(); });
 document.querySelectorAll("[data-light]").forEach(b => b.addEventListener("click", e => { e.stopPropagation(); lights[b.dataset.light](); }));
-pill.addEventListener("click", lights.restore);
+$("dockapp").addEventListener("click", lights.restore);
+$("dockmin").addEventListener("click", lights.restore);
+$("docksafari").addEventListener("click", e => { if (calm.matches) return; const b = e.currentTarget; b.classList.remove("bounce"); void b.offsetWidth; b.classList.add("bounce"); });
+$("docksite").addEventListener("click", () => scrollTo({ top: 0, behavior: calm.matches ? "auto" : "smooth" }));
 document.querySelectorAll("[data-k]").forEach(b => b.addEventListener("click", () => press(b.dataset.k)));
 // The old cheat code, for old hands.
 const konami = ["ArrowUp","ArrowUp","ArrowDown","ArrowDown","ArrowLeft","ArrowRight","ArrowLeft","ArrowRight","b","a"];
@@ -999,7 +1038,7 @@ document.addEventListener("keydown", e => {
   const kk = e.key.length === 1 ? e.key.toLowerCase() : e.key;
   kpos = kk === konami[kpos] ? kpos + 1 : kk === "ArrowUp" ? (kpos === 2 ? 2 : 1) : 0; // ↑↑↑ still counts as the start
   if (kpos === konami.length) { kpos = 0; toast("Cheat code accepted. It was already this fast.", 2600); return; }
-  if (win.inert) return; // minimised: the pill restores it
+  if (win.inert) return; // minimised: the Dock restores it
   if (panelKey(e)) return e.preventDefault();
   const focused = win.contains(document.activeElement);
   if (!focused && (!visible || [" ", "ArrowUp", "ArrowDown", "PageUp", "PageDown", "Home", "End", "Escape", "Enter"].includes(e.key))) return;
