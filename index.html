@@ -144,6 +144,11 @@
   .win.mini { transform:translateY(42%) scale(.12); opacity:0; pointer-events:none; }
   /* green: the demo goes full screen (or fills the page where it can't); .stage keeps its box so nothing below moves */
   .win.max { position:fixed; inset:0; z-index:50; border-radius:0; }
+  /* full screen as in the app: only the picture, edge to edge; the toolbar slides in when the pointer reaches the top */
+  .win.max .fit { inset:0; }
+  .win.max .lights, .win.max .tools, .win.max .strip { opacity:0; pointer-events:none; transform:translateY(-6px); transition:opacity .2s, transform .2s; }
+  .win.max .strip { transform:none; }
+  .win.max.peek .lights, .win.max.peek .tools { opacity:1; pointer-events:auto; transform:none; }
   .dockpill { position:absolute; left:50%; bottom:8px; transform:translateX(-50%) scale(.6); opacity:0; visibility:hidden;
     display:flex; align-items:center; gap:10px; padding:6px 14px 6px 6px; border-radius:14px; cursor:pointer; color:var(--fg); font:600 13px/1 var(--font);
     background:color-mix(in srgb, var(--surface) 80%, transparent); border:1px solid var(--line); box-shadow:var(--shadow);
@@ -967,6 +972,7 @@ const lights = {
   },
   max() {
     const on = win.classList.toggle("max");
+    win.classList.remove("peek");
     document.documentElement.style.overflow = on ? "hidden" : "";
     // Real full screen where the browser allows it; filling the page stays as the fallback (iPhone Safari).
     if (on) win.requestFullscreen?.().catch(() => {});
@@ -975,6 +981,8 @@ const lights = {
     toast(on ? "All yours. Esc or F to come back." : "Back in the page.", 1600);
   },
 };
+win.addEventListener("mousemove", e => win.classList.toggle("peek", win.classList.contains("max") && e.clientY - win.getBoundingClientRect().top < 64));
+win.addEventListener("mouseleave", () => win.classList.remove("peek"));
 // Esc in full screen is the browser's: it leaves full screen without a key event, so follow it.
 document.addEventListener("fullscreenchange", () => { if (!document.fullscreenElement && win.classList.contains("max")) lights.max(); });
 document.querySelectorAll("[data-light]").forEach(b => b.addEventListener("click", e => { e.stopPropagation(); lights[b.dataset.light](); }));
