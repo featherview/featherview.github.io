@@ -151,7 +151,7 @@
   .win.max.peek .lights, .win.max.peek .tools { opacity:1; pointer-events:auto; transform:none; }
   /* minimise: a classic Aqua Dock, translucent glass shelf, running triangles, magnification and labels */
   .adock { position:absolute; left:50%; bottom:0; transform:translate(-50%, 30%); opacity:0; visibility:hidden; z-index:6;
-    display:flex; align-items:flex-end; gap:6px; height:58px; padding:0 12px 10px; border-radius:12px 12px 0 0;
+    display:flex; align-items:flex-end; gap:6px; height:70px; padding:6px 10px 12px; border-radius:12px 12px 0 0;
     background:linear-gradient(rgba(255,255,255,.55), rgba(255,255,255,.28)); -webkit-backdrop-filter:blur(12px); backdrop-filter:blur(12px);
     border:1px solid rgba(255,255,255,.75); border-bottom:0; box-shadow:0 -1px 0 rgba(0,0,0,.18), 0 10px 30px -10px rgba(0,0,0,.5);
     transition:transform .22s cubic-bezier(.3,.7,.4,1) .08s, opacity .2s .08s, visibility .2s .08s; }
@@ -174,7 +174,7 @@
   .ditem:hover::before, .ditem:focus-visible::before { opacity:1; }
   .ditem.bounce { animation:bounce .5s cubic-bezier(.3,.7,.4,1) 2; }
   @keyframes bounce { 50% { translate:0 -18px; } }
-  .mw { display:flex; flex-direction:column; justify-content:flex-end; }
+  .mw { display:flex; flex-direction:column; justify-content:center; }
   .mw > span { display:block; height:36px; border-radius:4px; overflow:hidden; background:#fff; box-shadow:0 0 0 .5px rgba(0,0,0,.4); }
   .mw svg { width:100%; height:100%; display:block; }
   .mw .tb { height:6px; background:linear-gradient(#ececec, #cfcfcf); display:flex; gap:1.5px; align-items:center; padding-inline:2px; }
