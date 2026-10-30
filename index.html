@@ -142,7 +142,7 @@
     transition:transform .22s cubic-bezier(.3,.7,.4,1), opacity .22s, border-radius .2s; }
   .win.poof { transform:scale(.9); opacity:0; filter:blur(6px); transition:transform .18s ease-in, opacity .18s, filter .18s; }
   .win.mini { transform:translateY(42%) scale(.12); opacity:0; pointer-events:none; }
-  /* green: the demo takes the whole page; .stage keeps its box so nothing below moves */
+  /* green: the demo goes full screen (or fills the page where it can't); .stage keeps its box so nothing below moves */
   .win.max { position:fixed; inset:0; z-index:50; border-radius:0; }
   .dockpill { position:absolute; left:50%; bottom:8px; transform:translateX(-50%) scale(.6); opacity:0; visibility:hidden;
     display:flex; align-items:center; gap:10px; padding:6px 14px 6px 6px; border-radius:14px; cursor:pointer; color:var(--fg); font:600 13px/1 var(--font);
@@ -945,7 +945,7 @@ function press(k) {
   if (k === "ArrowRight") { const hk = document.querySelector(".hk"); hk.classList.add("hit"); setTimeout(() => hk.classList.remove("hit"), 140); }
   return true;
 }
-// Traffic lights: close pops right back, minimise parks it in a pill, green fills the page.
+// Traffic lights: close pops right back, minimise parks it in a pill, green goes full screen.
 const calm = matchMedia("(prefers-reduced-motion: reduce)"), pill = $("dockpill");
 const lights = {
   close() {
@@ -968,10 +968,15 @@ const lights = {
   max() {
     const on = win.classList.toggle("max");
     document.documentElement.style.overflow = on ? "hidden" : "";
+    // Real full screen where the browser allows it; filling the page stays as the fallback (iPhone Safari).
+    if (on) win.requestFullscreen?.().catch(() => {});
+    else if (document.fullscreenElement) document.exitFullscreen().catch(() => {});
     win.focus({ preventScroll: true });
     toast(on ? "All yours. Esc or F to come back." : "Back in the page.", 1600);
   },
 };
+// Esc in full screen is the browser's: it leaves full screen without a key event, so follow it.
+document.addEventListener("fullscreenchange", () => { if (!document.fullscreenElement && win.classList.contains("max")) lights.max(); });
 document.querySelectorAll("[data-light]").forEach(b => b.addEventListener("click", e => { e.stopPropagation(); lights[b.dataset.light](); }));
 pill.addEventListener("click", lights.restore);
 document.querySelectorAll("[data-k]").forEach(b => b.addEventListener("click", () => press(b.dataset.k)));
