@@ -4,6 +4,17 @@
     <title>Featherview</title>
     <link>https://featherview.mynetx.net/</link>
     <item>
+      <title>Featherview 0.13.1</title>
+      <pubDate>Sat, 31 Oct 2026 23:55:25 +0000</pubDate>
+      <sparkle:version>9</sparkle:version>
+      <sparkle:shortVersionString>0.13.1</sparkle:shortVersionString>
+      <sparkle:minimumSystemVersion>14.0</sparkle:minimumSystemVersion>
+      <link>https://github.com/featherview/featherview/releases/tag/v0.13.1</link>
+      <description><![CDATA[<ul><li>An iCloud-only picture from your Photos library now shows a sharp preview (about 1024 px) while it downloads, not a tiny blurry one.</li><li>Batch names a library picture it can't fetch by its file name instead of "Optional(…)".</li><li>Because Featherview isn't notarized yet, macOS asks for Photos access again after each update, as the permission is tied to the exact build.</li><li>Plus smaller speed-ups when changing the format in Batch and counting an album's pictures.</li></ul>]]></description>
+      <enclosure url="https://github.com/featherview/featherview/releases/download/v0.13.1/Featherview-0.13.1.dmg"
+                 sparkle:edSignature="EtIFcazNZx5JiMfLg0RNUwkRE7gF64i7xwXuCSg24/FKoZmsaXkCuRI68AtgFxfJR2e8aS5FhKaVS0A26jsVBA==" length="25969074" type="application/x-apple-diskimage"/>
+    </item>
+    <item>
       <title>Featherview 0.13.0</title>
       <pubDate>Sat, 31 Oct 2026 22:50:35 +0000</pubDate>
       <sparkle:version>8</sparkle:version>
