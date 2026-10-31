@@ -4,6 +4,17 @@
     <title>Featherview</title>
     <link>https://featherview.mynetx.net/</link>
     <item>
+      <title>Featherview 0.13.0</title>
+      <pubDate>Sat, 31 Oct 2026 22:50:35 +0000</pubDate>
+      <sparkle:version>8</sparkle:version>
+      <sparkle:shortVersionString>0.13.0</sparkle:shortVersionString>
+      <sparkle:minimumSystemVersion>14.0</sparkle:minimumSystemVersion>
+      <link>https://github.com/featherview/featherview/releases/tag/v0.13.0</link>
+      <description><![CDATA[<ul><li>Huge pictures open fast: Hubble's 4.6 GB Andromeda PSB fits in about half a second, and zooming loads only the visible part.</li><li>Photoshop files saved without "Maximize Compatibility" are drawn from their layers, with blend modes, groups, masks, fills and adjustment layers.</li><li>File › Open from Photos… (⇧⌘O) browses your Photos albums like folders.</li><li>Drag pictures from Photos into the viewer or batch, and convert from and into the library in batch.</li><li>iCloud originals download on demand, only for the picture on screen; copy, save and delete work on library pictures.</li><li>Because Featherview isn't notarized yet, macOS asks for Photos access again after each update, as the permission is tied to the exact build.</li><li>Deleting a picture that is in a shared library deletes it for all participants; Photos' own prompt says so.</li><li>Plus smaller fixes, among them place data downloading at most once a week.</li></ul>]]></description>
+      <enclosure url="https://github.com/featherview/featherview/releases/download/v0.13.0/Featherview-0.13.0.dmg"
+                 sparkle:edSignature="VqdeyVzSlRgBwBZF4Jf2picHYyA8/Es6W91vNOnRiPEgre4JT72Rfp4NYdliwkEdhA+S1SfgvIwip0lncMkKBg==" length="25972538" type="application/x-apple-diskimage"/>
+    </item>
+    <item>
       <title>Featherview 0.12.1</title>
       <pubDate>Fri, 30 Oct 2026 15:42:29 +0000</pubDate>
       <sparkle:version>7</sparkle:version>
