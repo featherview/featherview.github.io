@@ -341,8 +341,7 @@
   .center { text-align:center; } .center h2, .center .sub { margin-left:auto; margin-right:auto; }
 
   .grid { display:grid; grid-template-columns:repeat(3, 1fr); gap:14px; }
-  .card { background:var(--surface); border:1px solid var(--line); border-radius:20px; padding:26px; transition:border-color .2s, transform .2s; }
-  .card:hover { border-color:color-mix(in srgb, var(--warm) 40%, var(--line)); transform:translateY(-2px); }
+  .card { background:var(--surface); border:1px solid var(--line); border-radius:20px; padding:26px; }
 
   /* huge pictures: the Hubble clip and its measured figures */
   .hubble { margin:0 auto; max-width:1000px; }
@@ -487,7 +486,6 @@
   }
   @media (prefers-reduced-motion: reduce) {
     *, *::before, *::after { transition:none !important; animation:none !important; scroll-behavior:auto !important; }
-    .card:hover { transform:none; }
   }
 </style>
 </head>
