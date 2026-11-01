@@ -3,14 +3,15 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Featherview — a fast image viewer for the Mac</title>
-<meta name="description" content="Featherview is a fast, keyboard-driven image viewer for macOS with batch conversion. Open one photo, flip through the whole folder, and batch-convert the keepers.">
+<title>Featherview — free, open-source image viewer for Mac</title>
+<meta name="description" content="Featherview is a free, open-source image viewer for Mac. Flip through a folder with the arrow keys, open WebP, JPEG XL, HEIC, RAW and Photoshop PSD/PSB files, and batch-convert and resize.">
+<link rel="canonical" href="https://featherview.mynetx.net/">
 <meta name="color-scheme" content="dark light">
 <meta name="theme-color" content="#141417" media="(prefers-color-scheme: dark)">
 <meta name="theme-color" content="#f6f5f2" media="(prefers-color-scheme: light)">
 <meta property="og:type" content="website">
 <meta property="og:url" content="https://featherview.mynetx.net/">
-<meta property="og:title" content="Featherview — a fast image viewer for the Mac">
+<meta property="og:title" content="Featherview — free, open-source image viewer for Mac">
 <meta property="og:description" content="Keyboard-driven image viewer for macOS with batch conversion. Opens what your Mac opens, and a few things it doesn’t.">
 <meta property="og:image" content="https://featherview.mynetx.net/og.jpg">
 <meta property="og:image:width" content="1200">
@@ -21,6 +22,15 @@
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
 <link rel="me" href="https://mastodon.social/@mynetx">
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'><rect width='64' height='64' rx='14.4' fill='%2317171d'/><path d='M46 10C28 14 18 28 16 50l4 2c2-6 5-11 9-15 8-1 14-6 17-14-4 2-8 3-12 3 5-3 10-8 12-16z' fill='%23ffa25e'/></svg>">
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"SoftwareApplication","name":"Featherview",
+"description":"Free, open-source, keyboard-driven image viewer for macOS with batch conversion.",
+"applicationCategory":"MultimediaApplication","operatingSystem":"macOS 14 or later",
+"url":"https://featherview.mynetx.net/","downloadUrl":"https://github.com/featherview/featherview/releases/latest",
+"license":"https://opensource.org/licenses/MIT","isAccessibleForFree":true,
+"offers":{"@type":"Offer","price":"0","priceCurrency":"USD"},
+"author":{"@type":"Person","name":"Joachim Rütter","url":"https://mynetx.net"}}
+</script>
 <style>
   /* Page theme: Graphite by default, warm paper in light mode. The drawn windows follow it, as the app follows the Mac's appearance. */
   :root {
@@ -524,7 +534,7 @@
   <main>
   <header class="hero">
     <h1>Photos at the <em class="grad">speed&nbsp;of</em>&nbsp;<button class="hk" data-k="ArrowRight" aria-label="Next image in the demo">→</button></h1>
-    <p class="lead">Featherview is an image viewer for the Mac that keeps up with your fingers. Open one picture, flip through the whole folder, toss the rejects, batch-convert the keepers.</p>
+    <p class="lead">Featherview is a free, open-source image viewer for the Mac that keeps up with your fingers. Open one picture, flip through the whole folder, toss the rejects, batch-convert the keepers.</p>
     <div class="cta">
       <a class="btn primary" id="dl" href="https://github.com/featherview/featherview/releases/download/v0.13.1/Featherview-0.13.1.dmg">Download 0.13.1</a>
       <a class="btn" href="https://github.com/featherview/featherview">Follow on GitHub</a>
@@ -690,19 +700,19 @@
     <p class="sub">Every picture shows up the right way round, in true colour.</p>
     <div class="fgroups">
       <div class="fgroup">
-        <h3>Everything your Mac opens</h3><p>Phone photos, camera RAW, the modern web formats, even SVG and PDF pages.</p>
+        <h3>Everything your Mac opens</h3><p>Phone photos, camera RAW, the modern web formats WebP, AVIF and JPEG XL, even SVG and PDF pages.</p>
         <ul class="exts" aria-label="Examples"><li>.jpg</li><li>.heic</li><li>.png</li><li>.webp</li><li>.avif</li><li>.jxl</li><li>.dng</li><li>.tiff</li><li>.psd</li><li>.exr</li><li>.svg</li><li>.pdf</li><li class="more">and friends</li></ul>
       </div>
       <div class="fgroup">
-        <h3>The forgotten classics</h3><p>Formats macOS gave up on, read by Featherview itself. That PCX from your first PC, a MacPaint doodle, a telescope’s FITS? Opens fine, and Finder shows their thumbnails too.</p>
+        <h3>The forgotten classics</h3><p>Formats macOS gave up on, read by Featherview itself. That PCX from your first PC, a MacPaint doodle, a telescope’s FITS? Opens fine, and Finder shows their thumbnails and Quick Look previews too.</p>
         <ul class="exts" aria-label="Examples"><li>.pcx</li><li>.qoi</li><li>.xpm</li><li>.xbm</li><li>.iff</li><li>.ras</li><li>.mac</li><li>.fits</li><li>.xwd</li><li>.ani</li><li class="more">and more</li></ul>
       </div>
       <div class="fgroup">
-        <h3>Fresh from the editor</h3><p>Layered Photoshop, GIMP, Krita, Paint.NET and PaintShop Pro files, shown flattened. Procreate artwork from your iPad too, at full size. No editor needed.</p>
+        <h3>Fresh from the editor</h3><p>Layered Photoshop PSD and PSB, GIMP, Krita, Paint.NET and PaintShop Pro files, shown flattened. Procreate artwork from your iPad too, at full size. No editor needed.</p>
         <ul class="exts" aria-label="Examples"><li>.psb</li><li>.xcf</li><li>.kra</li><li>.ora</li><li>.procreate</li><li>.pdn</li><li>.psp</li></ul>
       </div>
     </div>
-    <p class="saves"><b>And it saves to all the useful ones:</b> JPEG, PNG, HEIC, AVIF, WebP, TIFF, PDF, and even ICO and ICNS for the icon crowd.</p>
+    <p class="saves"><b>And it saves to all the useful ones:</b> JPEG, PNG, HEIC, AVIF, WebP, JPEG XL, TIFF, PDF, and even ICO and ICNS for the icon crowd.</p>
   </section>
 
   <section id="batch" aria-labelledby="h-batch">
@@ -765,10 +775,23 @@
     </ul>
   </section>
 
+  <section id="faq" aria-labelledby="h-faq">
+    <p class="eyebrow">questions</p>
+    <h2 id="h-faq">Asked before you download.</h2>
+    <div class="grid">
+      <div class="card"><h3>Is there IrfanView for Mac?</h3><p>No, it runs on Windows only. Featherview is an independent Mac alternative in the same spirit: one key per job, the next picture before you blink. It isn’t affiliated with IrfanView.</p></div>
+      <div class="card"><h3>How do I open a PSD without Photoshop?</h3><p>Double-click it in Featherview. Layered PSD and PSB files show flattened, even 4.6 GB ones, and Finder shows thumbnails of GIMP and Procreate files too.</p></div>
+      <div class="card"><h3>Can I view WebP and JPEG XL on a Mac?</h3><p>Yes, and save to them too: WebP, JPEG XL, AVIF and HEIC, plus older formats macOS no longer opens, with Quick Look previews in Finder.</p></div>
+      <div class="card"><h3>Can I flip through a folder like on Windows?</h3><p>That’s the point. Open one photo, then → and ← step through the whole folder. Delete moves a reject to the Trash.</p></div>
+      <div class="card"><h3>Can it batch convert and resize?</h3><p>Yes: HEIC to JPEG, PNG to WebP, resize, rename, crop and watermark a whole shoot, with a live preview. It never overwrites a file.</p></div>
+      <div class="card"><h3>Is it really free?</h3><p>Yes. Open source under the MIT licence, no ads, no account, no paid tier. It updates itself, and runs on Apple Silicon and Intel Macs with macOS 14 or later.</p></div>
+    </div>
+  </section>
+
   <section class="closing" aria-labelledby="h-close">
     <svg class="mark" viewBox="0 0 64 64" aria-hidden="true"><use href="#icon"/></svg>
     <h2 id="h-close">Free, light as a feather, made for the Mac.</h2>
-    <p class="sub">Written in Swift on macOS’s own image engine. <a href="https://github.com/featherview/featherview/blob/main/ROADMAP.md">Next&nbsp;up</a>: your Photos library, browsed with the arrow keys.</p>
+    <p class="sub">Written in Swift on macOS’s own image engine. Your Photos library too, browsed with the arrow keys. <a href="https://github.com/featherview/featherview/blob/main/ROADMAP.md">Next&nbsp;up</a>.</p>
     <div class="cta"><a class="btn primary" href="https://github.com/featherview/featherview">Follow on GitHub</a></div>
   </section>
 

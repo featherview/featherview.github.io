@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://featherview.mynetx.net/sitemap.xml
