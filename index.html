@@ -348,6 +348,7 @@
   .hubble video { display:block; width:100%; height:auto; aspect-ratio:1600/1046; border-radius:20px; border:1px solid var(--line); box-shadow:var(--shadow); background:var(--surface); }
   .hubble figcaption { margin-top:14px; color:var(--muted); font-size:13px; }
   .hubble figcaption a { color:inherit; }
+  .hubble video.wide { aspect-ratio:1600/642; }
   .figs { max-width:1000px; margin:40px auto 0; text-align:start; }
   .figs b { display:block; font-size:34px; letter-spacing:-.02em; margin-bottom:6px; }
   .figs p { margin:0; color:var(--muted); font-size:15px; }
@@ -532,7 +533,7 @@
   <main>
   <header class="hero">
     <h1>Photos at the <em class="grad">speed&nbsp;of</em>&nbsp;<button class="hk" data-k="ArrowRight" aria-label="Next image in the demo">→</button></h1>
-    <p class="lead">Featherview is a free, open-source image viewer for the Mac that keeps up with your fingers. Open one picture, flip through the whole folder, toss the rejects, batch-convert the keepers.</p>
+    <p class="lead">Double-click a photo, press →. Preview stays on that one photo; Featherview goes through the whole folder, about 20&nbsp;ms a photo. A free, open-source image viewer for the Mac: toss the rejects, batch-convert the keepers.</p>
     <div class="cta">
       <a class="btn primary" id="dl" href="https://github.com/featherview/featherview/releases/download/v0.13.1/Featherview-0.13.1.dmg">Download 0.13.1</a>
       <a class="btn" href="https://github.com/featherview/featherview">Follow on GitHub</a>
@@ -617,6 +618,16 @@
       <p class="psst">psst: the keys work right here. Try holding →.</p>
     </div>
   </header>
+
+  <section id="preview" class="center" aria-labelledby="h-preview">
+    <p class="eyebrow">next photo</p>
+    <h2 id="h-preview">Double-click a photo, press →. <span class="grad">Only one of them moves on.</span></h2>
+    <p class="sub">Preview shows the photo you opened and nothing else; to see the rest you go back to Finder, select them all and open them together. Featherview opens the whole folder with the first photo: → for the next, ← for the previous, about 20&nbsp;ms each.</p>
+    <figure class="hubble">
+      <video id="vspreview" class="wide" src="vs-preview.mp4" poster="vs-preview.webp" muted loop playsinline preload="none" aria-label="Screen recording: the same photo open in Preview and in Featherview. The right arrow key is pressed six times in Preview, which stays on the first photo, then in Featherview, which shows all 18 photos of the folder in turn"><track kind="captions" src="vs-preview.vtt" srclang="en" label="English"></video>
+      <figcaption>Recorded on macOS 27.2 with Featherview 0.13.1. Photos: NASA, taken from the International Space Station, public domain.</figcaption>
+    </figure>
+  </section>
 
   <section id="speed" class="center" aria-labelledby="h-speed">
     <p class="eyebrow">speed</p>
@@ -1133,9 +1144,10 @@ document.querySelectorAll(".copy").forEach(b => b.addEventListener("click", asyn
 });
 
 // The Hubble clip loads and plays only while it's on screen; with reduced motion it waits for its controls.
-const hubble = $("hubble");
-if (calm.matches) hubble.controls = true;
-else new IntersectionObserver(([e]) => e.isIntersecting ? hubble.play().catch(() => hubble.controls = true) : hubble.pause(), { threshold:.4 }).observe(hubble);
+for (const clip of [$("hubble"), $("vspreview")]) {
+  if (calm.matches) clip.controls = true;
+  else new IntersectionObserver(([e]) => e.isIntersecting ? clip.play().catch(() => clip.controls = true) : clip.pause(), { threshold:.4 }).observe(clip);
+}
 </script>
 </body>
 </html>
