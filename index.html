@@ -2,9 +2,20 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
+<script>/* Language: this session's choice, else the browser's. Other languages load i18n/<lang>.json; the page stays hidden until it is applied (1.5 s at most). */
+(()=>{const L=["en","id","ms","ca","cs","da","de","es","fr","it","hu","nl","pl","pt-BR","ro","fi","sv","vi","tr","el","ru","uk","he","ar","hi","th","ko","ja","zh-Hans","zh-Hant"],h=document.documentElement;let l;try{l=sessionStorage.getItem("fv-lang")}catch(e){}
+if(!L.includes(l)){l="en";for(const b of navigator.languages||[navigator.language]){const x=b.toLowerCase(),p=x.split("-")[0];const m=p==="zh"?(/hant|tw|hk|mo/.test(x)?"zh-Hant":"zh-Hans"):p==="pt"?"pt-BR":L.find(c=>c.toLowerCase()===x)||L.find(c=>c.split("-")[0]===p);if(m){l=m;break}}}
+window.fvLang=l;window.fvDict=null;if(l==="en"){window.fvReady=Promise.resolve();return}
+h.classList.add("i18n");const show=()=>h.classList.remove("i18n");setTimeout(show,1500);
+window.fvReady=fetch("i18n/"+l+".json").then(r=>r.ok?r.json():null).catch(()=>null).then(d=>{if(d){window.fvDict=d;h.lang=l;if(l==="ar"||l==="he")h.dir="rtl";fvApply(d)}show()})})();
+function fvApply(d){const A=["aria-label","title","alt","aria-roledescription","placeholder","content"],q=s=>document.querySelectorAll(s);
+q("[data-i18n]").forEach(e=>{const v=d[e.dataset.i18n];if(v==null)return;const k=[...e.querySelectorAll("[data-keep]")].map(x=>x.innerHTML);e.innerHTML=v;e.querySelectorAll("[data-keep]").forEach((x,i)=>{if(k[i]!=null)x.innerHTML=k[i]})});
+q("[data-i18n-attr]").forEach(e=>A.forEach(a=>{const v=d[e.dataset.i18nAttr+"@"+a];if(v!=null)e.setAttribute(a,v)}))}
+const T=(s,v)=>{let r=window.fvDict&&fvDict[s]||s;return v?r.replace(/\{(\w+)\}/g,(m,k)=>v[k]):r};
+</script>
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Featherview — free, open-source image viewer for Mac</title>
-<meta name="description" content="Featherview is a free, open-source image viewer for Mac and an independent alternative to IrfanView. Flip through a folder with the arrow keys, open WebP, JPEG XL, HEIC, RAW and PSD files, and batch-convert.">
+<title data-i18n="head.1">Featherview — free, open-source image viewer for Mac</title>
+<meta data-i18n-attr="head.2" name="description" content="Featherview is a free, open-source image viewer for Mac and an independent alternative to IrfanView. Flip through a folder with the arrow keys, open WebP, JPEG XL, HEIC, RAW and PSD files, and batch-convert.">
 <link rel="canonical" href="https://featherview.mynetx.net/">
 <meta name="color-scheme" content="dark light">
 <meta name="theme-color" content="#141417" media="(prefers-color-scheme: dark)">
@@ -33,6 +44,14 @@
 </script>
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"Is there IrfanView for Mac?","acceptedAnswer":{"@type":"Answer","text":"No, it runs on Windows only. Featherview is an independent Mac alternative in the same spirit: open one picture and the arrow keys take you through the folder, R and L rotate, and batch conversion handles the rest. Most of the single keys are the same, so your fingers already know them. It isn’t affiliated with IrfanView."}},{"@type":"Question","name":"How do I open a PSD without Photoshop?","acceptedAnswer":{"@type":"Answer","text":"Double-click it in Featherview. Layered PSD and PSB files show flattened, even 4.6 GB ones, and Finder shows thumbnails of GIMP and Procreate files too."}},{"@type":"Question","name":"Can I view WebP and JPEG XL on a Mac?","acceptedAnswer":{"@type":"Answer","text":"Yes, and save to them too: WebP, JPEG XL, AVIF and HEIC, plus older formats macOS no longer opens, with Quick Look previews in Finder."}},{"@type":"Question","name":"Can I flip through a folder like on Windows?","acceptedAnswer":{"@type":"Answer","text":"That’s the point. Open one photo, then → and ← step through the whole folder. Delete moves a reject to the Trash."}},{"@type":"Question","name":"Can it batch convert and resize?","acceptedAnswer":{"@type":"Answer","text":"Yes: HEIC to JPEG, PNG to WebP, resize, rename, crop and watermark a whole shoot, with a live preview. It never overwrites a file."}},{"@type":"Question","name":"Is it really free?","acceptedAnswer":{"@type":"Answer","text":"Yes. Open source under the MIT licence, no ads, no account, no paid tier. It updates itself, and runs on Apple Silicon and Intel Macs with macOS 14 or later."}}]}</script>
 <style>
+  html.i18n body { visibility:hidden; }
+  nav .end { display:flex; align-items:center; gap:22px; }
+  .lang { position:relative; display:flex; align-items:center; gap:6px; font-size:15px; color:var(--muted); }
+  .lang:hover, .lang:focus-within { color:var(--fg); }
+  .lang svg { width:15px; height:15px; fill:none; stroke:currentColor; stroke-width:1.4; flex:none; }
+  .lang select { position:absolute; inset:0; width:100%; opacity:0; cursor:pointer; font:inherit; }
+  .lang .chev { width:9px; height:9px; stroke-width:1.6; }
+  .lang:has(select:focus-visible) { outline:2px solid var(--accent); outline-offset:4px; border-radius:6px; }
   /* Page theme: Graphite by default, warm paper in light mode. The drawn windows follow it, as the app follows the Mac's appearance. */
   :root {
     --bg:#141417; --surface:#1c1c20; --raise:#24242a; --line:#2d2d34; --fg:#ededf0; --muted:#a6a4ae;
@@ -84,11 +103,11 @@
   body { margin:0; background:var(--bg); color:var(--fg); font:17px/1.6 var(--font);
     -webkit-font-smoothing:antialiased; overflow-x:hidden; }
   a { color:inherit; }
-  h1, h2, h3 { text-wrap:balance; } p { text-wrap:pretty; }
+  h1, h2, h3 { text-wrap:balance; } p { text-wrap:pretty; } .lead, .center .sub, .cta-note { text-wrap:balance; }
   :focus-visible { outline:2px solid var(--warm); outline-offset:3px; border-radius:6px; }
   .wrap { max-width:1100px; margin:0 auto; padding:0 24px; }
   .mono { font-family:var(--mono); }
-  .grad { background:linear-gradient(100deg, var(--f1), var(--f2)); -webkit-background-clip:text; background-clip:text; color:transparent; }
+  .grad { background:linear-gradient(100deg, var(--f1), var(--f2)); -webkit-background-clip:text; background-clip:text; color:transparent; padding-block:.12em .2em; padding-inline-end:.08em; margin-inline-end:-.08em; }
 
   /* nav */
   nav { display:flex; align-items:center; justify-content:space-between; gap:16px; padding:22px 0; }
@@ -470,6 +489,7 @@
     body { font-size:16px; }
     .grid, .fgroups { grid-template-columns:1fr; }
     nav .links a:not(:last-child) { display:none; }
+    #langname { display:none; }
     section { padding-top:96px; }
     .hero { padding-top:40px; }
     .stage { aspect-ratio:4/3; }
@@ -527,255 +547,256 @@
 </svg>
 
 <div class="wrap">
-  <nav aria-label="Main">
-    <a class="brand" href="#"><svg viewBox="0 0 64 64" aria-hidden="true"><use href="#icon"/></svg>Featherview</a>
-    <div class="links"><a href="#keyboard">Keys</a><a href="#formats">Formats</a><a href="#batch">Batch</a><a href="https://github.com/featherview/featherview">GitHub</a></div>
+  <nav data-i18n-attr="page.1" aria-label="Main">
+    <a data-i18n="page.2" class="brand" href="#"><svg viewBox="0 0 64 64" aria-hidden="true"><use href="#icon"/></svg>Featherview</a>
+    <div class="end"><div class="links"><a data-i18n="page.3" href="#keyboard">Keys</a><a data-i18n="page.4" href="#formats">Formats</a><a data-i18n="page.5" href="#batch">Batch</a><a data-i18n="page.6" href="https://github.com/featherview/featherview">GitHub</a></div>
+    <label class="lang"><svg viewBox="0 0 16 16" aria-hidden="true"><circle cx="8" cy="8" r="6.2"/><path d="M1.8 8h12.4M8 1.8c1.8 1.7 2.7 3.8 2.7 6.2S9.8 12.5 8 14.2C6.2 12.5 5.3 10.4 5.3 8S6.2 3.5 8 1.8z"/></svg><span id="langname" translate="no">English</span><svg class="chev" viewBox="0 0 10 10" aria-hidden="true"><path d="M2 3.5 5 6.5 8 3.5" stroke-linecap="round" stroke-linejoin="round"/></svg><select id="lang" aria-label="Language"><option value="en" lang="en">English</option><option value="id" lang="id">Bahasa Indonesia</option><option value="ms" lang="ms">Bahasa Melayu</option><option value="ca" lang="ca">Català</option><option value="cs" lang="cs">Čeština</option><option value="da" lang="da">Dansk</option><option value="de" lang="de">Deutsch</option><option value="es" lang="es">Español</option><option value="fr" lang="fr">Français</option><option value="it" lang="it">Italiano</option><option value="hu" lang="hu">Magyar</option><option value="nl" lang="nl">Nederlands</option><option value="pl" lang="pl">Polski</option><option value="pt-BR" lang="pt-BR">Português (Brasil)</option><option value="ro" lang="ro">Română</option><option value="fi" lang="fi">Suomi</option><option value="sv" lang="sv">Svenska</option><option value="vi" lang="vi">Tiếng Việt</option><option value="tr" lang="tr">Türkçe</option><option value="el" lang="el">Ελληνικά</option><option value="ru" lang="ru">Русский</option><option value="uk" lang="uk">Українська</option><option value="he" lang="he">עברית</option><option value="ar" lang="ar">العربية</option><option value="hi" lang="hi">हिन्दी</option><option value="th" lang="th">ไทย</option><option value="ko" lang="ko">한국어</option><option value="ja" lang="ja">日本語</option><option value="zh-Hans" lang="zh-Hans">简体中文</option><option value="zh-Hant" lang="zh-Hant">繁體中文</option></select></label></div>
   </nav>
 
   <main>
   <header class="hero">
-    <h1>Photos at the <em class="grad">speed&nbsp;of</em>&nbsp;<button class="hk" data-k="ArrowRight" aria-label="Next image in the demo">→</button></h1>
-    <p class="lead">Double-click a photo, press →. Preview stays on that one photo; Featherview goes through the whole folder, about 20&nbsp;ms a photo. A free, open-source image viewer for the Mac: toss the rejects, batch-convert the keepers.</p>
+    <h1 data-i18n="page.7">Photos at the <em class="grad">speed&nbsp;of</em>&nbsp;<button class="hk" data-k="ArrowRight" aria-label="Next image in the demo">→</button></h1>
+    <p data-i18n="page.8" class="lead">Double-click a photo, press →. Preview stays on that one photo; Featherview goes through the whole folder, about 20&nbsp;ms a photo. A free, open-source image viewer for the Mac: toss the rejects, batch-convert the keepers.</p>
     <div class="cta">
-      <a class="btn primary" id="dl" href="https://github.com/featherview/featherview/releases/download/v0.13.1/Featherview-0.13.1.dmg">Download 0.13.1</a>
-      <a class="btn" href="https://github.com/featherview/featherview">Follow on GitHub</a>
+      <a class="btn primary" id="dl" href="https://github.com/featherview/featherview/releases/download/v0.13.1/Featherview-0.13.1.dmg"><span data-i18n="download">Download <span id="dlv" translate="no" data-keep>0.13.1</span></span></a>
+      <a data-i18n="page.9" class="btn" href="https://github.com/featherview/featherview">Follow on GitHub</a>
     </div>
-    <p class="cta-note" id="firstnote">Free and open source, for macOS Sonoma and later. First open needs one Terminal line:
+    <p data-i18n="page.10" class="cta-note" id="firstnote">Free and open source, for macOS Sonoma and later. First open needs one Terminal line:
       <button type="button" class="howto" id="howto" aria-expanded="false" aria-controls="firstopen">how&nbsp;↓</button></p>
     <section class="first" id="firstopen" aria-labelledby="firsthead" hidden>
       <div class="first-head">
-        <h2 id="firsthead">Opening it the first time</h2>
-        <button type="button" class="x" id="firstclose" aria-label="Close"><svg aria-hidden="true" width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><path d="M2 2l8 8M10 2l-8 8"/></svg></button>
+        <h2 data-i18n="firstopen.1" id="firsthead">Opening it the first time</h2>
+        <button data-i18n-attr="firstopen.2" type="button" class="x" id="firstclose" aria-label="Close"><svg aria-hidden="true" width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><path d="M2 2l8 8M10 2l-8 8"/></svg></button>
       </div>
-      <p>Drag Featherview to Applications, then paste this into Terminal once. It works on any account, administrator or not.</p>
-      <button type="button" class="copy" data-copy="xattr -dr com.apple.quarantine /Applications/Featherview.app" aria-label="Copy the Terminal line">
+      <p data-i18n="firstopen.3">Drag Featherview to Applications, then paste this into Terminal once. It works on any account, administrator or not.</p>
+      <button data-i18n-attr="firstopen.4" type="button" class="copy" data-copy="xattr -dr com.apple.quarantine /Applications/Featherview.app" aria-label="Copy the Terminal line">
         <code>xattr -dr com.apple.quarantine /Applications/Featherview.app</code>
         <svg class="idle" aria-hidden="true" width="18" height="18" viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"><rect x="6" y="6" width="9" height="9" rx="2"/><path d="M12 6V4.5A1.5 1.5 0 0 0 10.5 3h-6A1.5 1.5 0 0 0 3 4.5v6A1.5 1.5 0 0 0 4.5 12H6"/></svg>
         <svg class="ok" aria-hidden="true" width="18" height="18" viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3.5 9.5l3.5 3.5 7.5-8"/></svg>
       </button>
-      <p>Administrator? System Settings › Privacy &amp; Security › Open Anyway works too.</p>
+      <p data-i18n="firstopen.5">Administrator? System Settings › Privacy &amp; Security › Open Anyway works too.</p>
       <hr>
-      <p>Or install with Homebrew, which opens it straight away:</p>
-      <button type="button" class="copy" data-copy="brew install --cask featherview/tap/featherview" aria-label="Copy the Homebrew command">
+      <p data-i18n="firstopen.6">Or install with Homebrew, which opens it straight away:</p>
+      <button data-i18n-attr="firstopen.7" type="button" class="copy" data-copy="brew install --cask featherview/tap/featherview" aria-label="Copy the Homebrew command">
         <code>brew install --cask featherview/tap/featherview</code>
         <svg class="idle" aria-hidden="true" width="18" height="18" viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"><rect x="6" y="6" width="9" height="9" rx="2"/><path d="M12 6V4.5A1.5 1.5 0 0 0 10.5 3h-6A1.5 1.5 0 0 0 3 4.5v6A1.5 1.5 0 0 0 4.5 12H6"/></svg>
         <svg class="ok" aria-hidden="true" width="18" height="18" viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3.5 9.5l3.5 3.5 7.5-8"/></svg>
       </button>
       <div class="ask">
-        <p>Why the extra step? Featherview is made in our spare time and given away for free. For macOS to open it straight away, Apple has to notarize it, and that costs 99&nbsp;€ / $99 every year. So far 0 of 99 are covered. If Featherview turns out useful to you, a contribution towards that fee would mean a lot, even $5 once, and when the fee is paid this step goes away for everyone. Thank you for trying it either way.</p>
-        <a class="btn" href="https://github.com/sponsors/mynetx">Help pay the fee</a>
+        <p data-i18n="firstopen.8">Why the extra step? Featherview is made in our spare time and given away for free. For macOS to open it straight away, Apple has to notarize it, and that costs 99&nbsp;€ / $99 every year. So far <span data-keep>0</span> of 99 are covered. If Featherview turns out useful to you, a contribution towards that fee would mean a lot, even $5 once, and when the fee is paid this step goes away for everyone. Thank you for trying it either way.</p>
+        <a data-i18n="firstopen.9" class="btn" href="https://github.com/sponsors/mynetx">Help pay the fee</a>
       </div>
     </section>
 
     <div class="demo">
       <div class="stage">
-      <div class="win" id="win" tabindex="0" role="group" aria-roledescription="image viewer demo"
+      <div data-i18n-attr="page.11" class="win" id="win" tabindex="0" role="group" aria-roledescription="image viewer demo"
            aria-label="Featherview demo. Arrow keys browse, R and L rotate, plus and minus zoom, 0 fits, 1 shows actual size, I shows info, forward delete moves to Trash.">
         <div class="fit"><div class="photo" id="photo"></div></div>
-        <div class="lights"><button data-light="close" aria-label="Close window" title="Close"><span aria-hidden="true"><svg viewBox="0 0 12 12"><path d="M3.9 3.9l4.2 4.2M8.1 3.9l-4.2 4.2"/></svg></span></button><button data-light="mini" aria-label="Minimise window" title="Minimise"><span aria-hidden="true"><svg viewBox="0 0 12 12"><path d="M3.3 6h5.4"/></svg></span></button><button data-light="max" aria-label="Fill the page" title="Fill the page"><span aria-hidden="true"><svg viewBox="0 0 12 12"><path class="fill" d="M3.4 3.4h3.3L3.4 6.7zM8.6 8.6H5.3L8.6 5.3z"/></svg></span></button></div>
+        <div class="lights"><button data-i18n-attr="win.1" data-light="close" aria-label="Close window" title="Close"><span aria-hidden="true"><svg viewBox="0 0 12 12"><path d="M3.9 3.9l4.2 4.2M8.1 3.9l-4.2 4.2"/></svg></span></button><button data-i18n-attr="win.2" data-light="mini" aria-label="Minimise window" title="Minimise"><span aria-hidden="true"><svg viewBox="0 0 12 12"><path d="M3.3 6h5.4"/></svg></span></button><button data-i18n-attr="win.3" data-light="max" aria-label="Fill the page" title="Fill the page"><span aria-hidden="true"><svg viewBox="0 0 12 12"><path class="fill" d="M3.4 3.4h3.3L3.4 6.7zM8.6 8.6H5.3L8.6 5.3z"/></svg></span></button></div>
         <div class="tools">
-          <div class="seg glass"><button data-k="ArrowLeft" aria-label="Previous image" title="Previous image (←)"><svg class="chev"><use href="#i-prev"/></svg></button><button data-k="ArrowRight" aria-label="Next image" title="Next image (→)"><svg class="chev"><use href="#i-next"/></svg></button></div>
+          <div class="seg glass"><button data-i18n-attr="win.4" data-k="ArrowLeft" aria-label="Previous image" title="Previous image (←)"><svg class="chev"><use href="#i-prev"/></svg></button><button data-i18n-attr="win.5" data-k="ArrowRight" aria-label="Next image" title="Next image (→)"><svg class="chev"><use href="#i-next"/></svg></button></div>
           <div class="wtitle" aria-live="polite"><b id="title"></b><span id="count"></span></div>
-          <div class="seg glass"><button data-k="l" aria-label="Rotate left" title="Rotate left (L)"><svg><use href="#i-rotl"/></svg></button><button data-k="r" aria-label="Rotate right" title="Rotate right (R)"><svg><use href="#i-rotr"/></svg></button><hr><button data-k="-" aria-label="Zoom out" title="Zoom out (−)"><svg><use href="#i-zout"/></svg></button><button data-k="0" aria-label="Zoom to fit" title="Zoom to fit (0)"><svg><use href="#i-fit"/></svg></button><button data-k="+" aria-label="Zoom in" title="Zoom in (+)"><svg><use href="#i-zin"/></svg></button><hr><button data-k="i" id="infobtn" aria-label="Info" aria-pressed="false" title="Show info (I)"><svg><use href="#i-info"/></svg></button><button data-k="Delete" aria-label="Move to Trash" title="Move to Trash (⌦)"><svg><use href="#i-trash"/></svg></button></div>
+          <div class="seg glass"><button data-i18n-attr="win.6" data-k="l" aria-label="Rotate left" title="Rotate left (L)"><svg><use href="#i-rotl"/></svg></button><button data-i18n-attr="win.7" data-k="r" aria-label="Rotate right" title="Rotate right (R)"><svg><use href="#i-rotr"/></svg></button><hr><button data-i18n-attr="win.8" data-k="-" aria-label="Zoom out" title="Zoom out (−)"><svg><use href="#i-zout"/></svg></button><button data-i18n-attr="win.9" data-k="0" aria-label="Zoom to fit" title="Zoom to fit (0)"><svg><use href="#i-fit"/></svg></button><button data-i18n-attr="win.10" data-k="+" aria-label="Zoom in" title="Zoom in (+)"><svg><use href="#i-zin"/></svg></button><hr><button data-i18n-attr="win.11" data-k="i" id="infobtn" aria-label="Info" aria-pressed="false" title="Show info (I)"><svg><use href="#i-info"/></svg></button><button data-i18n-attr="win.12" data-k="Delete" aria-label="Move to Trash" title="Move to Trash (⌦)"><svg><use href="#i-trash"/></svg></button></div>
         </div>
-        <aside class="info" id="info" aria-label="Info">
+        <aside data-i18n-attr="win.13" class="info" id="info" aria-label="Info">
           <div class="ihead" id="ihead"></div>
           <div>
-            <div class="hhead"><span>Histogram</span><button class="mode" id="mode" aria-label="Histogram mode: Luminance"><span data-m="lum" class="on">Luminance</span><span data-m="rgb">RGB</span></button></div>
-            <div class="plot" id="plot" role="img" aria-label="Luminance histogram">
+            <div class="hhead"><span data-i18n="info.1">Histogram</span><button data-i18n-attr="info.2" class="mode" id="mode" aria-label="Histogram mode: Luminance"><span data-i18n="mode.1" data-m="lum" class="on">Luminance</span><span data-i18n="mode.2" data-m="rgb">RGB</span></button></div>
+            <div data-i18n-attr="info.3" class="plot" id="plot" role="img" aria-label="Luminance histogram">
               <svg viewBox="0 0 255 60" preserveAspectRatio="none" aria-hidden="true"><path class="grid" d="M63.75 0V60M127.5 0V60M191.25 0V60"/></svg>
               <svg class="curves" id="curves" viewBox="0 0 255 60" preserveAspectRatio="none" aria-hidden="true"><g id="h-rgb" display="none"><path class="ch" id="h-r"/><path class="ch" id="h-g"/><path class="ch" id="h-b"/></g><path id="h-fill"/><path id="h-lum"/></svg>
-              <button class="clip" data-c="0" aria-label="Shadows clipping"><svg viewBox="0 0 11 10" aria-hidden="true"><path d="M.7 9.3 5.5.8l4.8 8.5z"/></svg></button><button class="clip" data-c="1" aria-label="Highlights clipping"><svg viewBox="0 0 11 10" aria-hidden="true"><path d="M.7 9.3 5.5.8l4.8 8.5z"/></svg></button>
+              <button data-i18n-attr="plot.1" class="clip" data-c="0" aria-label="Shadows clipping"><svg viewBox="0 0 11 10" aria-hidden="true"><path d="M.7 9.3 5.5.8l4.8 8.5z"/></svg></button><button data-i18n-attr="plot.2" class="clip" data-c="1" aria-label="Highlights clipping"><svg viewBox="0 0 11 10" aria-hidden="true"><path d="M.7 9.3 5.5.8l4.8 8.5z"/></svg></button>
               <span class="bubble" id="bubble" hidden></span>
             </div>
           </div>
           <div id="groups"></div>
-          <button class="sb" data-say="The app lists every tag in a window of its own."><svg class="ic"><use href="#g-list"/></svg>Show all metadata…</button>
+          <button data-i18n="info.4" class="sb" data-say="The app lists every tag in a window of its own."><svg class="ic"><use href="#g-list"/></svg>Show all metadata…</button>
         </aside>
         <div class="strip glass" aria-hidden="true"><span id="s-size"></span><span id="s-zoom"></span><span id="s-bytes" class="opt-wide"></span><span id="s-pos"></span><span id="s-date" class="opt-wide"></span></div>
         <div class="toast glass" id="toast" role="status"></div>
       </div>
-      <div class="adock" id="adock" role="group" aria-label="Dock" inert>
-        <button class="ditem" id="dockapp" data-label="Featherview" aria-label="Featherview, restore the demo window"><svg viewBox="0 0 64 64" aria-hidden="true"><use href="#icon"/></svg><b class="run"></b></button>
-        <button class="ditem" id="docksafari" data-label="Safari" aria-label="Safari, back to the top"><svg viewBox="0 0 64 64" aria-hidden="true">
+      <div data-i18n-attr="page.12" class="adock" id="adock" role="group" aria-label="Dock" inert>
+        <button data-i18n-attr="adock.1" class="ditem" id="dockapp" data-label="Featherview" aria-label="Featherview, restore the demo window"><svg viewBox="0 0 64 64" aria-hidden="true"><use href="#icon"/></svg><b class="run"></b></button>
+        <button data-i18n-attr="adock.2" class="ditem" id="docksafari" data-label="Safari" aria-label="Safari, back to the top"><svg viewBox="0 0 64 64" aria-hidden="true">
           <defs><linearGradient id="sfr" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#7cc8ff"/><stop offset="1" stop-color="#1665d8"/></linearGradient></defs>
           <circle cx="32" cy="32" r="29" fill="#f4f4f6" stroke="#b9bcc4"/><circle cx="32" cy="32" r="25" fill="url(#sfr)"/>
           <g stroke="#fff" stroke-width="1.4" stroke-linecap="round" opacity=".85"><path d="M32 9v5M32 50v5M9 32h5M50 32h5M15.7 15.7l3 3M45.3 45.3l3 3M48.3 15.7l-3 3M18.7 45.3l-3 3"/></g>
           <path d="M44 20 35 35 29 29z" fill="#ff3b30"/><path d="M20 44 29 29 35 35z" fill="#fff"/><circle cx="32" cy="32" r="2" fill="#1d1d1f"/></svg><b class="run"></b></button>
         <i class="sep" aria-hidden="true"></i>
-        <button class="ditem" id="dockmin" data-label="IMG_2041.jpg" aria-label="Restore the demo window"><span class="mw" aria-hidden="true"><span><span class="tb"><i></i><i></i><i></i></span><span id="dockthumb" style="display:block;height:30px"></span></span></span></button>
-        <button class="ditem" id="docksite" data-label="Featherview, in Safari" aria-label="Featherview website in Safari, back to the top"><span class="mw" aria-hidden="true"><span><span class="tb"><i></i><i></i><i></i></span><span class="site"><span>Photos at the <em>speed of</em><b></b></span></span></span></span></button>
+        <button data-i18n-attr="adock.3" class="ditem" id="dockmin" data-label="IMG_2041.jpg" aria-label="Restore the demo window"><span class="mw" aria-hidden="true"><span><span class="tb"><i></i><i></i><i></i></span><span id="dockthumb" style="display:block;height:30px"></span></span></span></button>
+        <button data-i18n-attr="adock.4" class="ditem" id="docksite" data-label="Featherview, in Safari" aria-label="Featherview website in Safari, back to the top"><span class="mw" aria-hidden="true"><span><span class="tb"><i></i><i></i><i></i></span><span class="site"><span data-i18n="docksite.1">Photos at the <em>speed of</em><b></b></span></span></span></span></button>
       </div>
       </div>
       <div class="hint">
-        <button data-k="ArrowLeft"><kbd>←</kbd>Previous</button>
-        <button data-k="ArrowRight"><kbd>→</kbd>Next</button>
-        <button data-k="r"><kbd>R</kbd>Rotate</button>
-        <button data-k="+"><kbd>+</kbd>Zoom in</button>
-        <button data-k="1"><kbd>1</kbd>Actual size</button>
-        <button data-k="0"><kbd>0</kbd>Fit</button>
-        <button data-k="i"><kbd>I</kbd>Info</button>
-        <button data-k="Delete"><kbd>⌦</kbd>Trash</button>
+        <button data-i18n="page.13" data-k="ArrowLeft"><kbd>←</kbd>Previous</button>
+        <button data-i18n="page.14" data-k="ArrowRight"><kbd>→</kbd>Next</button>
+        <button data-i18n="page.15" data-k="r"><kbd>R</kbd>Rotate</button>
+        <button data-i18n="page.16" data-k="+"><kbd>+</kbd>Zoom in</button>
+        <button data-i18n="page.17" data-k="1"><kbd>1</kbd>Actual size</button>
+        <button data-i18n="page.18" data-k="0"><kbd>0</kbd>Fit</button>
+        <button data-i18n="page.19" data-k="i"><kbd>I</kbd>Info</button>
+        <button data-i18n="page.20" data-k="Delete"><kbd>⌦</kbd>Trash</button>
       </div>
-      <p class="psst">psst: the keys work right here. Try holding →.</p>
+      <p data-i18n="page.21" class="psst">psst: the keys work right here. Try holding →.</p>
     </div>
   </header>
 
   <section id="preview" class="center" aria-labelledby="h-preview">
-    <p class="eyebrow">next photo</p>
-    <h2 id="h-preview">Double-click a photo, press →. <span class="grad">Only one of them moves on.</span></h2>
-    <p class="sub">Preview shows the photo you opened and nothing else; to see the rest you go back to Finder, select them all and open them together. Featherview opens the whole folder with the first photo: → for the next, ← for the previous, about 20&nbsp;ms each.</p>
+    <p data-i18n="preview.1" class="eyebrow">next photo</p>
+    <h2 data-i18n="preview.2" id="h-preview">Double-click a photo, press →. <span class="grad">Only one of them moves on.</span></h2>
+    <p data-i18n="preview.3" class="sub">Preview shows the photo you opened and nothing else; to see the rest you go back to Finder, select them all and open them together. Featherview opens the whole folder with the first photo: → for the next, ← for the previous, about 20&nbsp;ms each.</p>
     <figure class="hubble">
-      <video id="vspreview" class="wide" src="vs-preview.mp4" poster="vs-preview.webp" muted loop playsinline preload="none" aria-label="Screen recording: the same photo open in Preview and in Featherview. The right arrow key is pressed six times in Preview, which stays on the first photo, then in Featherview, which shows all 18 photos of the folder in turn"><track kind="captions" src="vs-preview.vtt" srclang="en" label="English"></video>
-      <figcaption>Recorded on macOS 27.2 with Featherview 0.13.1. Photos: NASA, taken from the International Space Station, public domain.</figcaption>
+      <video data-i18n-attr="preview.4" id="vspreview" class="wide" src="vs-preview.mp4" poster="vs-preview.webp" muted loop playsinline preload="none" aria-label="Screen recording: the same photo open in Preview and in Featherview. The right arrow key is pressed six times in Preview, which stays on the first photo, then in Featherview, which shows all 18 photos of the folder in turn"><track kind="captions" src="vs-preview.vtt" srclang="en" label="English"></video>
+      <figcaption data-i18n="preview.5">Recorded on macOS 27.2 with Featherview 0.13.1. Photos: NASA, taken from the International Space Station, public domain.</figcaption>
     </figure>
   </section>
 
   <section id="speed" class="center" aria-labelledby="h-speed">
-    <p class="eyebrow">speed</p>
-    <h2 id="h-speed">We looked for a loading spinner. <span class="grad">There isn’t one.</span></h2>
-    <p class="sub">The next photo is ready before you ask for it. Huge folders open without the window freezing. You stop waiting and just look.</p>
-    <div class="snap" aria-label="Pressing the right arrow key: the next photo is simply there">
-      <button class="hk" id="snapkey" aria-label="Show the next photo">→</button>
+    <p data-i18n="speed.1" class="eyebrow">speed</p>
+    <h2 data-i18n="speed.2" id="h-speed">We looked for a loading spinner. <span class="grad">There isn’t one.</span></h2>
+    <p data-i18n="speed.3" class="sub">The next photo is ready before you ask for it. Huge folders open without the window freezing. You stop waiting and just look.</p>
+    <div data-i18n-attr="speed.4" class="snap" aria-label="Pressing the right arrow key: the next photo is simply there">
+      <button data-i18n-attr="speed.5" class="hk" id="snapkey" aria-label="Show the next photo">→</button>
       <span class="to" aria-hidden="true">→</span>
       <div class="frame" id="snapframe" aria-hidden="true"></div>
     </div>
-    <p class="nospin"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="8" stroke="var(--line)"/><path d="M12 4a8 8 0 0 1 8 8" stroke="var(--muted)"/><path d="M5 19 19 5" stroke="var(--warm)"/></svg>spinner: currently unemployed</p>
-    <div><button class="jump" id="jump">Now hold → in the real thing up there <span aria-hidden="true">↑</span></button></div>
+    <p data-i18n="speed.6" class="nospin"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="8" stroke="var(--line)"/><path d="M12 4a8 8 0 0 1 8 8" stroke="var(--muted)"/><path d="M5 19 19 5" stroke="var(--warm)"/></svg>spinner: currently unemployed</p>
+    <div><button data-i18n="speed.7" class="jump" id="jump">Now hold → in the real thing up there <span aria-hidden="true">↑</span></button></div>
   </section>
 
   <section id="huge" class="center" aria-labelledby="h-huge">
-    <p class="eyebrow">huge pictures</p>
-    <h2 id="h-huge">A 4.6 GB Photoshop file. <span class="grad">Opened by double-click.</span></h2>
-    <p class="sub">Hubble’s Andromeda mosaic, 69,536 × 22,230 pixels in one file. Featherview shows all of it about two seconds after the double-click, app launch included, then decodes only the part you look at.</p>
+    <p data-i18n="huge.1" class="eyebrow">huge pictures</p>
+    <h2 data-i18n="huge.2" id="h-huge">A 4.6 GB Photoshop file. <span class="grad">Opened by double-click.</span></h2>
+    <p data-i18n="huge.3" class="sub">Hubble’s Andromeda mosaic, 69,536 × 22,230 pixels in one file. Featherview shows all of it about two seconds after the double-click, app launch included, then decodes only the part you look at.</p>
     <figure class="hubble">
-      <video id="hubble" src="hubble.mp4" poster="hubble.webp" muted loop playsinline preload="none" aria-label="Screen recording: the 4.6 GB file is double-clicked in Finder, opens in Featherview, is zoomed to 100 % and panned"><track kind="captions" src="hubble.vtt" srclang="en" label="English"></video>
-      <figcaption>Andromeda: NASA, ESA, J. Dalcanton (University of Washington, USA), B. F. Williams (University of Washington, USA), L. C. Johnson (University of Washington, USA), the PHAT team, and R. Gendler. <a href="https://esahubble.org/images/heic1502a/">esahubble.org</a>, CC BY 4.0</figcaption>
+      <video data-i18n-attr="huge.4" id="hubble" src="hubble.mp4" poster="hubble.webp" muted loop playsinline preload="none" aria-label="Screen recording: the 4.6 GB file is double-clicked in Finder, opens in Featherview, is zoomed to 100 % and panned"><track kind="captions" src="hubble.vtt" srclang="en" label="English"></video>
+      <figcaption data-i18n="huge.5">Andromeda: NASA, ESA, J. Dalcanton (University of Washington, USA), B. F. Williams (University of Washington, USA), L. C. Johnson (University of Washington, USA), the PHAT team, and R. Gendler. <a href="https://esahubble.org/images/heic1502a/">esahubble.org</a>, CC BY 4.0</figcaption>
     </figure>
     <div class="grid figs">
-      <div class="card"><b>1.5 gigapixels</b><p>in one Photoshop file, read by our own reader</p></div>
-      <div class="card"><b>2 s</b><p>from double-click to picture, the first time, launch included</p></div>
-      <div class="card"><b>36–60 ms</b><p>per part while you pan at 100 %</p></div>
+      <div class="card"><b data-i18n="huge.6">1.5 gigapixels</b><p data-i18n="huge.7">in one Photoshop file, read by our own reader</p></div>
+      <div class="card"><b>2 s</b><p data-i18n="huge.8">from double-click to picture, the first time, launch included</p></div>
+      <div class="card"><b data-i18n="huge.9">36–60 ms</b><p data-i18n="huge.10">per part while you pan at 100 %</p></div>
     </div>
   </section>
 
   <section id="features" aria-labelledby="h-features">
-    <p class="eyebrow">the viewer</p>
-    <h2 id="h-features">Everything you need to sort a folder of photos. Nothing in the way.</h2>
-    <p class="sub">One window, the picture edge to edge, and your keyboard. Panels appear only when you ask.</p>
+    <p data-i18n="features.1" class="eyebrow">the viewer</p>
+    <h2 data-i18n="features.2" id="h-features">Everything you need to sort a folder of photos. Nothing in the way.</h2>
+    <p data-i18n="features.3" class="sub">One window, the picture edge to edge, and your keyboard. Panels appear only when you ask.</p>
     <div class="grid">
       <div class="card"><div class="ico"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M13 2 4 14h7l-1 8 9-12h-7z"/></svg></div>
-        <h3>It’s just there</h3><p>Double-click a photo in Finder. It opens, and the rest of the folder lines up behind it.</p></div>
+        <h3 data-i18n="features.4">It’s just there</h3><p data-i18n="features.5">Double-click a photo in Finder. It opens, and the rest of the folder lines up behind it.</p></div>
       <div class="card"><div class="ico"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="2" y="6" width="20" height="13" rx="2"/><path d="M6 10h.01M10 10h.01M14 10h.01M18 10h.01M7 15h10"/></svg></div>
-        <h3>One key, one job</h3><p>Rotate, zoom, trash, full screen. Each is a single key, no finger yoga. Mouse fans get a toolbar.</p></div>
+        <h3 data-i18n="features.6">One key, one job</h3><p data-i18n="features.7">Rotate, zoom, trash, full screen. Each is a single key, no finger yoga. Mouse fans get a toolbar.</p></div>
       <div class="card"><div class="ico"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M21 12a9 9 0 1 1-3-6.7L21 8"/><path d="M21 3v5h-5"/></svg></div>
-        <h3>Rotation without regret</h3><p>R and L turn JPEG, HEIC and TIFF without touching a single pixel.</p></div>
+        <h3 data-i18n="features.8">Rotation without regret</h3><p data-i18n="features.9">R and L turn JPEG, HEIC and TIFF without touching a single pixel.</p></div>
       <div class="card"><div class="ico"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3 4 6v6c0 5 3.5 8 8 9 4.5-1 8-4 8-9V6z"/></svg></div>
-        <h3>Hard to break</h3><p>Delete goes to the Trash. Batch output never overwrites. One broken file never stops the show.</p></div>
+        <h3 data-i18n="features.10">Hard to break</h3><p data-i18n="features.11">Delete goes to the Trash. Batch output never overwrites. One broken file never stops the show.</p></div>
       <div class="card"><div class="ico"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 11v6M12 7.5h.01"/></svg></div>
-        <h3>Nosy, on request</h3><p>Press I for the histogram, the camera and exposure, and where the shot was taken, in your language and worked out on your Mac, with nothing sent anywhere.</p></div>
+        <h3 data-i18n="features.12">Nosy, on request</h3><p data-i18n="features.13">Press I for the histogram, the camera and exposure, and where the shot was taken, in your language and worked out on your Mac, with nothing sent anywhere.</p></div>
       <div class="card"><div class="ico"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="4" width="18" height="13" rx="2"/><path d="M8 21h8M12 17v4"/></svg></div>
-        <h3>Mac to the core</h3><p>Real Mac menus, full screen, Open With, drag and drop, true colours, and HDR that glows on HDR screens.</p></div>
+        <h3 data-i18n="features.14">Mac to the core</h3><p data-i18n="features.15">Real Mac menus, full screen, Open With, drag and drop, true colours, and HDR that glows on HDR screens.</p></div>
     </div>
   </section>
 
   <section id="keyboard" aria-labelledby="h-keys">
     <div class="split">
       <div>
-        <p class="eyebrow">keyboard</p>
-        <h2 id="h-keys">Your mouse can take the day off.</h2>
-        <p class="sub">Every viewer action is one key, no modifiers to hold. Coming from a classic Windows viewer? Your fingers already know most of these. The ⌘ shortcuts are there too.</p>
+        <p data-i18n="keyboard.1" class="eyebrow">keyboard</p>
+        <h2 data-i18n="keyboard.2" id="h-keys">Your mouse can take the day off.</h2>
+        <p data-i18n="keyboard.3" class="sub">Every viewer action is one key, no modifiers to hold. Coming from a classic Windows viewer? Your fingers already know most of these. The ⌘ shortcuts are there too.</p>
       </div>
-      <div class="sheet" aria-label="Keyboard cheat sheet">
-        <header><b>cheat-sheet.txt</b><span>no modifiers required</span></header>
-        <h3>Browse</h3>
-        <div class="row"><span><kbd>→</kbd><kbd>Space</kbd></span><span>Next, then on to the next folder</span></div>
-        <div class="row"><span><kbd>←</kbd><kbd>⌫</kbd></span><span>Back</span></div>
-        <div class="row"><span><kbd>Home</kbd><kbd>End</kbd></span><span>Jump to either end</span></div>
-        <h3>Look closer</h3>
-        <div class="row"><span><kbd>+</kbd><kbd>−</kbd><kbd>0</kbd><kbd>1</kbd></span><span>Zoom, fit, every pixel</span></div>
-        <div class="row"><span><kbd>F</kbd><kbd>I</kbd></span><span>Full screen, info</span></div>
-        <h3>Tidy up</h3>
-        <div class="row"><span><kbd>R</kbd><kbd>L</kbd></span><span>Turn it the right way up</span></div>
-        <div class="row"><span><kbd>F7</kbd><kbd>F8</kbd></span><span>Move or copy to a favourite folder</span></div>
-        <div class="row"><span><kbd>⌦</kbd></span><span>Off to the Trash</span></div>
-        <div class="row"><span><kbd>B</kbd></span><span>Batch the lot</span></div>
-        <p class="foot">// Esc leaves full screen. It never, ever quits.</p>
+      <div data-i18n-attr="keyboard.4" class="sheet" aria-label="Keyboard cheat sheet">
+        <header><b data-i18n="keyboard.5">cheat-sheet.txt</b><span data-i18n="keyboard.6">no modifiers required</span></header>
+        <h3 data-i18n="keyboard.7">Browse</h3>
+        <div class="row"><span><kbd>→</kbd><kbd>Space</kbd></span><span data-i18n="keyboard.8">Next, then on to the next folder</span></div>
+        <div class="row"><span><kbd>←</kbd><kbd>⌫</kbd></span><span data-i18n="keyboard.9">Back</span></div>
+        <div class="row"><span><kbd>Home</kbd><kbd>End</kbd></span><span data-i18n="keyboard.10">Jump to either end</span></div>
+        <h3 data-i18n="keyboard.11">Look closer</h3>
+        <div class="row"><span><kbd>+</kbd><kbd>−</kbd><kbd>0</kbd><kbd>1</kbd></span><span data-i18n="keyboard.12">Zoom, fit, every pixel</span></div>
+        <div class="row"><span><kbd>F</kbd><kbd>I</kbd></span><span data-i18n="keyboard.13">Full screen, info</span></div>
+        <h3 data-i18n="keyboard.14">Tidy up</h3>
+        <div class="row"><span><kbd>R</kbd><kbd>L</kbd></span><span data-i18n="keyboard.15">Turn it the right way up</span></div>
+        <div class="row"><span><kbd>F7</kbd><kbd>F8</kbd></span><span data-i18n="keyboard.16">Move or copy to a favourite folder</span></div>
+        <div class="row"><span><kbd>⌦</kbd></span><span data-i18n="keyboard.17">Off to the Trash</span></div>
+        <div class="row"><span><kbd>B</kbd></span><span data-i18n="keyboard.18">Batch the lot</span></div>
+        <p data-i18n="keyboard.19" class="foot">// Esc leaves full screen. It never, ever quits.</p>
       </div>
     </div>
   </section>
 
   <section id="formats" aria-labelledby="h-formats">
-    <p class="eyebrow">formats</p>
-    <h2 id="h-formats">Opens the usual suspects. And the odd ones.</h2>
-    <p class="sub">Every picture shows up the right way round, in true colour.</p>
+    <p data-i18n="formats.1" class="eyebrow">formats</p>
+    <h2 data-i18n="formats.2" id="h-formats">Opens the usual suspects. And the odd ones.</h2>
+    <p data-i18n="formats.3" class="sub">Every picture shows up the right way round, in true colour.</p>
     <div class="fgroups">
       <div class="fgroup">
-        <h3>Everything your Mac opens</h3><p>Phone photos, camera RAW, the modern web formats WebP, AVIF and JPEG XL, even SVG and PDF pages.</p>
-        <ul class="exts" aria-label="Examples"><li>.jpg</li><li>.heic</li><li>.png</li><li>.webp</li><li>.avif</li><li>.jxl</li><li>.dng</li><li>.tiff</li><li>.psd</li><li>.exr</li><li>.svg</li><li>.pdf</li><li class="more">and friends</li></ul>
+        <h3 data-i18n="formats.4">Everything your Mac opens</h3><p data-i18n="formats.5">Phone photos, camera RAW, the modern web formats WebP, AVIF and JPEG XL, even SVG and PDF pages.</p>
+        <ul data-i18n-attr="formats.6" class="exts" aria-label="Examples"><li data-i18n="formats.7">.jpg</li><li data-i18n="formats.8">.heic</li><li data-i18n="formats.9">.png</li><li data-i18n="formats.10">.webp</li><li data-i18n="formats.11">.avif</li><li data-i18n="formats.12">.jxl</li><li data-i18n="formats.13">.dng</li><li data-i18n="formats.14">.tiff</li><li data-i18n="formats.15">.psd</li><li data-i18n="formats.16">.exr</li><li data-i18n="formats.17">.svg</li><li data-i18n="formats.18">.pdf</li><li data-i18n="formats.19" class="more">and friends</li></ul>
       </div>
       <div class="fgroup">
-        <h3>The forgotten classics</h3><p>Formats macOS gave up on, read by Featherview itself. That PCX from your first PC, a MacPaint doodle, a telescope’s FITS? Opens fine, and Finder shows their thumbnails and Quick Look previews too.</p>
-        <ul class="exts" aria-label="Examples"><li>.pcx</li><li>.qoi</li><li>.xpm</li><li>.xbm</li><li>.iff</li><li>.ras</li><li>.mac</li><li>.fits</li><li>.xwd</li><li>.ani</li><li class="more">and more</li></ul>
+        <h3 data-i18n="formats.20">The forgotten classics</h3><p data-i18n="formats.21">Formats macOS gave up on, read by Featherview itself. That PCX from your first PC, a MacPaint doodle, a telescope’s FITS? Opens fine, and Finder shows their thumbnails and Quick Look previews too.</p>
+        <ul data-i18n-attr="formats.22" class="exts" aria-label="Examples"><li data-i18n="formats.23">.pcx</li><li data-i18n="formats.24">.qoi</li><li data-i18n="formats.25">.xpm</li><li data-i18n="formats.26">.xbm</li><li data-i18n="formats.27">.iff</li><li data-i18n="formats.28">.ras</li><li data-i18n="formats.29">.mac</li><li data-i18n="formats.30">.fits</li><li data-i18n="formats.31">.xwd</li><li data-i18n="formats.32">.ani</li><li data-i18n="formats.33" class="more">and more</li></ul>
       </div>
       <div class="fgroup">
-        <h3>Fresh from the editor</h3><p>Layered Photoshop PSD and PSB, GIMP, Krita, Paint.NET and PaintShop Pro files, shown flattened. Procreate artwork from your iPad too, at full size. No editor needed.</p>
-        <ul class="exts" aria-label="Examples"><li>.psb</li><li>.xcf</li><li>.kra</li><li>.ora</li><li>.procreate</li><li>.pdn</li><li>.psp</li></ul>
+        <h3 data-i18n="formats.34">Fresh from the editor</h3><p data-i18n="formats.35">Layered Photoshop PSD and PSB, GIMP, Krita, Paint.NET and PaintShop Pro files, shown flattened. Procreate artwork from your iPad too, at full size. No editor needed.</p>
+        <ul data-i18n-attr="formats.36" class="exts" aria-label="Examples"><li data-i18n="formats.37">.psb</li><li data-i18n="formats.38">.xcf</li><li data-i18n="formats.39">.kra</li><li data-i18n="formats.40">.ora</li><li data-i18n="formats.41">.procreate</li><li data-i18n="formats.42">.pdn</li><li data-i18n="formats.43">.psp</li></ul>
       </div>
     </div>
-    <p class="saves"><b>And it saves to all the useful ones:</b> JPEG, PNG, HEIC, AVIF, WebP, JPEG XL, TIFF, PDF, and even ICO and ICNS for the icon crowd.</p>
+    <p data-i18n="formats.44" class="saves"><b>And it saves to all the useful ones:</b> JPEG, PNG, HEIC, AVIF, WebP, JPEG XL, TIFF, PDF, and even ICO and ICNS for the icon crowd.</p>
   </section>
 
   <section id="batch" aria-labelledby="h-batch">
     <div class="split batch-top">
       <div>
-        <p class="eyebrow">batch</p>
-        <h2 id="h-batch">A whole shoot in. Exactly what you need out.</h2>
-        <p class="sub" style="margin-bottom:0">Pick the keepers, choose a format, a size and a name, add the steps you want, watch the preview follow along, press Convert. Keep the recipe as a preset for next time.</p>
+        <p data-i18n="batch.1" class="eyebrow">batch</p>
+        <h2 data-i18n="batch.2" id="h-batch">A whole shoot in. Exactly what you need out.</h2>
+        <p data-i18n="batch.3" class="sub" style="margin-bottom:0">Pick the keepers, choose a format, a size and a name, add the steps you want, watch the preview follow along, press Convert. Keep the recipe as a preset for next time.</p>
       </div>
       <div>
         <ul class="ticks">
-          <li><span>Never overwrites a file<small>Your originals stay exactly as they were.</small></span></li>
-          <li><span>Keeps the story<small>Camera details and location come along.</small></span></li>
-          <li><span>Doesn’t give up<small>A file it can’t read is skipped. The rest still gets done.</small></span></li>
+          <li><span data-i18n="batch.4">Never overwrites a file<small>Your originals stay exactly as they were.</small></span></li>
+          <li><span data-i18n="batch.5">Keeps the story<small>Camera details and location come along.</small></span></li>
+          <li><span data-i18n="batch.6">Doesn’t give up<small>A file it can’t read is skipped. The rest still gets done.</small></span></li>
         </ul>
-        <p class="steps">Resize, crop, rotate, fix colour, sharpen, add a border, stamp text or a watermark, and rename with a pattern.</p>
+        <p data-i18n="batch.7" class="steps">Resize, crop, rotate, fix colour, sharpen, add a border, stamp text or a watermark, and rename with a pattern.</p>
       </div>
     </div>
-    <div class="bwin" role="img" aria-label="Drawing of the batch window: the image list, numbered cards for format, size and name with Size open, an added Text step, and a live before and after preview">
+    <div data-i18n-attr="batch.8" class="bwin" role="img" aria-label="Drawing of the batch window: the image list, numbered cards for format, size and name with Size open, an added Text step, and a live before and after preview">
       <div class="bbar">
-        <div class="lights"><i></i><i></i><i></i></div><span class="t">Batch</span><span class="sp"></span>
+        <div class="lights"><i></i><i></i><i></i></div><span data-i18n="batch.9" class="t">Batch</span><span class="sp"></span>
       </div>
       <div class="bcols">
-        <div class="bcol" id="bimgs"><div class="bh">Images</div></div>
+        <div class="bcol" id="bimgs"><div data-i18n="bimgs.1" class="bh">Images</div></div>
         <div class="bcol">
-          <div class="bstep"><span><em>2</em>Format</span><b>WebP · 80</b></div>
-          <div class="bstep open"><span><em>3</em>Size</span><b>Longest side 2048</b>
+          <div class="bstep"><span data-i18n="batch.10"><em>2</em>Format</span><b data-i18n="batch.11">WebP · 80</b></div>
+          <div class="bstep open"><span data-i18n="batch.12"><em>3</em>Size</span><b data-i18n="batch.13">Longest side 2048</b>
             <div class="bcard">
-              <div class="brow"><span>Change size</span><span class="ck"></span></div>
-              <div class="brow"><span>Resize to</span><span class="pop">Longest Side ▾</span></div>
-              <div class="brow"><span>Don’t enlarge smaller images</span><span class="ck"></span></div>
+              <div class="brow"><span data-i18n="batch.14">Change size</span><span class="ck"></span></div>
+              <div class="brow"><span data-i18n="batch.15">Resize to</span><span data-i18n="batch.16" class="pop">Longest Side ▾</span></div>
+              <div class="brow"><span data-i18n="batch.17">Don’t enlarge smaller images</span><span class="ck"></span></div>
             </div>
           </div>
-          <div class="bstep"><span><em>4</em>Name</span><b>trip-{n:3} · Desktop/Coast</b></div>
-          <div class="bstep"><span><em>✕</em>Text</span><b>{date}</b></div>
-          <div class="addstep">Add Step ▾</div>
+          <div class="bstep"><span data-i18n="batch.18"><em>4</em>Name</span><b data-i18n="batch.19">trip-{n:3} · Desktop/Coast</b></div>
+          <div class="bstep"><span data-i18n="batch.20"><em>✕</em>Text</span><b data-i18n="batch.21">{date}</b></div>
+          <div data-i18n="batch.22" class="addstep">Add Step ▾</div>
           <div class="prev">
             <figure><div class="a" id="pv-a"></div><figcaption>4032 × 3024</figcaption></figure>
             <figure><div class="b" id="pv-b"></div><figcaption>2048 × 1536</figcaption></figure>
-            <div class="names">IMG_4102.HEIC → <b>trip-001.webp</b><br>IMG_4103.HEIC → <b>trip-002.webp</b><br>DSC00118.ARW → <b>trip-003.webp</b></div>
+            <div data-i18n="batch.23" class="names">IMG_4102.HEIC → <b>trip-001.webp</b><br>IMG_4103.HEIC → <b>trip-002.webp</b><br>DSC00118.ARW → <b>trip-003.webp</b></div>
           </div>
-          <div class="applied">Applied: size → text</div>
+          <div data-i18n="batch.24" class="applied">Applied: size → text</div>
         </div>
       </div>
-      <div class="bfoot"><span class="pop">Presets ▾</span><span class="sp"></span><span class="go">Convert 6 images</span></div>
+      <div class="bfoot"><span data-i18n="batch.25" class="pop">Presets ▾</span><span class="sp"></span><span data-i18n="batch.26" class="go">Convert 6 images</span></div>
     </div>
   </section>
 
   <section id="languages" class="center" aria-labelledby="h-langs">
-    <p class="eyebrow">languages</p>
-    <h2 id="h-langs">Speaks your language. Thirty of them.</h2>
-    <p class="sub">Featherview follows your Mac’s language. Arabic and Hebrew flip the whole window right to left. Your photos stay the right way round.</p>
+    <p data-i18n="languages.1" class="eyebrow">languages</p>
+    <h2 data-i18n="languages.2" id="h-langs">Speaks your language. Thirty of them.</h2>
+    <p data-i18n="languages.3" class="sub">Featherview follows your Mac’s language. Arabic and Hebrew flip the whole window right to left. Your photos stay the right way round.</p>
     <ul class="langs">
       <li lang="id">Bahasa Indonesia</li><li lang="ms">Bahasa Melayu</li><li lang="ca">Català</li><li lang="cs">Čeština</li><li lang="da">Dansk</li>
       <li lang="de">Deutsch</li><li lang="en">English</li><li lang="es">Español</li><li lang="fr">Français</li><li lang="it">Italiano</li>
@@ -787,35 +808,38 @@
   </section>
 
   <section id="faq" aria-labelledby="h-faq">
-    <p class="eyebrow">questions</p>
-    <h2 id="h-faq">Asked before you download.</h2>
+    <p data-i18n="faq.1" class="eyebrow">questions</p>
+    <h2 data-i18n="faq.2" id="h-faq">Asked before you download.</h2>
     <div class="grid">
-      <div class="card"><h3>Is there IrfanView for Mac?</h3><p>No, it runs on Windows only. Featherview is an independent Mac alternative in the same spirit: open one picture and the arrow keys take you through the folder, R and L rotate, and batch conversion handles the rest. Most of the single keys are the same, so your fingers already know them. It isn’t affiliated with IrfanView.</p></div>
-      <div class="card"><h3>How do I open a PSD without Photoshop?</h3><p>Double-click it in Featherview. Layered PSD and PSB files show flattened, even 4.6 GB ones, and Finder shows thumbnails of GIMP and Procreate files too.</p></div>
-      <div class="card"><h3>Can I view WebP and JPEG XL on a Mac?</h3><p>Yes, and save to them too: WebP, JPEG XL, AVIF and HEIC, plus older formats macOS no longer opens, with Quick Look previews in Finder.</p></div>
-      <div class="card"><h3>Can I flip through a folder like on Windows?</h3><p>That’s the point. Open one photo, then → and ← step through the whole folder. Delete moves a reject to the Trash.</p></div>
-      <div class="card"><h3>Can it batch convert and resize?</h3><p>Yes: HEIC to JPEG, PNG to WebP, resize, rename, crop and watermark a whole shoot, with a live preview. It never overwrites a file.</p></div>
-      <div class="card"><h3>Is it really free?</h3><p>Yes. Open source under the MIT licence, no ads, no account, no paid tier. It updates itself, and runs on Apple Silicon and Intel Macs with macOS 14 or later.</p></div>
+      <div class="card"><h3 data-i18n="faq.3">Is there IrfanView for Mac?</h3><p data-i18n="faq.4">No, it runs on Windows only. Featherview is an independent Mac alternative in the same spirit: open one picture and the arrow keys take you through the folder, R and L rotate, and batch conversion handles the rest. Most of the single keys are the same, so your fingers already know them. It isn’t affiliated with IrfanView.</p></div>
+      <div class="card"><h3 data-i18n="faq.5">How do I open a PSD without Photoshop?</h3><p data-i18n="faq.6">Double-click it in Featherview. Layered PSD and PSB files show flattened, even 4.6 GB ones, and Finder shows thumbnails of GIMP and Procreate files too.</p></div>
+      <div class="card"><h3 data-i18n="faq.7">Can I view WebP and JPEG XL on a Mac?</h3><p data-i18n="faq.8">Yes, and save to them too: WebP, JPEG XL, AVIF and HEIC, plus older formats macOS no longer opens, with Quick Look previews in Finder.</p></div>
+      <div class="card"><h3 data-i18n="faq.9">Can I flip through a folder like on Windows?</h3><p data-i18n="faq.10">That’s the point. Open one photo, then → and ← step through the whole folder. Delete moves a reject to the Trash.</p></div>
+      <div class="card"><h3 data-i18n="faq.11">Can it batch convert and resize?</h3><p data-i18n="faq.12">Yes: HEIC to JPEG, PNG to WebP, resize, rename, crop and watermark a whole shoot, with a live preview. It never overwrites a file.</p></div>
+      <div class="card"><h3 data-i18n="faq.13">Is it really free?</h3><p data-i18n="faq.14">Yes. Open source under the MIT licence, no ads, no account, no paid tier. It updates itself, and runs on Apple Silicon and Intel Macs with macOS 14 or later.</p></div>
     </div>
   </section>
 
   <section class="closing" aria-labelledby="h-close">
     <svg class="mark" viewBox="0 0 64 64" aria-hidden="true"><use href="#icon"/></svg>
-    <h2 id="h-close">Free, light as a feather, made for the Mac.</h2>
-    <p class="sub">Written in Swift on macOS’s own image engine. Your Photos library too, browsed with the arrow keys. <a href="https://github.com/featherview/featherview/blob/main/ROADMAP.md">Next&nbsp;up</a>.</p>
-    <div class="cta"><a class="btn primary" href="https://github.com/featherview/featherview">Follow on GitHub</a></div>
+    <h2 data-i18n="page.22" id="h-close">Free, light as a feather, made for the Mac.</h2>
+    <p data-i18n="page.23" class="sub">Written in Swift on macOS’s own image engine. Your Photos library too, browsed with the arrow keys. <a href="https://github.com/featherview/featherview/blob/main/ROADMAP.md">Next&nbsp;up</a>.</p>
+    <div class="cta"><a data-i18n="page.24" class="btn primary" href="https://github.com/featherview/featherview">Follow on GitHub</a></div>
   </section>
 
   </main>
 
   <footer>
-    <span><a class="mx" href="https://mynetx.net" aria-label="mynetx"><svg viewBox="1800 2500 4500 3150" aria-hidden="true"><path d="M1852.226 5472.772c-4-3-7-660-7-1460v-1453h270 270l1 43 8 190 6 149 48-65c127-174 322-299 565-364 86-23 117-26 272-27 192-1 274 14 420 74 180 74 363 239 436 393 10 20 20 37 24 37 3 0 26-28 50-62 215-297 588-465 986-445 448 24 746 240 878 637 69 209 69 208 73 983l-1 697c-3 0-21-11-41-25-81-54-209-87-311-79l-59 5-75-69-75-70-6-513c-7-537-8-557-55-704-86-266-283-398-574-382-200 10-329 63-445 181-99 100-157 216-202 401-15 62-18 173-22 1000l-6 930h-280-280l-6-965c-5-956-5-966-28-1065-58-257-169-398-365-462-103-33-273-38-376-10-272 74-421 253-507 612-15 62-17 175-22 980l-6 910-276 3c-151 1-278-1-282-5z" fill="currentColor"/><circle cx="5830" cy="5200" r="400" fill="var(--bg)"/><path d="M4885 4220 5830 5200" stroke="#247966" stroke-width="320"/><circle cx="4885" cy="4220" r="320" fill="#247966"/><circle cx="5830" cy="5200" r="320" fill="#247966"/></svg></a>Made by <a href="https://github.com/mynetx">Joachim Rütter</a> · <a href="https://github.com/featherview/featherview/blob/main/ROADMAP.md">Roadmap</a></span>
-    <p>An independent Mac alternative to IrfanView, not affiliated with it or its author. Thanks to Irfan Škiljan, whose viewer has shown for decades how fast looking at images can be.</p>
-    <a href="https://macpip.com/apps/featherview?ref=badge"><picture><source media="(prefers-color-scheme: light)" srcset="https://macpip.com/badge/featherview.svg"><img src="https://macpip.com/badge/featherview.svg?theme=dark" height="40" alt="Featherview is listed on MacPip"></picture></a>
+    <span data-i18n="page.25"><a class="mx" href="https://mynetx.net" aria-label="mynetx"><svg viewBox="1800 2500 4500 3150" aria-hidden="true"><path d="M1852.226 5472.772c-4-3-7-660-7-1460v-1453h270 270l1 43 8 190 6 149 48-65c127-174 322-299 565-364 86-23 117-26 272-27 192-1 274 14 420 74 180 74 363 239 436 393 10 20 20 37 24 37 3 0 26-28 50-62 215-297 588-465 986-445 448 24 746 240 878 637 69 209 69 208 73 983l-1 697c-3 0-21-11-41-25-81-54-209-87-311-79l-59 5-75-69-75-70-6-513c-7-537-8-557-55-704-86-266-283-398-574-382-200 10-329 63-445 181-99 100-157 216-202 401-15 62-18 173-22 1000l-6 930h-280-280l-6-965c-5-956-5-966-28-1065-58-257-169-398-365-462-103-33-273-38-376-10-272 74-421 253-507 612-15 62-17 175-22 980l-6 910-276 3c-151 1-278-1-282-5z" fill="currentColor"/><circle cx="5830" cy="5200" r="400" fill="var(--bg)"/><path d="M4885 4220 5830 5200" stroke="#247966" stroke-width="320"/><circle cx="4885" cy="4220" r="320" fill="#247966"/><circle cx="5830" cy="5200" r="320" fill="#247966"/></svg></a>Made by <a href="https://github.com/mynetx">Joachim Rütter</a> · <a href="https://github.com/featherview/featherview/blob/main/ROADMAP.md">Roadmap</a></span>
+    <p data-i18n="page.26">An independent Mac alternative to IrfanView, not affiliated with it or its author. Thanks to Irfan Škiljan, whose viewer has shown for decades how fast looking at images can be.</p>
+    <a href="https://macpip.com/apps/featherview?ref=badge"><picture><source media="(prefers-color-scheme: light)" srcset="https://macpip.com/badge/featherview.svg"><img data-i18n-attr="page.27" src="https://macpip.com/badge/featherview.svg?theme=dark" height="40" alt="Featherview is listed on MacPip"></picture></a>
   </footer>
 </div>
 
 <script>
+fvReady.then(() => {
+const lang = document.getElementById("lang"); lang.value = fvLang; document.getElementById("langname").textContent = lang.selectedOptions[0].text;
+lang.addEventListener("change", () => { try { sessionStorage.setItem("fv-lang", lang.value); } catch (e) {} location.reload(); });
 // Demo photos are random landscapes drawn as SVG, seeded by image number so going back shows the same one.
 const $ = id => document.getElementById(id);
 // camera, lens, focal length, aperture, 35 mm equivalent (when it differs), colour profile
@@ -823,7 +847,6 @@ const cams = [["iPhone 16 Pro","Back camera 6.8 mm f/1.78","6.8","1.78","24 mm",
   ["Sony A7 IV","35 mm f/1.4","35","1.4",null,"sRGB IEC61966-2.1"],["Canon R6","50 mm f/1.8","50","1.8",null,"Adobe RGB (1998)"],
   ["Nikon Z6 II","85 mm f/1.8","85","1.8",null,"sRGB IEC61966-2.1"],["Ricoh GR III","18.3 mm f/2.8","18.3","2.8","28 mm","sRGB IEC61966-2.1"]];
 const sizes = [[6000, 4000], [6240, 4160], [4032, 2688], [7728, 5152]];
-const months = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
 function rng(seed) { return () => { seed = (seed + 0x6d2b79f5) | 0; let t = Math.imul(seed ^ seed >>> 15, 1 | seed); t ^= t + Math.imul(t ^ t >>> 7, 61 | t); return ((t ^ t >>> 14) >>> 0) / 4294967296; }; }
 function scene(seed, id) {
   const r = rng(seed), pick = a => a[Math.floor(r() * a.length)], g = "sk" + id; // gradient id unique per SVG on the page
@@ -846,7 +869,7 @@ function scene(seed, id) {
   const d = 1 + Math.floor(r() * 28), mo = Math.floor(r() * 9), hr = night ? 21 + Math.floor(r() * 3) : 7 + Math.floor(r() * 11), mi = Math.floor(r() * 60);
   return { svg: `<svg viewBox="0 0 300 200" preserveAspectRatio="xMidYMid slice" aria-hidden="true"><defs><linearGradient id="${g}" x2="0" y2="1"><stop stop-color="${sky[0]}"/><stop offset="1" stop-color="${sky[1]}"/></linearGradient></defs>${out}</svg>`,
     cam, night, w, h: hgt, mb: (w * hgt / 1e6 * (.32 + r() * .2)).toFixed(1),
-    date: `${d} ${months[mo]} 2026, ${String(hr).padStart(2, "0")}:${String(mi).padStart(2, "0")}`, day: `${d} ${months[mo]} 2026`,
+    date: new Date(2026, mo, d, hr, mi).toLocaleString(fvLang, { dateStyle: "medium", timeStyle: "short" }), day: new Date(2026, mo, d).toLocaleDateString(fvLang, { dateStyle: "medium" }),
     exp: night ? pick(["4", "8", "15"]) : pick(["1/125", "1/250", "1/500", "1/1000"]), iso: night ? pick(["800", "1600", "3200"]) : pick(["64", "100", "200"]) };
 }
 
@@ -875,25 +898,25 @@ function show(first) { // browsing is instant: no transition between images
 // Info panel (I), as in the app: header with the place, a histogram counted from the picture on screen, then groups that
 // stay open or closed from image to image. Places and camera details are made up per image, from the same seed.
 const places = [ // header, Location's full name, latitude, longitude, altitude (none at sea)
-  ["Andermatt, Switzerland", "near Andermatt, Uri, Switzerland", 46.6356, 8.5939, 1447],
-  ["Nürnberg-Wetzendorf, Germany", "near Nürnberg-Wetzendorf, Bavaria, Germany", 49.4712, 11.0517, 309],
-  ["Hallstatt, Austria", "near Hallstatt, Upper Austria, Austria", 47.5622, 13.6493, 511],
-  ["Tromsø, Norway", "near Tromsø, Troms, Norway", 69.6489, 18.9551, 14],
-  ["Portree, United Kingdom", "near Portree, Scotland, United Kingdom", 57.4129, -6.1942, 41],
-  ["Banff, Canada", "near Banff, Alberta, Canada", 51.1784, -115.5708, 1383],
-  ["North Atlantic, off Gambia", "North Atlantic Ocean, off Banjul, Gambia", 13.3412, -17.2954, null],
-  ["Sahara, near Algeria", "Sahara, near Algeria", 24.5583, 9.4846, 1094],
+  [T("Andermatt, Switzerland"), T("near Andermatt, Uri, Switzerland"), 46.6356, 8.5939, 1447],
+  [T("Nürnberg-Wetzendorf, Germany"), T("near Nürnberg-Wetzendorf, Bavaria, Germany"), 49.4712, 11.0517, 309],
+  [T("Hallstatt, Austria"), T("near Hallstatt, Upper Austria, Austria"), 47.5622, 13.6493, 511],
+  [T("Tromsø, Norway"), T("near Tromsø, Troms, Norway"), 69.6489, 18.9551, 14],
+  [T("Portree, United Kingdom"), T("near Portree, Scotland, United Kingdom"), 57.4129, -6.1942, 41],
+  [T("Banff, Canada"), T("near Banff, Alberta, Canada"), 51.1784, -115.5708, 1383],
+  [T("North Atlantic, off Gambia"), T("North Atlantic Ocean, off Banjul, Gambia"), 13.3412, -17.2954, null],
+  [T("Sahara, near Algeria"), T("Sahara, near Algeria"), 24.5583, 9.4846, 1094],
 ];
 const info = $("info"), plot = $("plot"), curves = $("curves"), bubble = $("bubble");
 const panel = { open: new Set(["camera", "location"]), rgb: false, since: 0, hist: null, token: 0, clip: -1 };
-const num = x => x.toLocaleString("en-US");
+const num = x => x.toLocaleString(fvLang);
 const ic = (g, cls = "ic") => `<svg class="${cls}" aria-hidden="true"><use href="#g-${g}"/></svg>`;
 const infoOpen = () => info.classList.contains("open");
 function details(seed) {
   const r = rng(seed ^ 0x51ed), pick = a => a[Math.floor(r() * a.length)];
   return { place: r() < .8 ? pick(places) : null, bias: pick(["−0.7 EV", "−0.3 EV", "+0.3 EV", null, null]),
-    flash: "No flash", wb: cur.night ? "Auto" : pick(["Auto", "Daylight", "Cloudy"]), meter: pick(["Multi-segment", "Centre-weighted", "Spot"]),
-    rating: r() < .45 ? 2 + Math.floor(r() * 4) : 0, keywords: pick(["mountains, dusk", "lake, hiking", "coast, trip", "night sky, stars"]),
+    flash: T("No flash"), wb: cur.night ? T("Auto") : pick([T("Auto"), T("Daylight"), T("Cloudy")]), meter: pick([T("Multi-segment"), T("Centre-weighted"), T("Spot")]),
+    rating: r() < .45 ? 2 + Math.floor(r() * 4) : 0, keywords: pick([T("mountains, dusk"), T("lake, hiking"), T("coast, trip"), T("night sky, stars")]),
     folder: pick(["~/Pictures/Hiking 2026", "~/Pictures/Coast", "~/Desktop/Trip"]), edited: 1 + Math.floor(r() * 3) };
 }
 function infoShow() {
@@ -905,18 +928,18 @@ function infoShow() {
   $("ihead").innerHTML = `<b title="${name}">${name}</b><small>JPEG · ${num(cur.w)} × ${num(cur.h)} · ${cur.mb} MB</small>` +
     (p ? `<p>${ic("pin")}${p[0]}</p>` : "");
   const groups = [
-    ["camera", "Camera", model, `<div class="expo"><div class="tiles">
-      <div><b>${cur.exp}</b><small>${ic("timer")}sec</small></div><div><b>${aperture}</b><small>ƒ stop</small></div>
-      <div><b>${cur.iso}</b><small>ISO speed</small></div><div${eq ? ` title="${eq} equivalent"` : ""}><b>${focal}</b><small>${ic("lens")}mm</small></div></div>
+    ["camera", T("Camera"), model, `<div class="expo"><div class="tiles">
+      <div><b>${cur.exp}</b><small>${ic("timer")}${T("sec")}</small></div><div><b>${aperture}</b><small>${T("ƒ stop")}</small></div>
+      <div><b>${cur.iso}</b><small>${T("ISO speed")}</small></div><div${eq ? ` title="${T("{eq} equivalent", { eq })}"` : ""}><b>${focal}</b><small>${ic("lens")}mm</small></div></div>
       <div class="chips">${[["bias", d.bias], ["flash", d.flash], ["wb", d.wb], ["meter", d.meter]].filter(c => c[1]).map(([g, t]) => `<span>${ic(g)}${t}</span>`).join("")}</div></div>` +
-      row("Lens", lens) + row("35 mm equivalent", eq) + row("Taken", cur.date)],
-    ["image", "Image", `${profile.startsWith("sRGB") ? "sRGB" : profile.replace("Display ", "").replace(" (1998)", "")} · 8-bit`,
-      row("Dimensions", `${num(cur.w)} × ${num(cur.h)} · ${(cur.w * cur.h / 1e6).toFixed(1)} MP`) + row("Colour profile", profile) + row("Bit depth", "8 bits per channel")],
-    p && ["location", "Location", p[4] == null ? "" : `${num(p[4])} m`, `<div class="pl">${p[1]}</div>` + row("Latitude", ll(p[2], "N", "S")) +
-      row("Longitude", ll(p[3], "E", "W")) + row("Altitude", p[4] == null ? "" : `${num(p[4])} m`) + btn("map", "Open in Maps", "Maps would open at this spot. Nothing loads before the click.")],
-    stars && ["description", "Description", stars, row("Keywords", d.keywords) + row("Rating", stars)],
-    ["file", "File", `${cur.day}, 18:${String(10 + d.edited * 7)}`, row("Folder", d.folder) + row("Modified", `${cur.day}, 18:${String(10 + d.edited * 7)}`) +
-      row("Created", cur.date) + btn("folder", "Show in Finder", `Finder would show ${name}.`)],
+      row(T("Lens"), lens) + row(T("35 mm equivalent"), eq) + row(T("Taken"), cur.date)],
+    ["image", T("Image"), `${profile.startsWith("sRGB") ? "sRGB" : profile.replace("Display ", "").replace(" (1998)", "")} · 8-bit`,
+      row(T("Dimensions"), `${num(cur.w)} × ${num(cur.h)} · ${(cur.w * cur.h / 1e6).toFixed(1)} MP`) + row(T("Colour profile"), profile) + row(T("Bit depth"), T("8 bits per channel"))],
+    p && ["location", T("Location"), p[4] == null ? "" : `${num(p[4])} m`, `<div class="pl">${p[1]}</div>` + row(T("Latitude"), ll(p[2], "N", "S")) +
+      row(T("Longitude"), ll(p[3], "E", "W")) + row(T("Altitude"), p[4] == null ? "" : `${num(p[4])} m`) + btn("map", T("Open in Maps"), T("Maps would open at this spot. Nothing loads before the click."))],
+    stars && ["description", T("Description"), stars, row(T("Keywords"), d.keywords) + row(T("Rating"), stars)],
+    ["file", T("File"), `${cur.day}, 18:${String(10 + d.edited * 7)}`, row(T("Folder"), d.folder) + row(T("Modified"), `${cur.day}, 18:${String(10 + d.edited * 7)}`) +
+      row(T("Created"), cur.date) + btn("folder", T("Show in Finder"), T("Finder would show {name}.", { name }))],
   ].filter(Boolean);
   // the focused control stays focused when the next image has it, else the focus moves on to the next one
   const a = document.activeElement, g = info.contains(a) && a.closest(".grp"), had = g && [g.dataset.g, stops().indexOf(a), a.matches(".sb")];
@@ -950,7 +973,7 @@ function count(svg) {
     if (curves.style.transform) { curves.getBoundingClientRect(); curves.classList.add("rising"); curves.style.transform = ""; }
   }).catch(() => {}); // a browser that won't draw it shows the plot empty
 }
-const clipText = (i, f) => `${i ? "Highlights" : "Shadows"}: ${(f * 100).toFixed(1)} % clipped`;
+const clipText = (i, f) => T(i ? "Highlights: {pct} % clipped" : "Shadows: {pct} % clipped", { pct: (f * 100).toLocaleString(fvLang, { minimumFractionDigits: 1, maximumFractionDigits: 1 }) });
 function drawHist() {
   const h = panel.hist, line = b => Array.from(b, (v, i) => `${i ? "L" : "M"}${i} ${(60 * (1 - Math.min(1, v))).toFixed(1)}`).join("");
   ["h-lum", "h-r", "h-g", "h-b"].forEach((id, i) => $(id).setAttribute("d", h ? line(h.bins[i]) : ""));
@@ -959,11 +982,11 @@ function drawHist() {
   info.querySelectorAll(".clip").forEach((c, i) => c.classList.toggle("on", !!h && h.clip[i] > .001));
   bubble.hidden = !h || panel.clip < 0;
   if (h && panel.clip >= 0) { bubble.textContent = clipText(panel.clip, h.clip[panel.clip]); bubble.classList.toggle("end", panel.clip === 1); }
-  const clipped = h ? [0, 1].filter(i => h.clip[i] > .001).map(i => clipText(i, h.clip[i])).join(", ") || "nothing clipped" : "";
-  plot.setAttribute("aria-label", `${panel.rgb ? "RGB" : "Luminance"} histogram${clipped && ", " + clipped}`);
+  const clipped = h ? [0, 1].filter(i => h.clip[i] > .001).map(i => clipText(i, h.clip[i])).join(", ") || T("nothing clipped") : "";
+  plot.setAttribute("aria-label", (panel.rgb ? T("RGB histogram") : T("Luminance histogram")) + (clipped && ", " + clipped));
 }
 function setMode(rgb) {
-  panel.rgb = rgb; $("mode").setAttribute("aria-label", `Histogram mode: ${rgb ? "RGB" : "Luminance"}`);
+  panel.rgb = rgb; $("mode").setAttribute("aria-label", rgb ? T("Histogram mode: RGB") : T("Histogram mode: Luminance"));
   $("mode").querySelectorAll("span").forEach(s => s.classList.toggle("on", (s.dataset.m === "rgb") === rgb));
   drawHist();
 }
@@ -1016,11 +1039,11 @@ const step = () => win.clientWidth * .15;
 let flips = [], bragged = false;
 function flipped() {
   const t = performance.now(); flips = flips.filter(x => t - x < 2500); flips.push(t);
-  if (!bragged && flips.length >= 18) { bragged = true; toast("Still no spinner. Told you.", 2000); }
+  if (!bragged && flips.length >= 18) { bragged = true; toast(T("Still no spinner. Told you."), 2000); }
 }
 const actions = {
-  next() { if (n < total) { n++; show(); flipped(); } else toast("End of the folder. The app would offer the next one."); },
-  prev() { if (n > 1) { n--; show(); flipped(); } else toast("That’s the first one."); },
+  next() { if (n < total) { n++; show(); flipped(); } else toast(T("End of the folder. The app would offer the next one.")); },
+  prev() { if (n > 1) { n--; show(); flipped(); } else toast(T("That’s the first one.")); },
   first() { n = 1; show(); }, last() { n = total; show(); },
   // arrows pan an image larger than the window, as in the app; Space and Backspace always browse
   ArrowRight() { larger() ? pan(step(), 0) : actions.next(); }, ArrowLeft() { larger() ? pan(-step(), 0) : actions.prev(); },
@@ -1029,9 +1052,9 @@ const actions = {
   "+"() { setZoom(zoom * 1.1); }, "-"() { setZoom(zoom / 1.1); }, "1"() { setZoom(100 / fitPct()); }, "0"() { zoom = 1; px = py = 0; layout(); },
   i() { infoToggle(); },
   f() { lights.max(); },
-  Escape() { win.classList.contains("max") ? lights.max() : toast("Esc never quits Featherview. Not even here."); },
-  "?"() { toast("Try → ← R L + − 0 1 I ⌦", 2200); },
-  Delete() { if (total < 2) return toast("That’s the last one in this demo"); toast("Moved to Trash (the pretend one)"); total--; gone++; if (n > total) n = total; show(); },
+  Escape() { win.classList.contains("max") ? lights.max() : toast(T("Esc never quits Featherview. Not even here.")); },
+  "?"() { toast(T("Try → ← R L + − 0 1 I ⌦"), 2200); },
+  Delete() { if (total < 2) return toast(T("That’s the last one in this demo")); toast(T("Moved to Trash (the pretend one)")); total--; gone++; if (n > total) n = total; show(); },
 };
 const alias = { " ":"next", PageDown:"next", Backspace:"prev", PageUp:"prev", Home:"first", End:"last", "=":"+", "−":"-", R:"r", L:"l", I:"i", F:"f", Enter:"f" };
 function press(k) {
@@ -1050,7 +1073,7 @@ const lights = {
     if (win.classList.contains("poof")) return;
     if (win.classList.contains("max")) lights.max();
     win.classList.add("poof");
-    setTimeout(() => { win.classList.remove("poof"); toast("Closed. And reopened before you noticed.", 2000); }, calm.matches ? 0 : 420);
+    setTimeout(() => { win.classList.remove("poof"); toast(T("Closed. And reopened before you noticed."), 2000); }, calm.matches ? 0 : 420);
   },
   mini() {
     if (win.classList.contains("max")) lights.max();
@@ -1071,7 +1094,7 @@ const lights = {
     if (on) win.requestFullscreen?.().catch(() => {});
     else if (document.fullscreenElement) document.exitFullscreen().catch(() => {});
     win.focus({ preventScroll: true });
-    toast(on ? "All yours. Esc or F to come back." : "Back in the page.", 1600);
+    toast(on ? T("All yours. Esc or F to come back.") : T("Back in the page."), 1600);
   },
 };
 win.addEventListener("mousemove", e => win.classList.toggle("peek", win.classList.contains("max") && e.clientY - win.getBoundingClientRect().top < 64));
@@ -1096,7 +1119,7 @@ document.addEventListener("keydown", e => {
   if (e.metaKey || e.ctrlKey || e.altKey) return;
   const kk = e.key.length === 1 ? e.key.toLowerCase() : e.key;
   kpos = kk === konami[kpos] ? kpos + 1 : kk === "ArrowUp" ? (kpos === 2 ? 2 : 1) : 0; // ↑↑↑ still counts as the start
-  if (kpos === konami.length) { kpos = 0; toast("Cheat code accepted. It was already this fast.", 2600); return; }
+  if (kpos === konami.length) { kpos = 0; toast(T("Cheat code accepted. It was already this fast."), 2600); return; }
   if (win.inert) return; // minimised: the Dock restores it
   if (panelKey(e)) return e.preventDefault();
   const focused = win.contains(document.activeElement);
@@ -1119,7 +1142,7 @@ new IntersectionObserver(([e]) => snapSeen = e.isIntersecting).observe(snapFrame
 setInterval(() => { if (snapSeen && !calm.matches && !document.hidden) snap(); }, 1500);
 $("jump").addEventListener("click", () => {
   win.scrollIntoView({ block: "center", behavior: calm.matches ? "auto" : "smooth" });
-  win.focus({ preventScroll: true }); toast("Go on. Hold →.", 1800);
+  win.focus({ preventScroll: true }); toast(T("Go on. Hold →."), 1800);
 });
 
 // First-open help: opens after Download (the download goes on) or from "how ↓"; the note's line stays for when it's closed.
@@ -1128,8 +1151,8 @@ function firstOpen(show, heading) {
   if (heading) $("firsthead").textContent = heading;
   if (show) $("firstopen").querySelector(".copy").focus({ preventScroll: true }); else $("howto").focus();
 }
-$("dl").addEventListener("click", () => firstOpen(true, "Downloading. Before you open it the first time:"));
-$("howto").addEventListener("click", () => firstOpen(true, "Opening it the first time"));
+$("dl").addEventListener("click", () => firstOpen(true, T("Downloading. Before you open it the first time:")));
+$("howto").addEventListener("click", () => firstOpen(true, T("Opening it the first time")));
 $("firstclose").addEventListener("click", () => firstOpen(false));
 document.querySelectorAll(".copy").forEach(b => b.addEventListener("click", async () => {
   try { await navigator.clipboard.writeText(b.dataset.copy); } catch { getSelection().selectAllChildren(b.querySelector("code")); return; }
@@ -1151,6 +1174,7 @@ for (const clip of [$("hubble"), $("vspreview")]) {
   if (calm.matches) clip.controls = true;
   else new IntersectionObserver(([e]) => e.isIntersecting ? clip.play().catch(() => clip.controls = true) : clip.pause(), { threshold:.4 }).observe(clip);
 }
+});
 </script>
 </body>
 </html>
