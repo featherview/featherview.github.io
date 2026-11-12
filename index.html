@@ -44,6 +44,9 @@ const T=(s,v)=>{let r=window.fvDict&&fvDict[s]||s;return v?r.replace(/\{(\w+)\}/
 </script>
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"Is there IrfanView for Mac?","acceptedAnswer":{"@type":"Answer","text":"No, it runs on Windows only. Featherview is an independent Mac alternative in the same spirit: open one picture and the arrow keys take you through the folder, R and L rotate, and batch conversion handles the rest. Most of the single keys are the same, so your fingers already know them. It isn’t affiliated with IrfanView."}},{"@type":"Question","name":"How do I open a PSD without Photoshop?","acceptedAnswer":{"@type":"Answer","text":"Double-click it in Featherview. Layered PSD and PSB files show flattened, even 4.6 GB ones, and Finder shows thumbnails of GIMP and Procreate files too."}},{"@type":"Question","name":"Can I view WebP and JPEG XL on a Mac?","acceptedAnswer":{"@type":"Answer","text":"Yes, and save to them too: WebP, JPEG XL, AVIF and HEIC, plus older formats macOS no longer opens, with Quick Look previews in Finder."}},{"@type":"Question","name":"Can I flip through a folder like on Windows?","acceptedAnswer":{"@type":"Answer","text":"That’s the point. Open one photo, then → and ← step through the whole folder. Delete moves a reject to the Trash."}},{"@type":"Question","name":"Can it batch convert and resize?","acceptedAnswer":{"@type":"Answer","text":"Yes: HEIC to JPEG, PNG to WebP, resize, rename, crop and watermark a whole shoot, with a live preview. It never overwrites a file."}},{"@type":"Question","name":"Is it really free?","acceptedAnswer":{"@type":"Answer","text":"Yes. Open source under the MIT licence, no ads, no account, no paid tier. It updates itself, and runs on Apple Silicon and Intel Macs with macOS 14 or later."}}]}</script>
 <style>
+  :root { accent-color:var(--accent); caret-color:var(--accent); }
+  ::selection { background:color-mix(in srgb, var(--accent) 34%, transparent); color:var(--fg); }
+  :focus-visible { outline-color:var(--accent); }
   html.i18n body { visibility:hidden; }
   nav .end { display:flex; align-items:center; gap:22px; }
   .lang { position:relative; display:flex; align-items:center; gap:6px; font-size:15px; color:var(--muted); }
@@ -59,7 +62,7 @@ const T=(s,v)=>{let r=window.fvDict&&fvDict[s]||s;return v?r.replace(/\{(\w+)\}/
     --accent:#ff7a59; --accent-ink:#fff;
     /* drawn batch window, dark Mac appearance */
     --w-bar:#2a2a2f; --w-c1:#232327; --w-c2:#1f1f23; --w-c3:#1b1b1e; --w-line:#38383e; --w-fg:#ececf0;
-    --w-muted:#acabb4; --w-card:#26262b; --w-cap:rgba(255,255,255,.08); --w-sel:rgba(10,132,255,.24);
+    --w-muted:#acabb4; --w-card:#26262b; --w-cap:rgba(255,255,255,.08); --w-sel:rgba(255,122,89,.24);
     --shadow:0 40px 90px -30px rgba(0,0,0,.75);
     /* viewer window tokens, dark (Graphite); from the app's Theme.swift */
     --v-bg:#1c1c20; --v-edge:rgba(255,255,255,.07); --v-glass:rgba(52,52,58,.55); --v-panel:rgba(44,44,50,.62); --v-solid:rgba(46,46,52,.94);
@@ -83,7 +86,7 @@ const T=(s,v)=>{let r=window.fvDict&&fvDict[s]||s;return v?r.replace(/\{(\w+)\}/
       --warm:#b9501f; --f1:#c86a12; --f2:#cf4426; --key:#ffffff; --keyline:#d6d3cc;
       --accent:#b8552b;
       --w-bar:#ececee; --w-c1:#fafafb; --w-c2:#f3f3f5; --w-c3:#ffffff; --w-line:#dcdce0; --w-fg:#1d1d1f;
-      --w-muted:#5f5f64; --w-card:#ffffff; --w-cap:rgba(255,255,255,.8); --w-sel:rgba(10,91,196,.13);
+      --w-muted:#5f5f64; --w-card:#ffffff; --w-cap:rgba(255,255,255,.8); --w-sel:rgba(184,85,43,.14);
       --shadow:0 34px 80px -34px rgba(40,30,20,.35);
       --v-bg:#e7e7ec; --v-edge:rgba(0,0,0,.08); --v-glass:rgba(255,255,255,.60); --v-panel:rgba(255,255,255,.66); --v-solid:rgba(246,246,249,.94);
       --v-hl:rgba(255,255,255,.70); --v-hair:rgba(0,0,0,.06); --v-pic:rgba(0,0,0,.08);
