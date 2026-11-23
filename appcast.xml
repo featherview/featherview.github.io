@@ -4,6 +4,17 @@
     <title>Featherview</title>
     <link>https://featherview.mynetx.net/</link>
     <item>
+      <title>Featherview 0.14.0</title>
+      <pubDate>Mon, 23 Nov 2026 10:19:25 +0000</pubDate>
+      <sparkle:version>10</sparkle:version>
+      <sparkle:shortVersionString>0.14.0</sparkle:shortVersionString>
+      <sparkle:minimumSystemVersion>14.0</sparkle:minimumSystemVersion>
+      <link>https://github.com/featherview/featherview/releases/tag/v0.14.0</link>
+      <description><![CDATA[<ul><li>Photoshop PSB files now get Finder thumbnails and Quick Look (Space) previews, which macOS never draws on its own.</li><li>If macOS already tried a PSB before, its thumbnails appear after your next login.</li><li>Damaged JPEG XR files now fail to open with a short message instead of stalling the app.</li><li>The README is rewritten for skimming, with Homebrew install first and a table of keys.</li><li>Plus smaller fixes, among them safer handling of unusual JPEG XR files.</li><li>Still not notarized: Apple charges $99 a year for that, and nobody has chipped in so far. Even $5 once helps: github.com/sponsors/mynetx. Then the first-open step and the Photos question after each update go away.</li></ul>]]></description>
+      <enclosure url="https://github.com/featherview/featherview/releases/download/v0.14.0/Featherview-0.14.0.dmg"
+                 sparkle:edSignature="sxgTwe0sOMn6+OEBOfvcqdRKyHgJaQBU4FIN0LbTFHJZ7Vx6HWCIJdXuTctl3rQN2astzbo2s8oiB948gs2QAg==" length="25945942" type="application/x-apple-diskimage"/>
+    </item>
+    <item>
       <title>Featherview 0.13.1</title>
       <pubDate>Sat, 31 Oct 2026 23:55:25 +0000</pubDate>
       <sparkle:version>9</sparkle:version>
